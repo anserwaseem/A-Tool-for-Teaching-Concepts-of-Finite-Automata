@@ -1,0 +1,29 @@
+blockquote {
+  /* border: none; */
+  font-family: Georgia, "Times New Roman", Times, serif;
+  /* margin-bottom: -30px; */
+  quotes: "\201C""\201D""\2018""\2019";
+  
+}
+
+blockquote h4 {
+  /* font-size: 15px; */
+  /* padding: 20px; */
+
+}
+
+blockquote h4:before {
+  content: open-quote;
+  font-weight: bold;
+  font-size: 80px;
+  color: #889c0b;
+  /* justify-self: end; */
+}
+blockquote h4:after {
+  content: close-quote;
+  font-weight: bold;
+  font-size: 80px;
+  color: #889c0b;
+  float:right;
+  margin-right: 5rem;
+}
