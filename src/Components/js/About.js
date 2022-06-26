@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import "../css/A3S.css";
+import "../css/A3S.css"
 import "../css/About.css";
 
 const About = () => {
@@ -13,7 +13,7 @@ const About = () => {
         <Col>
           <Container id="about-text" className="dark-bg py-5">
             <blockquote>
-              <h4 className="px-5">
+              <h4 className="px-5 light-text">
                 <br />
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A3S provides a
                 simulated environment where you will be able to make DFAs

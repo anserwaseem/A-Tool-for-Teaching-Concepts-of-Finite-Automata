@@ -1,7 +1,23 @@
 .dark-bg {
-  background-color: rgba(78, 78, 95, 1);
+  background: rgb(119, 184, 200);
+  background: linear-gradient(
+    90deg,
+    rgba(119, 184, 200, 1) 0%,
+    rgba(136, 204, 201, 1) 25%,
+    rgba(140, 220, 213, 1) 100%
+  );
 }
 
 .light-bg {
-  background-color: rgba(100, 103, 122, 1);
+  background-color: white;
+  /* background: rgb(84, 111, 173);
+  background: linear-gradient(
+    180deg,
+    rgba(84, 111, 173, 1) 0%,
+    rgba(0, 255, 255, 1) 54%
+  ); */
+}
+
+.light-text {
+  color: white;
 }

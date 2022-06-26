@@ -1,3 +1,8 @@
 #editor-dropdown {
-  color: #889c0b !important;
+  color: aqua !important;
+}
+
+#pageName{
+  font-size: larger;
+  color: aqua;
 }

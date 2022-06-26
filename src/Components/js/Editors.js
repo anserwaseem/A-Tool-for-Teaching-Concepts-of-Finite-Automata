@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import "../css/A3S.css";
+import "../css/A3S.css"
 import "../css/Editors.css";
 
 const Editors = () => {
@@ -8,7 +8,7 @@ const Editors = () => {
     <Container fluid className="py-5 dark-bg">
       <Row>
         <Col sm={12} md={2} lg={2}>
-          <h3 className="mx-5 mb-5">Editors</h3>
+          <h3 className="mx-5 mb-5 light-text">Editors</h3>
         </Col>
         <Col sm={12} md={5} lg>
           <Card className="mb-5 light-bg editor-card">

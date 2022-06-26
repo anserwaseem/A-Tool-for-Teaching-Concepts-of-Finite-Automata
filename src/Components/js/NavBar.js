@@ -1,14 +1,16 @@
 import React from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import "../css/NavBar.css";
 
-const NavBar = () => {
+const NavBar = ({ pageName }) => {
   return (
     <Navbar expand="lg" sticky="top" className="dark-bg">
       <Container fluid className="mx-5">
         <Navbar.Brand href="/" className="fs-2 fw-bold">
           A3S
         </Navbar.Brand>
+        <Navbar.Text id="pageName">{pageName}</Navbar.Text>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -23,10 +25,14 @@ const NavBar = () => {
               className="fs-4"
             >
               <NavDropdown.Item href="#action/3.1">
-                Using States and Transitions
+                <Nav.Link as={Link} to="/EditStates">
+                  Using States and Transitions
+                </Nav.Link>
               </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Using Transition Table
+              <NavDropdown.Item>
+                <Nav.Link as={Link} to="/EditTransitionTable">
+                  Using Transition Table
+                </Nav.Link>
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
