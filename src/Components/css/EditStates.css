@@ -1,4 +1,0 @@
-.edit-buttons {
-  width: 50%; /*make it min-content if square shape is required at all screen sizes */
-  min-width: fit-content;
-}
