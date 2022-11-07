@@ -9,8 +9,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/a3s" element={<A3S />} />
-        <Route path="/" element={<Editor />} />
+        <Route
+          path="/A-Tool-for-Teaching-Concepts-of-Finite-Automata/a3s"
+          element={<A3S />}
+        />
+        <Route
+          path="/A-Tool-for-Teaching-Concepts-of-Finite-Automata"
+          element={<Editor />}
+        />
       </Routes>
     </Router>
   );
