@@ -1,4 +1,4 @@
-export default class Row {
+export default class RowModel {
   constructor(
     public id: number,
     public node: string,

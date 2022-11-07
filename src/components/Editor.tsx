@@ -1,29 +1,25 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Grid,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Slide,
-  Tooltip,
-} from "@mui/material";
+import { useRef, useState } from "react";
+import { Box, Button, Grid } from "@mui/material";
 import { DataGrid, GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
 import SecurityIcon from "@mui/icons-material/Security";
+import RestoreTwoToneIcon from "@mui/icons-material/RestoreTwoTone";
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
+// import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
+import MoveUpRoundedIcon from "@mui/icons-material/MoveUpRounded";
+import HighlightAltTwoToneIcon from "@mui/icons-material/HighlightAltTwoTone";
 import { darken, lighten } from "@mui/material/styles";
-import Row from "../models/TransitionTableRow.model";
+import { RowModel, DraggableBoxModel } from "../models";
+import PlayGround from "./Playground";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
 
 const Editor = () => {
   const [gridRowId, setGridRowId] = useState(1);
-  const [gridData, setGridData] = useState<Row[]>([]);
+  const [gridData, setGridData] = useState<RowModel[]>([]);
   const gridColumns: GridColumns = [
     { field: "id", hide: true, hideable: false },
     {
@@ -94,16 +90,56 @@ const Editor = () => {
       },
     },
   ];
-  const [selectedIndex, setSelectedIndex] = useState(1);
+  // const [selectedIndex, setSelectedIndex] = useState(1);
+  // const [boxes, setBoxes] = useState<DraggableBoxModel[]>([]);
+  // const boxez = [
+  //   { id: "box1", x: 50, y: 20, reference: useRef(null) },
+  //   { id: "box2", x: 20, y: 250, reference: useRef(null) },
+  //   { id: "box3", x: 350, y: 80, reference: useRef(null) },
+  // ];
+  // const [lines] = useState([
+  //   {
+  //     start: "box1",
+  //     end: "box2",
+  //     headSize: 14,
+  //     labels: { end: "endLabel" },
+  //   },
+  //   {
+  //     start: "box2",
+  //     end: "box3",
+  //     color: "red",
+  //     labels: {
+  //       middle: (
+  //         <div
+  //           contentEditable
+  //           suppressContentEditableWarning={true}
+  //           style={{ font: "italic 1.5em serif", color: "purple" }}
+  //         >
+  //           Editable label
+  //         </div>
+  //       ),
+  //     },
+  //     headSize: 0,
+  //     strokeWidth: 15,
+  //   },
+  //   {
+  //     start: "box3",
+  //     end: "box1",
+  //     color: "green",
+  //     path: "grid",
+  //     // endAnchor: ["right", {position: "left", offset: {y: -10}}],
+  //     dashness: { animation: 1 },
+  //   },
+  // ]);
 
-  function handleListItemClick(event: any, index: number) {
-    setSelectedIndex(index);
-  }
+  // function handleListItemClick(event: any, index: number) {
+  //   setSelectedIndex(index);
+  // }
 
   const handleAddRow = () => {
     setGridData((prev) => [
       ...prev,
-      new Row(gridRowId, "", "", "", "", false, false),
+      new RowModel(gridRowId, "", "", "", "", false, false),
     ]);
     setGridRowId((prev) => prev + 1);
   };
@@ -113,11 +149,11 @@ const Editor = () => {
     setGridData((prev) => prev.filter((row) => row.id !== id));
   };
 
-  const isRowEmpty = (row: Row) => {
+  const isRowEmpty = (row: RowModel) => {
     return row.node === "" && row.a === "" && row.b === "" && row.nul === "";
   };
 
-  const handleSaveRow = (row: Row) => {
+  const handleSaveRow = (row: RowModel) => {
     console.log("handleSaveRow", row);
     setGridData((prev) => {
       console.log("handleSaveRow prev", prev);
@@ -158,14 +194,13 @@ const Editor = () => {
       }
 
       let newGridData = [...prev];
-      let index = newGridData.findIndex((r) => r.id === row.id);
-      newGridData[index] = row;
+      newGridData[row.id - 1] = row;
       console.log("newGridData", newGridData);
       return newGridData;
     });
   };
 
-  const toggleInitialState = (row: Row) => {
+  const toggleInitialState = (row: RowModel) => {
     console.log("toggleInitialState", row);
     setGridData((prev) => {
       console.log("toggleInitialState prev", prev);
@@ -174,20 +209,23 @@ const Editor = () => {
         return prev;
       }
 
+      if (isRowEmpty(prev[row.id - 1])) {
+        alert("Kindly save the row before making it initial state.");
+      }
+
       if (prev.filter((r) => r.isInitial).length > 0 && !row.isInitial) {
         alert("Only one initial state is allowed.");
         return prev;
       }
 
       let newGridData = [...prev];
-      let index = newGridData.findIndex((r) => r.id === row.id);
-      newGridData[index].isInitial = !newGridData[index].isInitial;
+      newGridData[row.id - 1].isInitial = !newGridData[row.id - 1].isInitial;
       console.log("newGridData", newGridData);
       return newGridData;
     });
   };
 
-  const toggleFinalState = (row: Row) => {
+  const toggleFinalState = (row: RowModel) => {
     console.log("toggleFinalState", row);
     setGridData((prev) => {
       console.log("toggleFinalState prev", prev);
@@ -196,9 +234,12 @@ const Editor = () => {
         return prev;
       }
 
+      if (isRowEmpty(prev[row.id - 1])) {
+        alert("Kindly save the row before making it final state.");
+      }
+
       let newGridData = [...prev];
-      let index = newGridData.findIndex((r) => r.id === row.id);
-      newGridData[index].isFinal = !newGridData[index].isFinal;
+      newGridData[row.id - 1].isFinal = !newGridData[row.id - 1].isFinal;
       console.log("newGridData", newGridData);
       return newGridData;
     });
@@ -208,9 +249,16 @@ const Editor = () => {
     <>
       <Box sx={{ flexGrow: 1, m: 1 }}>
         {/* Grid to incorporate Transition table and Automata */}
-        <Grid container columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid
+          container
+          columnSpacing={{
+            xs: 1,
+            sm: 2,
+            md: 3,
+          }}
+        >
           {/* Transition table grid */}
-          <Grid item sm={12} md={4}>
+          <Grid item xs={12} md={4}>
             <Button size="small" onClick={handleAddRow}>
               Add a row
             </Button>
@@ -260,18 +308,29 @@ const Editor = () => {
             </Box>
           </Grid>
           {/* Automata grid */}
-          <Grid container item sm={12} md={8}>
+          <Grid container item xs={12} md={8}>
             {/* Automata toolbar grid */}
-            <Grid container item sm={12} md={2}>
+            {/* <Grid container item xs={12} md={1}>
               <Slide direction="up" in mountOnEnter unmountOnExit>
                 <Grid
                   container
                   item
-                  direction={{ sm: "row", md: "column" }}
+                  direction={{ xs: "row", md: "column" }}
                   justifyContent={{
-                    sm: "space-evenly",
+                    xs: "space-evenly",
                   }}
                 >
+                  <Grid item>
+                    <ListItem
+                      button
+                      selected={selectedIndex === 3}
+                      onClick={(event) => handleListItemClick(event, 3)}
+                    >
+                      <Tooltip title="Undo">
+                        <RestoreTwoToneIcon />
+                      </Tooltip>
+                    </ListItem>
+                  </Grid>
                   <Grid item>
                     <ListItem
                       button
@@ -279,9 +338,7 @@ const Editor = () => {
                       onClick={(event) => handleListItemClick(event, 0)}
                     >
                       <Tooltip title="Add node">
-                        <ListItemIcon>
-                          <EditSharpIcon />
-                        </ListItemIcon>
+                        <CircleOutlinedIcon />
                       </Tooltip>
                     </ListItem>
                   </Grid>
@@ -292,9 +349,7 @@ const Editor = () => {
                       onClick={(event) => handleListItemClick(event, 1)}
                     >
                       <Tooltip title="Add transition">
-                        <ListItemIcon>
-                          <EditSharpIcon />
-                        </ListItemIcon>
+                        <MoveUpRoundedIcon />
                       </Tooltip>
                     </ListItem>
                   </Grid>
@@ -305,31 +360,16 @@ const Editor = () => {
                       onClick={(event) => handleListItemClick(event, 2)}
                     >
                       <Tooltip title="Mouse">
-                        <ListItemIcon>
-                          <EditSharpIcon />
-                        </ListItemIcon>
-                      </Tooltip>
-                    </ListItem>
-                  </Grid>
-                  <Grid item>
-                    <ListItem
-                      button
-                      selected={selectedIndex === 3}
-                      onClick={(event) => handleListItemClick(event, 3)}
-                    >
-                      <Tooltip title="Undo">
-                        <ListItemIcon>
-                          <EditSharpIcon />
-                        </ListItemIcon>
+                        <HighlightAltTwoToneIcon />
                       </Tooltip>
                     </ListItem>
                   </Grid>
                 </Grid>
               </Slide>
-            </Grid>
+            </Grid> */}
             {/* Automata canvas grid */}
-            <Grid item sm={12} md={10}>
-              Automata goes here ...
+            <Grid item xs={12}>
+              <PlayGround />
             </Grid>
           </Grid>
         </Grid>
