@@ -13,11 +13,12 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Pages } from "../enums/pages";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 const pages = Object.values(Pages);
 
-function ResponsiveAppBar() {
+export function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -28,6 +29,7 @@ function ResponsiveAppBar() {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -48,8 +50,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            component={RouterLink}
+            to={process.env.PUBLIC_URL}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -92,31 +94,29 @@ function ResponsiveAppBar() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map(
-                (page) => (
-                  console.log(
-                    `/${Object.keys(Pages)[Object.values(Pages).indexOf(page)]}`
-                  ),
-                  (
-                    <Link
-                      to={`/${Object.keys(Pages)[Object.values(Pages).indexOf(page)]}`}
-                      
-                    >
-                      <MenuItem key={page} onClick={handleCloseNavMenu}>
-                        <Typography textAlign="center">{page}</Typography>
-                      </MenuItem>
-                    </Link>
-                  )
-                )
-              )}
+              {pages.map((page) => (
+                <Link
+                  component={RouterLink}
+                  to={`${process.env.PUBLIC_URL}/${
+                    Object.keys(Pages)[Object.values(Pages).indexOf(page)]
+                  }`}
+                  underline="none"
+                >
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center" variant="h6">
+                      {page}
+                    </Typography>
+                  </MenuItem>
+                </Link>
+              ))}
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href=""
+            component={RouterLink}
+            to={process.env.PUBLIC_URL}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -132,13 +132,20 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
+              <Link
+                component={RouterLink}
+                to={`${process.env.PUBLIC_URL}/${
+                  Object.keys(Pages)[Object.values(Pages).indexOf(page)]
+                }`}
               >
-                {page}
-              </Button>
+                <Button 
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  {page}
+                </Button>
+              </Link>
             ))}
           </Box>
         </Toolbar>
@@ -146,4 +153,4 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
+export default NavBar;
