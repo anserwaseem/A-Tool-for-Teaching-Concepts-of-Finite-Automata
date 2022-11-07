@@ -2,6 +2,7 @@
   "name": "a-tool-for-teaching-concepts-of-finite-automata",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://anserwaseem.github.io/A-Tool-for-Teaching-Concepts-of-Finite-Automata/",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -16,6 +17,7 @@
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
+    "gh-pages": "^4.0.0",
     "react": "^18.2.0",
     "react-collapsible": "^2.10.0",
     "react-dom": "^18.2.0",
@@ -29,6 +31,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
