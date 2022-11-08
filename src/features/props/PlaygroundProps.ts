@@ -1,11 +1,11 @@
-import { DraggableStateModel } from "../../models";
+import { DraggableStateModel, TransitionModel } from "../../models";
 import { selectedElementType } from "./SelectedElementType";
 
 export type PlaygroundProps = {
   boxes: DraggableStateModel[];
   setBoxes: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
-  lines: any[];
-  setLines: React.Dispatch<React.SetStateAction<any[]>>;
+  lines: TransitionModel[];
+  setLines: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   selected: selectedElementType | null;
   setSelected: React.Dispatch<React.SetStateAction<selectedElementType | null>>;
   actionState: string;

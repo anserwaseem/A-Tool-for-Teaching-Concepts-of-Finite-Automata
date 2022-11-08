@@ -1,6 +1,7 @@
-import React from "react";
-import DraggableStateModel from "../../models/DraggableStateModel";
 import "./css/TopBar.css";
+import { TopBarProps } from "./props/TopBarProps";
+import { DraggableStateModel, TransitionModel } from "../../../models";
+import { selectedElementTypeId } from "../../props/SelectedElementType";
 // import MaterialIcon from "material-icons-react";
 
 const actions = {
@@ -8,58 +9,69 @@ const actions = {
   arrow: ["Edit Properties", "Remove Transition"],
 };
 
-export const TopBar = (props: any) => {
+const enterNewName = (boxes: DraggableStateModel[]) => {
+  var newName = prompt("Enter new name: ");
+  while (
+    !newName ||
+    (newName && [...boxes].map((b) => b.id).includes(newName)) ||
+    newName.length > 4
+  ) {
+    if (!newName)
+      newName = prompt("Name cannot be empty, choose another one: ");
+    else if (newName && [...boxes].map((b) => b.id).includes(newName))
+      newName = prompt("Name already taken, choose another one: ");
+    else if (newName.length > 4)
+      newName = prompt("Name cannot be longer than 4 characters: ");
+  }
+  return newName;
+};
+
+export const TopBar = (props: TopBarProps) => {
   const handleEditAction = (action: any) => {
     console.log("handleEditAction", action);
     switch (action) {
       case "Edit Name":
         props.setBoxes((boxes: DraggableStateModel[]) => {
-          var newName = prompt("Enter new name: ");
-          while (newName === null || newName === "")
-            newName = prompt("Name cannot be empty, choose another one: ");
-          while (
-            newName !== null &&
-            [...boxes].map((a) => a.id).includes(newName)
-          )
-            newName = prompt("Name already taken, choose another one: ");
-          if (!newName) return;
-
-          console.log("boxes before", boxes);
+          var newName = enterNewName(boxes);
           console.log("lines before", props.lines);
-          console.log(
-            "boxes after",
-            boxes.map((box) =>
-              box.id === props.selected.id
-                ? { ...box, id: newName }
-                : { ...box }
-            )
-          );
           console.log(
             "lines after",
             props.lines.map((line: any, i: number) => {
               // console.log("line", i, line.props);
               var lineProps = line.props;
-              if (lineProps.start === props.selected.id)
+              if (props.selected && lineProps.start === props.selected.id)
                 return { ...line, props: { ...lineProps, start: newName } };
-              if (line.props.end === props.selected.id)
+              if (props.selected && line.props.end === props.selected.id)
                 return { ...line, props: { ...lineProps, end: newName } };
               return { ...line };
             })
           );
 
-          props.setLines((prevLines: any[]) =>
-            prevLines.map((line: any, i: number) => {
+          props.setLines((lines: TransitionModel[]) =>
+            lines.map((line: any, i: number) => {
               var lineProps = line.props;
-              if (lineProps.start === props.selected.id)
+              if (props.selected && lineProps.start === props.selected.id)
                 return { ...line, props: { ...lineProps, start: newName } };
-              if (line.props.end === props.selected.id)
+              if (props.selected && line.props.end === props.selected.id)
                 return { ...line, props: { ...lineProps, end: newName } };
               return { ...line };
             })
+          );
+
+          console.log("boxes before", boxes);
+          console.log(
+            "boxes after",
+            boxes.map((box) =>
+              props.selected && box.id === props.selected.id
+                ? { ...box, id: newName }
+                : { ...box }
+            )
           );
 
           return boxes.map((box) =>
-            box.id === props.selected.id ? { ...box, id: newName } : { ...box }
+            props.selected && box.id === props.selected.id
+              ? { ...box, id: newName }
+              : { ...box }
           );
         });
         break;
@@ -70,21 +82,29 @@ export const TopBar = (props: any) => {
         props.setActionState(action);
         break;
       case "Remove Transition":
-        props.setLines((lines: any[]) =>
-          lines.filter(
+        console.log("remove transition triggered", props);
+        props.setLines((lines: TransitionModel[]) => {
+          const start = (props.selected!.id as selectedElementTypeId).start;
+          const end = (props.selected!.id as selectedElementTypeId).end;
+          console.log("start", start, "end", end);
+          return lines.filter(
             (line) =>
               !(
-                line.props.root === props.selected.id.root &&
-                line.props.end === props.selected.id.end
+                props.selected &&
+                line.props.start ===
+                  (props.selected.id as selectedElementTypeId).start &&
+                line.props.end ===
+                  (props.selected.id as selectedElementTypeId).end
               )
-          )
-        );
+          );
+        });
         break;
       case "Edit Properties":
-        props.setLines((lines: any[]) =>
+        props.setLines((lines: TransitionModel[]) =>
           lines.map((line) =>
-            line.props.root === props.selected.id.root &&
-            line.props.end === props.selected.id.end
+            props.selected &&
+            line.props.start === props.selected.id &&
+            line.props.end === props.selected.id
               ? {
                   ...line,
                   menuWindowOpened: true,
@@ -95,38 +115,35 @@ export const TopBar = (props: any) => {
         break;
       case "Delete":
         if (
+          props.selected &&
           window.confirm(
             `are you sure you want to delete ${props.selected.id}?`
           )
         ) {
           // first remove any lines connected to the node.
-          props.setLines((lines: any[]) => {
+          props.setLines((lines: TransitionModel[]) => {
             return lines.filter(
               (line) =>
                 !(
-                  line.props.root === props.selected.id ||
-                  line.props.end === props.selected.id
+                  props.selected &&
+                  (line.props.start === props.selected.id ||
+                    line.props.end === props.selected.id)
                 )
             );
           });
           // if its a box remove from boxes
           if (
-            props.boxes.map((box: any) => box.id).includes(props.selected.id)
+            props.selected &&
+            props.boxes
+              .map((box) => box.id)
+              .includes(props.selected.id as string)
           ) {
-            props.setBoxes((boxes: any[]) =>
-              boxes.filter((box) => !(box.id === props.selected.id))
+            props.setBoxes((boxes: DraggableStateModel[]) =>
+              boxes.filter(
+                (box) => props.selected && !(box.id === props.selected.id)
+              )
             );
           }
-          // if its a interface remove from interfaces
-          // else if (
-          //   props.interfaces
-          //     .map((itr: any) => itr.id)
-          //     .includes(props.selected.id)
-          // ) {
-          //   props.setInterfaces((itrs: any[]) =>
-          //     itrs.filter((itr) => !(itr.id === props.selected.id))
-          //   );
-          // }
           props.handleSelect(null);
         }
         break;

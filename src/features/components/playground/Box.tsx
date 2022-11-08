@@ -2,31 +2,56 @@ import React from "react";
 import "./css/Box.css";
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
+import { TransitionModel } from "../../../models";
 
 export const Box = (props: any) => {
   const updateXarrow = useXarrow();
   // const handleDrag = () => props.setBoxes([...props.boxes]);
   const handleClick = (e: any) => {
-    console.log("Box handleClick", e);
+    console.log("Box handleClick", props);
     e.stopPropagation(); //so only the click event on the box will fire on not on the container itself
+
     if (props.actionState === "Normal") {
       props.handleSelect(e);
     } else if (
       props.actionState === "Add Transition" &&
       props.selected.id !== props.box.id
     ) {
-      props.setLines((lines: any[]) => [
+      props.setLines((lines: TransitionModel[]) => [
         ...lines,
         {
-          props: { start: props.selected.id, end: props.box.id },
+          props: {
+            start: props.selected.id,
+            end: props.box.id,
+            labels: (
+              <div
+                contentEditable
+                suppressContentEditableWarning={true}
+                style={{
+                  fontSize: "1.5em",
+                  padding: "0.4em 0.4em 0",
+                  color: "purple",
+                  marginBottom: "1em",
+                  borderRadius: "1.5em",
+                }}
+              >
+                ^
+              </div>
+            ),
+            // dashness: { animation: 10 },
+            animateDrawing: true,
+          },
           menuWindowOpened: false,
         },
       ]);
     } else if (props.actionState === "Remove Transitions") {
-      props.setLines((lines: any[]) =>
+      props.setLines((lines: TransitionModel[]) =>
         lines.filter(
           (line) =>
-            !(line.root === props.selected.id && line.end === props.box.id)
+            !(
+              line.props.start === props.selected.id &&
+              line.props.end === props.box.id
+            )
         )
       );
     }
@@ -39,13 +64,15 @@ export const Box = (props: any) => {
     (props.actionState === "Add Transition" &&
       // props.sidePos !== "right" &&
       props.lines.filter(
-        (line: any) =>
-          line.root === props.selected.id && line.end === props.box.id
+        (line: TransitionModel) =>
+          line.props.start === props.selected.id &&
+          line.props.end === props.box.id
       ).length === 0) ||
     (props.actionState === "Remove Transitions" &&
       props.lines.filter(
-        (line: any) =>
-          line.root === props.selected.id && line.end === props.box.id
+        (line: TransitionModel) =>
+          line.props.start === props.selected.id &&
+          line.props.end === props.box.id
       ).length > 0)
   ) {
     background = "LemonChiffon";

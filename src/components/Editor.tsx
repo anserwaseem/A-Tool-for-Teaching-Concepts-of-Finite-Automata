@@ -4,11 +4,12 @@ import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
 import SecurityIcon from "@mui/icons-material/Security";
-import { RowModel, DraggableStateModel } from "../models";
-import PlayGround from "./Playground";
-import TransitionTable from "./TransitionTable";
-import { TransitionTableProps } from "./props/TransitionTableProps";
-import { PlaygroundProps } from "./props/PlaygroundProps";
+import { RowModel, DraggableStateModel, TransitionModel } from "../models";
+import PlayGround from "../features/Playground";
+import { PlaygroundProps } from "../features/props/PlaygroundProps";
+import { selectedElementType } from "../features/props/SelectedElementType";
+import { TransitionTableProps } from "../features/props/TransitionTableProps";
+import TransitionTable from "../features/TransitionTable";
 
 const Editor = () => {
   const [gridRowId, setGridRowId] = useState(1);
@@ -84,12 +85,8 @@ const Editor = () => {
     },
   ];
   const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
-  const [lines, setLines] = useState<any[]>([]);
+  const [lines, setLines] = useState<TransitionModel[]>([]);
 
-  type selectedElementType = {
-    id: string;
-    type: "arrow" | "box";
-  };
   const [selected, setSelected] = useState<selectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
 
@@ -207,7 +204,10 @@ const Editor = () => {
     if (e === null) {
       setSelected(null);
       setActionState("Normal");
-    } else setSelected({ id: e.target.id, type: "box" });
+    } else {
+      console.log("PlayGround handleSelect e", e.target.id);
+      setSelected({ id: e.target.id, type: "box" });
+    }
   };
 
   const checkExsitence = (id: string) => {

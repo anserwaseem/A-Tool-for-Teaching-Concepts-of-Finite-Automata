@@ -3,7 +3,6 @@ import Xarrow from "react-xarrows";
 
 //{props: {line, setSelected, selected}}
 export default ({ setSelected, selected, line: { props } }: any) => {
-  // console.log(sss)
   const [state, setState] = useState({ color: "coral" });
   const defProps = {
     passProps: {
@@ -13,7 +12,7 @@ export default ({ setSelected, selected, line: { props } }: any) => {
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the box will fire on not on the container itself
         setSelected({
-          id: { start: props.root, end: props.end },
+          id: { start: props.start, end: props.end },
           type: "arrow",
         });
       },
@@ -24,9 +23,12 @@ export default ({ setSelected, selected, line: { props } }: any) => {
   if (
     selected &&
     selected.type === "arrow" &&
-    selected.id.root === props.root &&
+    selected.id.start === props.start &&
     selected.id.end === props.end
   )
-    color = "red";
-  return <Xarrow {...{ ...defProps, ...props, ...state, color }} />;
+    color = "black";
+  return (
+    // console.log("custom Xarrow props", props),
+    <Xarrow {...{ ...defProps, ...props, ...state, color }} />
+  );
 };

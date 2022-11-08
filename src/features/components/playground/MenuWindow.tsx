@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
+import { TransitionModel } from "../../../models";
 import "./css/MenuWindow.css";
 
 export default ({ setLines, line: { props: lineProp } }: any) => {
@@ -44,9 +45,9 @@ export default ({ setLines, line: { props: lineProp } }: any) => {
   //   console.log(typeof state);
 
   const handleClose = () =>
-    setLines((lines: any[]) =>
+    setLines((lines: TransitionModel[]) =>
       lines.map((line) =>
-        line.props.root === lineProp.root && line.props.end === lineProp.end
+        line.props.start === lineProp.start && line.props.end === lineProp.end
           ? {
               ...line,
               menuWindowOpened: false,
@@ -58,7 +59,7 @@ export default ({ setLines, line: { props: lineProp } }: any) => {
   return (
     <Draggable>
       <div className="menuWindowContainer">
-        <div className={"header"}>{`${lineProp.root}->${lineProp.end}`}</div>
+        <div className={"header"}>{`${lineProp.start}->${lineProp.end}`}</div>
         <hr style={{ width: "80%" }} />
         {/*<MaterialIcon*/}
         {/*  size={30}*/}

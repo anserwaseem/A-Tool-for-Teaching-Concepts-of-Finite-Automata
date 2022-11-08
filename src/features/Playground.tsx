@@ -1,12 +1,12 @@
 import "./css/Playground.css";
-import Box from "./playgroundUI/Box";
-import TopBar from "./playgroundUI/TopBar";
-import Xarrow from "./playgroundUI/Xarrow";
 import { Xwrapper } from "react-xarrows";
-import MenuWindow from "./playgroundUI/MenuWindow";
+import MenuWindow from "./components/playground/MenuWindow";
+import { BoxProps } from "./components/playground/props/BoxProps";
+import { TopBarProps } from "./components/playground/props/TopBarProps";
+import TopBar from "./components/playground/TopBar";
 import { PlaygroundProps } from "./props/PlaygroundProps";
-import { TopBarProps } from "./playgroundUI/props/TopBarProps";
-import { BoxProps } from "./playgroundUI/props/BoxProps";
+import Box from "./components/playground/Box";
+import Xarrow from "./components/playground/Xarrow";
 
 const PlayGround = (props: PlaygroundProps) => {
   const topBarprops: TopBarProps = {
@@ -79,7 +79,7 @@ const PlayGround = (props: PlaygroundProps) => {
           {/* xarrow connections*/}
           {props.lines.map((line, i) => (
             <Xarrow
-              key={line.props.root + "-" + line.props.end + i}
+              key={line.props.start + "-" + line.props.end + i}
               line={line}
               selected={props.selected}
               setSelected={props.setSelected}
@@ -89,7 +89,7 @@ const PlayGround = (props: PlaygroundProps) => {
           {props.lines.map((line, i) =>
             line.menuWindowOpened ? (
               <MenuWindow
-                key={line.props.root + "-" + line.props.end + i}
+                key={line.props.start + "-" + line.props.end + i}
                 setLines={props.setLines}
                 line={line}
               />
