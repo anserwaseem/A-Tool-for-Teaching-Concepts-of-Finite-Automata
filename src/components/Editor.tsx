@@ -1,21 +1,14 @@
-import { useRef, useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
-import { DataGrid, GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
+import { useState } from "react";
+import { Box, Grid } from "@mui/material";
+import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditSharpIcon from "@mui/icons-material/EditSharp";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
 import SecurityIcon from "@mui/icons-material/Security";
-import RestoreTwoToneIcon from "@mui/icons-material/RestoreTwoTone";
-import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
-// import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
-import MoveUpRoundedIcon from "@mui/icons-material/MoveUpRounded";
-import HighlightAltTwoToneIcon from "@mui/icons-material/HighlightAltTwoTone";
-import { darken, lighten } from "@mui/material/styles";
 import { RowModel, DraggableStateModel } from "../models";
 import PlayGround from "./Playground";
-
-const getBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
+import TransitionTable from "./TransitionTable";
+import { TransitionTableProps } from "./props/TransitionTableProps";
+import { PlaygroundProps } from "./props/PlaygroundProps";
 
 const Editor = () => {
   const [gridRowId, setGridRowId] = useState(1);
@@ -90,51 +83,15 @@ const Editor = () => {
       },
     },
   ];
-  // const [selectedIndex, setSelectedIndex] = useState(1);
-  // const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
-  // const boxez = [
-  //   { id: "box1", x: 50, y: 20, reference: useRef(null) },
-  //   { id: "box2", x: 20, y: 250, reference: useRef(null) },
-  //   { id: "box3", x: 350, y: 80, reference: useRef(null) },
-  // ];
-  // const [lines] = useState([
-  //   {
-  //     start: "box1",
-  //     end: "box2",
-  //     headSize: 14,
-  //     labels: { end: "endLabel" },
-  //   },
-  //   {
-  //     start: "box2",
-  //     end: "box3",
-  //     color: "red",
-  //     labels: {
-  //       middle: (
-  //         <div
-  //           contentEditable
-  //           suppressContentEditableWarning={true}
-  //           style={{ font: "italic 1.5em serif", color: "purple" }}
-  //         >
-  //           Editable label
-  //         </div>
-  //       ),
-  //     },
-  //     headSize: 0,
-  //     strokeWidth: 15,
-  //   },
-  //   {
-  //     start: "box3",
-  //     end: "box1",
-  //     color: "green",
-  //     path: "grid",
-  //     // endAnchor: ["right", {position: "left", offset: {y: -10}}],
-  //     dashness: { animation: 1 },
-  //   },
-  // ]);
+  const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
+  const [lines, setLines] = useState<any[]>([]);
 
-  // function handleListItemClick(event: any, index: number) {
-  //   setSelectedIndex(index);
-  // }
+  type selectedElementType = {
+    id: string;
+    type: "arrow" | "box";
+  };
+  const [selected, setSelected] = useState<selectedElementType | null>(null);
+  const [actionState, setActionState] = useState("Normal");
 
   const handleAddRow = () => {
     setGridData((prev) => [
@@ -166,7 +123,7 @@ const Editor = () => {
         .map((r) => r.node)
         .filter((v) => v !== "");
       if (!availableNodeValues.includes(row.node))
-        availableNodeValues.concat(row.node);
+        availableNodeValues.push(row.node);
 
       console.log("availableNodeValues", availableNodeValues);
 
@@ -245,6 +202,65 @@ const Editor = () => {
     });
   };
 
+  const handleSelect = (e: any) => {
+    console.log("PlayGround handleSelect", e);
+    if (e === null) {
+      setSelected(null);
+      setActionState("Normal");
+    } else setSelected({ id: e.target.id, type: "box" });
+  };
+
+  const checkExsitence = (id: string) => {
+    return [...boxes].map((b) => b.id).includes(id);
+  };
+
+  const handleDropDynamic = (e: any) => {
+    console.log("handleDropDynamic", e);
+    let l = boxes.length;
+    while (checkExsitence("q" + l)) l++;
+    let { x, y } = e.target.getBoundingClientRect();
+    const stateName = prompt("Enter state name: ", "q" + l);
+    if (stateName) {
+      let newState = new DraggableStateModel(
+        stateName,
+        e.clientX - x,
+        e.clientY - y
+      );
+      let newBox = {
+        id: stateName,
+        x: e.clientX - x,
+        y: e.clientY - y,
+        shape: "state",
+      };
+      setBoxes([...boxes, newBox]);
+    }
+    console.log("boxes", boxes);
+    // }
+  };
+
+  const transitionTableProps: TransitionTableProps = {
+    gridData,
+    setGridData,
+    gridColumns,
+    gridRowId,
+    setGridRowId,
+    handleAddRow,
+  };
+
+  const playgroundProps: PlaygroundProps = {
+    boxes,
+    setBoxes,
+    lines,
+    setLines,
+    selected,
+    setSelected,
+    actionState,
+    setActionState,
+    handleSelect,
+    checkExsitence,
+    handleDropDynamic,
+  };
+
   return (
     <>
       <Box sx={{ flexGrow: 1, m: 1 }}>
@@ -259,117 +275,13 @@ const Editor = () => {
         >
           {/* Transition table grid */}
           <Grid item xs={12} md={4}>
-            <Button size="small" onClick={handleAddRow}>
-              Add a row
-            </Button>
-            <Box
-              sx={{
-                "& .super-app-theme--Both": {
-                  bgcolor: (theme) =>
-                    `${getBackgroundColor(
-                      theme.palette.error.main,
-                      theme.palette.mode
-                    )} !important`,
-                },
-
-                "& .super-app-theme--Initial": {
-                  bgcolor: (theme) =>
-                    `${getBackgroundColor(
-                      theme.palette.info.main,
-                      theme.palette.mode
-                    )} !important`,
-                },
-
-                "& .super-app-theme--Final": {
-                  bgcolor: (theme) =>
-                    `${getBackgroundColor(
-                      theme.palette.success.main,
-                      theme.palette.mode
-                    )} !important`,
-                },
-              }}
-            >
-              <DataGrid
-                rows={gridData}
-                columns={gridColumns}
-                autoHeight
-                hideFooter
-                experimentalFeatures={{ newEditingApi: true }}
-                getRowClassName={(params) =>
-                  `super-app-theme--${
-                    params?.row?.isInitial && params?.row?.isFinal
-                      ? "Both"
-                      : params?.row?.isInitial
-                      ? "Initial"
-                      : params?.row?.isFinal && "Final"
-                  }`
-                }
-              ></DataGrid>
-            </Box>
+            <TransitionTable {...transitionTableProps} />
           </Grid>
           {/* Automata grid */}
           <Grid container item xs={12} md={8}>
-            {/* Automata toolbar grid */}
-            {/* <Grid container item xs={12} md={1}>
-              <Slide direction="up" in mountOnEnter unmountOnExit>
-                <Grid
-                  container
-                  item
-                  direction={{ xs: "row", md: "column" }}
-                  justifyContent={{
-                    xs: "space-evenly",
-                  }}
-                >
-                  <Grid item>
-                    <ListItem
-                      button
-                      selected={selectedIndex === 3}
-                      onClick={(event) => handleListItemClick(event, 3)}
-                    >
-                      <Tooltip title="Undo">
-                        <RestoreTwoToneIcon />
-                      </Tooltip>
-                    </ListItem>
-                  </Grid>
-                  <Grid item>
-                    <ListItem
-                      button
-                      selected={selectedIndex === 0}
-                      onClick={(event) => handleListItemClick(event, 0)}
-                    >
-                      <Tooltip title="Add node">
-                        <CircleOutlinedIcon />
-                      </Tooltip>
-                    </ListItem>
-                  </Grid>
-                  <Grid item>
-                    <ListItem
-                      button
-                      selected={selectedIndex === 1}
-                      onClick={(event) => handleListItemClick(event, 1)}
-                    >
-                      <Tooltip title="Add transition">
-                        <MoveUpRoundedIcon />
-                      </Tooltip>
-                    </ListItem>
-                  </Grid>
-                  <Grid item>
-                    <ListItem
-                      button
-                      selected={selectedIndex === 2}
-                      onClick={(event) => handleListItemClick(event, 2)}
-                    >
-                      <Tooltip title="Mouse">
-                        <HighlightAltTwoToneIcon />
-                      </Tooltip>
-                    </ListItem>
-                  </Grid>
-                </Grid>
-              </Slide>
-            </Grid> */}
             {/* Automata canvas grid */}
             <Grid item xs={12}>
-              <PlayGround />
+              <PlayGround {...playgroundProps} />
             </Grid>
           </Grid>
         </Grid>

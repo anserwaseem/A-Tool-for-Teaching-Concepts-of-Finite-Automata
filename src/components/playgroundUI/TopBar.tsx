@@ -34,20 +34,8 @@ export const TopBar = (props: any) => {
                 : { ...box }
             )
           );
-          // console.log(
-          //   "lines after",
-          //   props.lines.map((line: any, i: number) => {
-          //     // console.log("line", i, line.props);
-          //     var lineProps = line.props;
-          //     if (lineProps.start === props.selected.id)
-          //       return { ...line, props: { ...lineProps, start: newName } };
-          //     if (line.props.end === props.selected.id)
-          //       return { ...line, props: { ...lineProps, end: newName } };
-          //     return { ...line };
-          //   })
-          // );
-
-          props.setLines((prevLines: any[]) =>
+          console.log(
+            "lines after",
             props.lines.map((line: any, i: number) => {
               // console.log("line", i, line.props);
               var lineProps = line.props;
@@ -58,7 +46,17 @@ export const TopBar = (props: any) => {
               return { ...line };
             })
           );
-          console.log("lines after", props.lines);
+
+          props.setLines((prevLines: any[]) =>
+            prevLines.map((line: any, i: number) => {
+              var lineProps = line.props;
+              if (lineProps.start === props.selected.id)
+                return { ...line, props: { ...lineProps, start: newName } };
+              if (line.props.end === props.selected.id)
+                return { ...line, props: { ...lineProps, end: newName } };
+              return { ...line };
+            })
+          );
 
           return boxes.map((box) =>
             box.id === props.selected.id ? { ...box, id: newName } : { ...box }
