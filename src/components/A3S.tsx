@@ -101,6 +101,7 @@ export function NavBar() {
                     Object.keys(Pages)[Object.values(Pages).indexOf(page)]
                   }`}
                   underline="none"
+                  key={page}
                 >
                   <MenuItem key={page} onClick={handleCloseNavMenu}>
                     <Typography textAlign="center" variant="h6">
@@ -137,8 +138,9 @@ export function NavBar() {
                 to={`${process.env.PUBLIC_URL}/${
                   Object.keys(Pages)[Object.values(Pages).indexOf(page)]
                 }`}
+                key={page}
               >
-                <Button 
+                <Button
                   key={page}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: "white", display: "block" }}

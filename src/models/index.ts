@@ -1,4 +1,4 @@
-import RowModel from "./TransitionTableRow.model";
-import DraggableBoxModel from "./DraggableBox.model";
+import RowModel from "./TransitionTableRowModel";
+import DraggableStateModel from "./DraggableStateModel";
 
-export { RowModel, DraggableBoxModel };
+export { RowModel, DraggableStateModel };

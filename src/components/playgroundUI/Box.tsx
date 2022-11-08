@@ -7,6 +7,7 @@ export const Box = (props: any) => {
   const updateXarrow = useXarrow();
   // const handleDrag = () => props.setBoxes([...props.boxes]);
   const handleClick = (e: any) => {
+    console.log("Box handleClick", e);
     e.stopPropagation(); //so only the click event on the box will fire on not on the container itself
     if (props.actionState === "Normal") {
       props.handleSelect(e);

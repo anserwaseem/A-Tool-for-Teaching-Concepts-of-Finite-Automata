@@ -11,7 +11,7 @@ import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import MoveUpRoundedIcon from "@mui/icons-material/MoveUpRounded";
 import HighlightAltTwoToneIcon from "@mui/icons-material/HighlightAltTwoTone";
 import { darken, lighten } from "@mui/material/styles";
-import { RowModel, DraggableBoxModel } from "../models";
+import { RowModel, DraggableStateModel } from "../models";
 import PlayGround from "./Playground";
 
 const getBackgroundColor = (color: string, mode: string) =>
@@ -91,7 +91,7 @@ const Editor = () => {
     },
   ];
   // const [selectedIndex, setSelectedIndex] = useState(1);
-  // const [boxes, setBoxes] = useState<DraggableBoxModel[]>([]);
+  // const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
   // const boxez = [
   //   { id: "box1", x: 50, y: 20, reference: useRef(null) },
   //   { id: "box2", x: 20, y: 250, reference: useRef(null) },

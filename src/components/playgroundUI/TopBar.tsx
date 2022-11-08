@@ -1,25 +1,67 @@
 import React from "react";
+import DraggableStateModel from "../../models/DraggableStateModel";
 import "./css/TopBar.css";
 // import MaterialIcon from "material-icons-react";
 
 const actions = {
-  box: ["Add Transition", "Remove Transitions", "Delete"],
+  box: ["Edit Name", "Add Transition", "Remove Transitions", "Delete"],
   arrow: ["Edit Properties", "Remove Transition"],
 };
 
 export const TopBar = (props: any) => {
   const handleEditAction = (action: any) => {
+    console.log("handleEditAction", action);
     switch (action) {
       case "Edit Name":
-        props.setBoxes((boxes: any[]) => {
+        props.setBoxes((boxes: DraggableStateModel[]) => {
           var newName = prompt("Enter new name: ");
+          while (newName === null || newName === "")
+            newName = prompt("Name cannot be empty, choose another one: ");
           while (
-            [...boxes, ...props.interfaces].map((a) => a.id).includes(newName)
+            newName !== null &&
+            [...boxes].map((a) => a.id).includes(newName)
           )
-            newName = prompt("Name Already taken,Choose another: ");
+            newName = prompt("Name already taken, choose another one: ");
           if (!newName) return;
+
+          console.log("boxes before", boxes);
+          console.log("lines before", props.lines);
+          console.log(
+            "boxes after",
+            boxes.map((box) =>
+              box.id === props.selected.id
+                ? { ...box, id: newName }
+                : { ...box }
+            )
+          );
+          // console.log(
+          //   "lines after",
+          //   props.lines.map((line: any, i: number) => {
+          //     // console.log("line", i, line.props);
+          //     var lineProps = line.props;
+          //     if (lineProps.start === props.selected.id)
+          //       return { ...line, props: { ...lineProps, start: newName } };
+          //     if (line.props.end === props.selected.id)
+          //       return { ...line, props: { ...lineProps, end: newName } };
+          //     return { ...line };
+          //   })
+          // );
+
+          props.setLines((prevLines: any[]) =>
+            props.lines.map((line: any, i: number) => {
+              // console.log("line", i, line.props);
+              var lineProps = line.props;
+              if (lineProps.start === props.selected.id)
+                return { ...line, props: { ...lineProps, start: newName } };
+              if (line.props.end === props.selected.id)
+                return { ...line, props: { ...lineProps, end: newName } };
+              return { ...line };
+            })
+          );
+          console.log("lines after", props.lines);
+
           return boxes.map((box) =>
-            box.id === props.selected.id ? { ...box, id: newName } : box
+            box.id === props.selected.id ? { ...box, id: newName } : { ...box }
           );
         });
         break;
@@ -78,15 +120,15 @@ export const TopBar = (props: any) => {
             );
           }
           // if its a interface remove from interfaces
-          else if (
-            props.interfaces
-              .map((itr: any) => itr.id)
-              .includes(props.selected.id)
-          ) {
-            props.setInterfaces((itrs: any[]) =>
-              itrs.filter((itr) => !(itr.id === props.selected.id))
-            );
-          }
+          // else if (
+          //   props.interfaces
+          //     .map((itr: any) => itr.id)
+          //     .includes(props.selected.id)
+          // ) {
+          //   props.setInterfaces((itrs: any[]) =>
+          //     itrs.filter((itr) => !(itr.id === props.selected.id))
+          //   );
+          // }
           props.handleSelect(null);
         }
         break;
@@ -98,6 +140,8 @@ export const TopBar = (props: any) => {
     let allowedActions: any[] = [];
     if (props.selected)
       allowedActions = actions[props.selected.type as keyof typeof actions];
+    console.log("allowedActions", allowedActions);
+    console.log("returnTopBarApearnce", props);
     switch (props.actionState) {
       case "Normal":
         return (
@@ -111,6 +155,17 @@ export const TopBar = (props: any) => {
                 {action}
               </div>
             ))}
+          </div>
+        );
+      case "Edit Name":
+        return (
+          <div className="actionBubbles">
+            <div
+              className="actionBubble"
+              onClick={() => handleEditAction("Edit Name")}
+            >
+              Edit Name
+            </div>
           </div>
         );
       case "Add Transition":
