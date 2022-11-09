@@ -7,6 +7,7 @@ type TransitionModelLabels = {
 type TransitionModelProps = {
   start: string;
   end: string;
+  value: string; //transitionValue: a, b or ^
   labels?: TransitionModelLabels | JSX.Element | string;
   color?: string;
   lineColor?: string;

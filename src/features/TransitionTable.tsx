@@ -1,61 +1,23 @@
 import { Box, Button } from "@mui/material";
-import { DataGrid, GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { darken, lighten } from "@mui/material/styles";
 import { TransitionTableProps } from "./props/TransitionTableProps";
+import { RowModel } from "../models";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
 
 const TransitionTable = (props: TransitionTableProps) => {
-  // const [selectedIndex, setSelectedIndex] = useState(1);
-  // const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
-  // const boxez = [
-  //   { id: "box1", x: 50, y: 20, reference: useRef(null) },
-  //   { id: "box2", x: 20, y: 250, reference: useRef(null) },
-  //   { id: "box3", x: 350, y: 80, reference: useRef(null) },
-  // ];
-  // const [lines] = useState([
-  //   {
-  //     start: "box1",
-  //     end: "box2",
-  //     headSize: 14,
-  //     labels: { end: "endLabel" },
-  //   },
-  //   {
-  //     start: "box2",
-  //     end: "box3",
-  //     color: "red",
-  //     labels: {
-  //       middle: (
-  //         <div
-  //           contentEditable
-  //           suppressContentEditableWarning={true}
-  //           style={{ font: "italic 1.5em serif", color: "purple" }}
-  //         >
-  //           Editable label
-  //         </div>
-  //       ),
-  //     },
-  //     headSize: 0,
-  //     strokeWidth: 15,
-  //   },
-  //   {
-  //     start: "box3",
-  //     end: "box1",
-  //     color: "green",
-  //     path: "grid",
-  //     // endAnchor: ["right", {position: "left", offset: {y: -10}}],
-  //     dashness: { animation: 1 },
-  //   },
-  // ]);
-
-  // function handleListItemClick(event: any, index: number) {
-  //   setSelectedIndex(index);
-  // }
-
   return (
     <>
-      <Button size="small" onClick={props.handleAddRow}>
+      <Button
+        size="small"
+        onClick={() =>
+          props.handleAddRow(
+            new RowModel(props.gridRowId, "", "", "", "", false, false)
+          )
+        }
+      >
         Add a row
       </Button>
       <Box

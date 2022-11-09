@@ -1,4 +1,4 @@
-import { DraggableStateModel, TransitionModel } from "../../../../models";
+import { DraggableStateModel, RowModel, TransitionModel } from "../../../../models";
 import { selectedElementType } from "../../../props/SelectedElementType";
 
 export type BoxProps = {
@@ -9,4 +9,10 @@ export type BoxProps = {
   selected: selectedElementType | null;
   handleSelect: (e: any) => void;
   actionState: string;
+  gridData: RowModel[];
+  setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
+  transitionValue: string;
+  setTransitionValue: React.Dispatch<React.SetStateAction<string>>;
+  oldTransitionValue: string;
+  setOldTransitionValue: React.Dispatch<React.SetStateAction<string>>;
 };

@@ -1,7 +1,12 @@
 import "./css/TopBar.css";
 import { TopBarProps } from "./props/TopBarProps";
-import { DraggableStateModel, TransitionModel } from "../../../models";
+import {
+  DraggableStateModel,
+  RowModel,
+  TransitionModel,
+} from "../../../models";
 import { selectedElementTypeId } from "../../props/SelectedElementType";
+import { promptNewStateName } from "../../../utils/PromptNewStateName";
 // import MaterialIcon from "material-icons-react";
 
 const actions = {
@@ -9,84 +14,105 @@ const actions = {
   arrow: ["Edit Properties", "Remove Transition"],
 };
 
-const enterNewName = (boxes: DraggableStateModel[]) => {
-  var newName = prompt("Enter new name: ");
-  while (
-    !newName ||
-    (newName && [...boxes].map((b) => b.id).includes(newName)) ||
-    newName.length > 4
-  ) {
-    if (!newName)
-      newName = prompt("Name cannot be empty, choose another one: ");
-    else if (newName && [...boxes].map((b) => b.id).includes(newName))
-      newName = prompt("Name already taken, choose another one: ");
-    else if (newName.length > 4)
-      newName = prompt("Name cannot be longer than 4 characters: ");
-  }
-  return newName;
-};
-
 export const TopBar = (props: TopBarProps) => {
   const handleEditAction = (action: any) => {
     console.log("handleEditAction", action);
     switch (action) {
       case "Edit Name":
-        props.setBoxes((boxes: DraggableStateModel[]) => {
-          var newName = enterNewName(boxes);
-          console.log("lines before", props.lines);
-          console.log(
-            "lines after",
-            props.lines.map((line: any, i: number) => {
-              // console.log("line", i, line.props);
-              var lineProps = line.props;
-              if (props.selected && lineProps.start === props.selected.id)
-                return { ...line, props: { ...lineProps, start: newName } };
-              if (props.selected && line.props.end === props.selected.id)
-                return { ...line, props: { ...lineProps, end: newName } };
-              return { ...line };
-            })
-          );
+        const newName = promptNewStateName(props.boxes, "");
 
-          props.setLines((lines: TransitionModel[]) =>
-            lines.map((line: any, i: number) => {
-              var lineProps = line.props;
-              if (props.selected && lineProps.start === props.selected.id)
-                return { ...line, props: { ...lineProps, start: newName } };
-              if (props.selected && line.props.end === props.selected.id)
-                return { ...line, props: { ...lineProps, end: newName } };
-              return { ...line };
-            })
+        props.setGridData((rows: RowModel[]) => {
+          const row = rows.find(
+            (row) => props.selected && row.node === props.selected.id
           );
+          if (row) row.node = newName;
+          return rows;
+        });
 
-          console.log("boxes before", boxes);
-          console.log(
-            "boxes after",
-            boxes.map((box) =>
-              props.selected && box.id === props.selected.id
-                ? { ...box, id: newName }
-                : { ...box }
-            )
-          );
+        console.log("lines before", props.lines);
+        console.log(
+          "lines after",
+          props.lines.map((line: any, i: number) => {
+            // console.log("line", i, line.props);
+            var lineProps = line.props;
+            if (props.selected && lineProps.start === props.selected.id)
+              return { ...line, props: { ...lineProps, start: newName } };
+            if (props.selected && line.props.end === props.selected.id)
+              return { ...line, props: { ...lineProps, end: newName } };
+            return { ...line };
+          })
+        );
 
-          return boxes.map((box) =>
+        props.setLines((lines: TransitionModel[]) =>
+          lines.map((line: any, i: number) => {
+            var lineProps = line.props;
+            if (props.selected && lineProps.start === props.selected.id)
+              return { ...line, props: { ...lineProps, start: newName } };
+            if (props.selected && line.props.end === props.selected.id)
+              return { ...line, props: { ...lineProps, end: newName } };
+            return { ...line };
+          })
+        );
+
+        console.log("boxes before", props.boxes);
+        console.log(
+          "boxes after",
+          props.boxes.map((box) =>
             props.selected && box.id === props.selected.id
               ? { ...box, id: newName }
               : { ...box }
-          );
-        });
+          )
+        );
+
+        props.setBoxes((boxes: DraggableStateModel[]) =>
+          boxes.map((box) =>
+            props.selected && box.id === props.selected.id
+              ? { ...box, id: newName }
+              : { ...box }
+          )
+        );
         break;
+
       case "Add Transition":
+        console.log("TopBar Add Transition", props);
+        // props.setGridData((rows: RowModel[]) => {
+        //   const row = rows.find(
+        //     (row) => props.selected && row.node === props.selected.id
+        //   );
+        //   if (row) {
+        //     // props.lines.forEach((line) => {
+
+        //   }
+        //   return rows;
+        // });
         props.setActionState(action);
         break;
+
       case "Remove Transitions":
+        console.log("remove transitions triggered", props);
+        if (
+          props.selected &&
+          window.confirm(
+            `Are you sure you want to remove all transitions of ${props.selected.id}?`
+          )
+        )
+          props.setLines((lines: TransitionModel[]) =>
+            lines.filter(
+              (line: TransitionModel) =>
+                !(
+                  props.selected &&
+                  (line.props.start === props.selected.id ||
+                    line.props.end === props.selected.id)
+                )
+            )
+          );
+
         props.setActionState(action);
         break;
+
       case "Remove Transition":
         console.log("remove transition triggered", props);
         props.setLines((lines: TransitionModel[]) => {
-          const start = (props.selected!.id as selectedElementTypeId).start;
-          const end = (props.selected!.id as selectedElementTypeId).end;
-          console.log("start", start, "end", end);
           return lines.filter(
             (line) =>
               !(
@@ -98,7 +124,21 @@ export const TopBar = (props: TopBarProps) => {
               )
           );
         });
+        console.log(
+          "lines after",
+          props.lines.filter(
+            (line) =>
+              !(
+                props.selected &&
+                line.props.start ===
+                  (props.selected.id as selectedElementTypeId).start &&
+                line.props.end ===
+                  (props.selected.id as selectedElementTypeId).end
+              )
+          )
+        );
         break;
+
       case "Edit Properties":
         props.setLines((lines: TransitionModel[]) =>
           lines.map((line) =>
@@ -113,6 +153,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
         break;
+
       case "Delete":
         if (
           props.selected &&
@@ -120,18 +161,18 @@ export const TopBar = (props: TopBarProps) => {
             `are you sure you want to delete ${props.selected.id}?`
           )
         ) {
-          // first remove any lines connected to the node.
-          props.setLines((lines: TransitionModel[]) => {
-            return lines.filter(
+          // first remove any transitions connected to the state.
+          props.setLines((lines: TransitionModel[]) =>
+            lines.filter(
               (line) =>
                 !(
                   props.selected &&
                   (line.props.start === props.selected.id ||
                     line.props.end === props.selected.id)
                 )
-            );
-          });
-          // if its a box remove from boxes
+            )
+          );
+          // then remove that state.
           if (
             props.selected &&
             props.boxes
@@ -145,8 +186,18 @@ export const TopBar = (props: TopBarProps) => {
             );
           }
           props.handleSelect(null);
+          if (props.selected) {
+            console.log(
+              "selected id slice",
+              props.selected.id.toString().slice(1)
+            );
+            props.handleDeleteRow(
+              Number(props.selected.id.toString().slice(1))
+            );
+          }
         }
         break;
+
       default:
     }
   };

@@ -18,6 +18,8 @@ const PlayGround = (props: PlaygroundProps) => {
     handleSelect: props.handleSelect,
     actionState: props.actionState,
     setActionState: props.setActionState,
+    setGridData: props.setGridData,
+    handleDeleteRow: props.handleDeleteRow,
   };
 
   const boxProps: BoxProps = {
@@ -28,6 +30,12 @@ const PlayGround = (props: PlaygroundProps) => {
     selected: props.selected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
+    gridData: props.gridData,
+    setGridData: props.setGridData,
+    transitionValue: props.transitionValue,
+    setTransitionValue: props.setTransitionValue,
+    oldTransitionValue: props.oldTransitionValue,
+    setOldTransitionValue: props.setOldTransitionValue,
   };
 
   return (

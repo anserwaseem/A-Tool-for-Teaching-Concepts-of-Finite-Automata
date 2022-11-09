@@ -7,5 +7,5 @@ export type TransitionTableProps = {
   gridColumns: GridColumns;
   gridRowId: number;
   setGridRowId: React.Dispatch<React.SetStateAction<number>>;
-  handleAddRow: () => void;
+  handleAddRow: (row: RowModel) => void;
 };

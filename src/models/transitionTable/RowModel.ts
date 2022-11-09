@@ -1,4 +1,8 @@
-export default class RowModel {
+interface IRowModel {
+  [key: string]: string | number | boolean;
+}
+
+export default class RowModel implements IRowModel {
   constructor(
     public id: number,
     public node: string,
@@ -8,4 +12,5 @@ export default class RowModel {
     public isInitial: boolean,
     public isFinal: boolean
   ) {}
+  [key: string]: string | number | boolean;
 }

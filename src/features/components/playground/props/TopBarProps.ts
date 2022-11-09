@@ -1,4 +1,4 @@
-import { DraggableStateModel, TransitionModel } from "../../../../models";
+import { DraggableStateModel, RowModel, TransitionModel } from "../../../../models";
 import { selectedElementType } from "../../../props/SelectedElementType";
 
 export type TopBarProps = {
@@ -10,4 +10,6 @@ export type TopBarProps = {
   handleSelect: (e: any) => void;
   actionState: string;
   setActionState: React.Dispatch<React.SetStateAction<string>>;
+  setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
+  handleDeleteRow: (id: number) => void;
 };

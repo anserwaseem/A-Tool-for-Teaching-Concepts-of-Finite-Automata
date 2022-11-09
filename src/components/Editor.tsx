@@ -10,9 +10,10 @@ import { PlaygroundProps } from "../features/props/PlaygroundProps";
 import { selectedElementType } from "../features/props/SelectedElementType";
 import { TransitionTableProps } from "../features/props/TransitionTableProps";
 import TransitionTable from "../features/TransitionTable";
+import { promptNewStateName } from "../utils/PromptNewStateName";
 
 const Editor = () => {
-  const [gridRowId, setGridRowId] = useState(1);
+  const [gridRowId, setGridRowId] = useState(0);
   const [gridData, setGridData] = useState<RowModel[]>([]);
   const gridColumns: GridColumns = [
     { field: "id", hide: true, hideable: false },
@@ -89,12 +90,11 @@ const Editor = () => {
 
   const [selected, setSelected] = useState<selectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
+  const [transitionValue, setTransitionValue] = useState("");
+  const [oldTransitionValue, setOldTransitionValue] = useState("");
 
-  const handleAddRow = () => {
-    setGridData((prev) => [
-      ...prev,
-      new RowModel(gridRowId, "", "", "", "", false, false),
-    ]);
+  const handleAddRow = (row: RowModel) => {
+    setGridData((prev) => [...prev, row]);
     setGridRowId((prev) => prev + 1);
   };
 
@@ -148,7 +148,7 @@ const Editor = () => {
       }
 
       let newGridData = [...prev];
-      newGridData[row.id - 1] = row;
+      newGridData[row.id] = row;
       console.log("newGridData", newGridData);
       return newGridData;
     });
@@ -163,7 +163,7 @@ const Editor = () => {
         return prev;
       }
 
-      if (isRowEmpty(prev[row.id - 1])) {
+      if (isRowEmpty(prev[row.id])) {
         alert("Kindly save the row before making it initial state.");
       }
 
@@ -173,7 +173,7 @@ const Editor = () => {
       }
 
       let newGridData = [...prev];
-      newGridData[row.id - 1].isInitial = !newGridData[row.id - 1].isInitial;
+      newGridData[row.id].isInitial = !newGridData[row.id].isInitial;
       console.log("newGridData", newGridData);
       return newGridData;
     });
@@ -188,24 +188,24 @@ const Editor = () => {
         return prev;
       }
 
-      if (isRowEmpty(prev[row.id - 1])) {
+      if (isRowEmpty(prev[row.id])) {
         alert("Kindly save the row before making it final state.");
       }
 
       let newGridData = [...prev];
-      newGridData[row.id - 1].isFinal = !newGridData[row.id - 1].isFinal;
+      newGridData[row.id].isFinal = !newGridData[row.id].isFinal;
       console.log("newGridData", newGridData);
       return newGridData;
     });
   };
 
   const handleSelect = (e: any) => {
-    console.log("PlayGround handleSelect", e);
+    console.log("PlayGround handleBoxSelect e", e);
     if (e === null) {
       setSelected(null);
       setActionState("Normal");
     } else {
-      console.log("PlayGround handleSelect e", e.target.id);
+      console.log("PlayGround handleBoxSelect id", e.target.id);
       setSelected({ id: e.target.id, type: "box" });
     }
   };
@@ -219,7 +219,7 @@ const Editor = () => {
     let l = boxes.length;
     while (checkExsitence("q" + l)) l++;
     let { x, y } = e.target.getBoundingClientRect();
-    const stateName = prompt("Enter state name: ", "q" + l);
+    const stateName = promptNewStateName(boxes, "q" + l);
     if (stateName) {
       let newState = new DraggableStateModel(
         stateName,
@@ -235,7 +235,8 @@ const Editor = () => {
       setBoxes([...boxes, newBox]);
     }
     console.log("boxes", boxes);
-    // }
+
+    handleAddRow(new RowModel(gridRowId, stateName, "", "", "", false, false));
   };
 
   const transitionTableProps: TransitionTableProps = {
@@ -259,6 +260,13 @@ const Editor = () => {
     handleSelect,
     checkExsitence,
     handleDropDynamic,
+    gridData,
+    setGridData,
+    handleDeleteRow,
+    transitionValue,
+    setTransitionValue,
+    oldTransitionValue,
+    setOldTransitionValue,
   };
 
   return (

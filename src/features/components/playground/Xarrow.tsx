@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Xarrow from "react-xarrows";
+import { TransitionModel } from "../../../models";
 
 //{props: {line, setSelected, selected}}
 export default ({ setSelected, selected, line: { props } }: any) => {
@@ -11,8 +12,13 @@ export default ({ setSelected, selected, line: { props } }: any) => {
       onMouseLeave: () => setState({ color: "coral" }),
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the box will fire on not on the container itself
+        console.log("Xarrow onClick props", props);
         setSelected({
-          id: { start: props.start, end: props.end },
+          id: {
+            start: props.start,
+            end: props.end,
+            value: props.value,
+          },
           type: "arrow",
         });
       },
