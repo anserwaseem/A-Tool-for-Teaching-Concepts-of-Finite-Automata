@@ -1,13 +1,13 @@
 import { DraggableStateModel, RowModel, TransitionModel } from "../../models";
-import { selectedElementType } from "./SelectedElementType";
+import { SelectedElementType } from "./SelectedElementType";
 
 export type PlaygroundProps = {
   boxes: DraggableStateModel[];
   setBoxes: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
   lines: TransitionModel[];
   setLines: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
-  selected: selectedElementType | null;
-  setSelected: React.Dispatch<React.SetStateAction<selectedElementType | null>>;
+  selected: SelectedElementType | null;
+  setSelected: React.Dispatch<React.SetStateAction<SelectedElementType | null>>;
   actionState: string;
   setActionState: React.Dispatch<React.SetStateAction<string>>;
   handleSelect: (e: any) => void;
@@ -15,7 +15,7 @@ export type PlaygroundProps = {
   handleDropDynamic: (e: any) => void;
   gridData: RowModel[];
   setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
-  handleDeleteRow: (id: number) => void;
+  handleDeleteRow: (node: string) => void;
   transitionValue: string;
   setTransitionValue: React.Dispatch<React.SetStateAction<string>>;
   oldTransitionValue: string;

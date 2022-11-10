@@ -7,10 +7,11 @@ import SecurityIcon from "@mui/icons-material/Security";
 import { RowModel, DraggableStateModel, TransitionModel } from "../models";
 import PlayGround from "../features/Playground";
 import { PlaygroundProps } from "../features/props/PlaygroundProps";
-import { selectedElementType } from "../features/props/SelectedElementType";
+import { SelectedElementType } from "../features/props/SelectedElementType";
 import { TransitionTableProps } from "../features/props/TransitionTableProps";
 import TransitionTable from "../features/TransitionTable";
 import { promptNewStateName } from "../utils/PromptNewStateName";
+import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 
 const Editor = () => {
   const [gridRowId, setGridRowId] = useState(0);
@@ -23,6 +24,7 @@ const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
+      width: 55,
     },
     {
       field: "a",
@@ -30,7 +32,6 @@ const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
-      width: 50,
     },
     {
       field: "b",
@@ -38,7 +39,6 @@ const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
-      width: 50,
     },
     {
       field: "nul",
@@ -46,13 +46,13 @@ const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
-      width: 50,
     },
     {
       field: "action",
       headerName: "Action",
       disableColumnMenu: true,
       sortable: false,
+      width: 70,
       type: "actions",
       getActions: (params) => {
         return [
@@ -88,7 +88,7 @@ const Editor = () => {
   const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
   const [lines, setLines] = useState<TransitionModel[]>([]);
 
-  const [selected, setSelected] = useState<selectedElementType | null>(null);
+  const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
   const [transitionValue, setTransitionValue] = useState("");
   const [oldTransitionValue, setOldTransitionValue] = useState("");
@@ -98,9 +98,36 @@ const Editor = () => {
     setGridRowId((prev) => prev + 1);
   };
 
-  const handleDeleteRow = (id: number) => {
-    console.log("handleDeleteRow", id);
-    setGridData((prev) => prev.filter((row) => row.id !== id));
+  const handleDeleteRow = (node: string) => {
+    console.log("handleDeleteRow", node);
+    console.log(
+      "resultant data",
+      gridData.filter((row) => {
+        if (row.node !== node) {
+          PossibleTransitionValues.forEach((val) => {
+            if (row[val === "^" ? "nul" : val].toString().includes(node)) {
+              row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
+                .toString()
+                .replace(node, "");
+            }
+          });
+          return row;
+        }
+      })
+    );
+    setGridData((rows) => {
+      // const filteredRows = rows.filter((row) => row.node !== node);
+      return rows.filter((row) => {
+        if (row.node !== node) {
+          PossibleTransitionValues.forEach((val) => {
+            if (row[val === "^" ? "nul" : val].toString().includes(node)) {
+              row[val === "^" ? "nul" : val].toString().replace(node, "");
+            }
+          });
+          return row;
+        }
+      });
+    });
   };
 
   const isRowEmpty = (row: RowModel) => {

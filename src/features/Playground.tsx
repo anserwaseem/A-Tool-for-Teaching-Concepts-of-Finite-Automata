@@ -15,9 +15,11 @@ const PlayGround = (props: PlaygroundProps) => {
     lines: props.lines,
     setLines: props.setLines,
     selected: props.selected,
+    setSelected: props.setSelected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
     setActionState: props.setActionState,
+    gridData: props.gridData,
     setGridData: props.setGridData,
     handleDeleteRow: props.handleDeleteRow,
   };

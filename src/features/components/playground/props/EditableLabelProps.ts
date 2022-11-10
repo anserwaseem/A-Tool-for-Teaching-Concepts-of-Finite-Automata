@@ -1,5 +1,5 @@
 import { DraggableStateModel } from "../../../../models";
-import { selectedElementType } from "../../../props/SelectedElementType";
+import { SelectedElementType } from "../../../props/SelectedElementType";
 
 export type EditableLabelProps = {
   transitionValue: string;
@@ -7,5 +7,5 @@ export type EditableLabelProps = {
   oldTransitionValue: string;
   setOldTransitionValue: React.Dispatch<React.SetStateAction<string>>;
   box: DraggableStateModel;
-  selected: selectedElementType | null;
+  selected: SelectedElementType | null;
 };

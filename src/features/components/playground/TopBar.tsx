@@ -5,19 +5,19 @@ import {
   RowModel,
   TransitionModel,
 } from "../../../models";
-import { selectedElementTypeId } from "../../props/SelectedElementType";
+import { SelectedElementTypeId } from "../../props/SelectedElementType";
 import { promptNewStateName } from "../../../utils/PromptNewStateName";
+import { promptNewTransitionValue } from "../../../utils/PromptNewTransitionValue";
+import { TopBarActions } from "../../../consts/TopBarActions";
+import { TransitionValuesSeparator } from "../../../consts/TransitionValuesSeparator";
+import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 // import MaterialIcon from "material-icons-react";
-
-const actions = {
-  box: ["Edit Name", "Add Transition", "Remove Transitions", "Delete"],
-  arrow: ["Edit Properties", "Remove Transition"],
-};
 
 export const TopBar = (props: TopBarProps) => {
   const handleEditAction = (action: any) => {
-    console.log("handleEditAction", action);
+    console.log("handleEditAction", action, props);
     switch (action) {
+      // state actions
       case "Edit Name":
         const newName = promptNewStateName(props.boxes, "");
 
@@ -71,6 +71,8 @@ export const TopBar = (props: TopBarProps) => {
               : { ...box }
           )
         );
+
+        props.handleSelect(null);
         break;
 
       case "Add Transition":
@@ -95,7 +97,7 @@ export const TopBar = (props: TopBarProps) => {
           window.confirm(
             `Are you sure you want to remove all transitions of ${props.selected.id}?`
           )
-        )
+        ) {
           props.setLines((lines: TransitionModel[]) =>
             lines.filter(
               (line: TransitionModel) =>
@@ -107,51 +109,20 @@ export const TopBar = (props: TopBarProps) => {
             )
           );
 
-        props.setActionState(action);
-        break;
+          props.setGridData((rows: RowModel[]) => {
+            const row = rows.find(
+              (row) => props.selected && row.node === props.selected.id
+            );
+            if (row) {
+              PossibleTransitionValues.forEach(
+                (val) => (row[val === "^" ? "nul" : val] = "")
+              );
+            }
+            return rows;
+          });
+        }
 
-      case "Remove Transition":
-        console.log("remove transition triggered", props);
-        props.setLines((lines: TransitionModel[]) => {
-          return lines.filter(
-            (line) =>
-              !(
-                props.selected &&
-                line.props.start ===
-                  (props.selected.id as selectedElementTypeId).start &&
-                line.props.end ===
-                  (props.selected.id as selectedElementTypeId).end
-              )
-          );
-        });
-        console.log(
-          "lines after",
-          props.lines.filter(
-            (line) =>
-              !(
-                props.selected &&
-                line.props.start ===
-                  (props.selected.id as selectedElementTypeId).start &&
-                line.props.end ===
-                  (props.selected.id as selectedElementTypeId).end
-              )
-          )
-        );
-        break;
-
-      case "Edit Properties":
-        props.setLines((lines: TransitionModel[]) =>
-          lines.map((line) =>
-            props.selected &&
-            line.props.start === props.selected.id &&
-            line.props.end === props.selected.id
-              ? {
-                  ...line,
-                  menuWindowOpened: true,
-                }
-              : line
-          )
-        );
+        props.handleSelect(null);
         break;
 
       case "Delete":
@@ -172,6 +143,7 @@ export const TopBar = (props: TopBarProps) => {
                 )
             )
           );
+
           // then remove that state.
           if (
             props.selected &&
@@ -185,19 +157,215 @@ export const TopBar = (props: TopBarProps) => {
               )
             );
           }
-          props.handleSelect(null);
+
+          // then remove that state from the transition table.
           if (props.selected) {
-            console.log(
-              "selected id slice",
-              props.selected.id.toString().slice(1)
-            );
-            props.handleDeleteRow(
-              Number(props.selected.id.toString().slice(1))
-            );
+            console.log("selected id", props.selected.id);
+            props.handleDeleteRow(props.selected.id.toString());
           }
+          props.handleSelect(null);
         }
         break;
 
+      // transition actions
+      case "Remove Transition":
+        console.log("remove transition triggered", props);
+        props.setLines((lines: TransitionModel[]) => {
+          return lines.filter(
+            (line) =>
+              !(
+                props.selected &&
+                line.props.start ===
+                  (props.selected.id as SelectedElementTypeId).start &&
+                line.props.end ===
+                  (props.selected.id as SelectedElementTypeId).end
+              )
+          );
+        });
+        console.log(
+          "lines after",
+          props.lines.filter(
+            (line) =>
+              !(
+                props.selected &&
+                line.props.start ===
+                  (props.selected.id as SelectedElementTypeId).start &&
+                line.props.end ===
+                  (props.selected.id as SelectedElementTypeId).end
+              )
+          )
+        );
+
+        props.setGridData((rows: RowModel[]) => {
+          const row = rows.find(
+            (row) =>
+              props.selected &&
+              row.node === (props.selected.id as SelectedElementTypeId).start
+          );
+          if (row) {
+            PossibleTransitionValues.forEach(
+              (val) =>
+                (row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
+                  .toString()
+                  .replace(
+                    (props.selected.id as SelectedElementTypeId).end,
+                    ""
+                  ))
+            );
+          }
+          return rows;
+        });
+        props.handleSelect(null);
+        break;
+
+      case "Edit Properties":
+        props.setLines((lines: TransitionModel[]) =>
+          lines.map((line) =>
+            props.selected &&
+            line.props.start === props.selected.id &&
+            line.props.end === props.selected.id
+              ? {
+                  ...line,
+                  menuWindowOpened: true,
+                }
+              : line
+          )
+        );
+        break;
+
+      case "Edit Value":
+        const newValue = promptNewTransitionValue(
+          props.lines,
+          (props.selected.id as SelectedElementTypeId).value
+        ); //send original value
+        console.log("new value", newValue);
+
+        props.setLines((lines: TransitionModel[]) =>
+          lines.map((line) =>
+            props.selected &&
+            line.props.start ===
+              (props.selected.id as SelectedElementTypeId).start &&
+            line.props.end === (props.selected.id as SelectedElementTypeId).end
+              ? {
+                  ...line,
+                  props: {
+                    ...line.props,
+                    labels: newValue,
+                    value: newValue,
+                  },
+                }
+              : line
+          )
+        );
+        console.log(
+          "lines after Edit Value",
+          props.lines.map((line) =>
+            props.selected &&
+            props.selected.id &&
+            line.props.start ===
+              (props.selected.id as SelectedElementTypeId).start &&
+            line.props.end === (props.selected.id as SelectedElementTypeId).end
+              ? {
+                  ...line,
+                  props: {
+                    ...line.props,
+                    labels: newValue,
+                    value: newValue,
+                  },
+                }
+              : line
+          )
+        );
+
+        const transitionValues: string[] = newValue.split(
+          TransitionValuesSeparator
+        );
+        console.log("transitionValues", transitionValues);
+
+        props.setGridData((rows: RowModel[]) => {
+          console.log("starting setGridData");
+          rows.map((row) => {
+            if (
+              props.selected &&
+              row.node === (props.selected.id as SelectedElementTypeId).start
+            ) {
+              //if same target state's values are already in the row, remove them.
+              PossibleTransitionValues.forEach((val) => {
+                console.log(
+                  `original val '${row[val === "^" ? "nul" : val].toString()}'`,
+                  `target value to check '${
+                    (props.selected.id as SelectedElementTypeId).end
+                  }'`
+                );
+                if (
+                  row[val === "^" ? "nul" : val]
+                    .toString()
+                    .includes((props.selected.id as SelectedElementTypeId).end)
+                ) {
+                  console.log("removing ", row[val === "^" ? "nul" : val]);
+                  row[val === "^" ? "nul" : val] = row[
+                    val === "^" ? "nul" : val
+                  ]
+                    .toString()
+                    .replace(
+                      (props.selected.id as SelectedElementTypeId).end,
+                      ""
+                    );
+                }
+              });
+
+              //if there are new transition values to add, add them.
+              if (transitionValues.length > 0) {
+                transitionValues.forEach((val: string) => {
+                  const updatedValue = row[val === "^" ? "nul" : val]
+                    .toString()
+                    //add space if there is already a value in the cell
+                    .concat(
+                      row[val === "^" ? "nul" : val].toString() === ""
+                        ? ""
+                        : " "
+                    )
+                    //append new value
+                    .concat((props.selected.id as SelectedElementTypeId).end);
+                  console.log(
+                    "val",
+                    val,
+                    "prev value",
+                    row[val === "^" ? "nul" : val],
+                    "paste",
+                    updatedValue
+                  );
+                  row[val === "^" ? "nul" : val] = updatedValue;
+                });
+
+                PossibleTransitionValues.forEach((val) => {
+                  row[val === "^" ? "nul" : val] = Array.from(
+                    new Set(
+                      row[val === "^" ? "nul" : val].toString().split(" ")
+                    )
+                  ).join(" ");
+                });
+              }
+
+              console.log("row after", row);
+            }
+            return row;
+          });
+
+          console.log("ending setGridData");
+          return rows;
+        });
+
+        props.setSelected({
+          id: {
+            start: (props.selected.id as SelectedElementTypeId).start,
+            end: (props.selected.id as SelectedElementTypeId).end,
+            value: newValue,
+          } as SelectedElementTypeId,
+          type: "arrow",
+        });
+
+        break;
       default:
     }
   };
@@ -205,7 +373,8 @@ export const TopBar = (props: TopBarProps) => {
   var returnTopBarApearnce = () => {
     let allowedActions: any[] = [];
     if (props.selected)
-      allowedActions = actions[props.selected.type as keyof typeof actions];
+      allowedActions =
+        TopBarActions[props.selected.type as keyof typeof TopBarActions];
     console.log("allowedActions", allowedActions);
     console.log("returnTopBarApearnce", props);
     switch (props.actionState) {
@@ -244,13 +413,6 @@ export const TopBar = (props: TopBarProps) => {
             >
               finish
             </div>
-          </div>
-        );
-
-      case "Remove Transitions":
-        return (
-          <div className="actionBubbles">
-            <p>Which connection to remove?</p>
           </div>
         );
       default:

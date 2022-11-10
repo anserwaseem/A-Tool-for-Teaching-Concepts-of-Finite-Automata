@@ -3,11 +3,16 @@ import { DataGrid } from "@mui/x-data-grid";
 import { darken, lighten } from "@mui/material/styles";
 import { TransitionTableProps } from "./props/TransitionTableProps";
 import { RowModel } from "../models";
+import { useEffect } from "react";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
 
 const TransitionTable = (props: TransitionTableProps) => {
+  useEffect(() => {
+    console.log("re rendering transition table", props);
+  });
+
   return (
     <>
       <Button
