@@ -167,6 +167,28 @@ export const TopBar = (props: TopBarProps) => {
         }
         break;
 
+      case "Toggle Initial State":
+        const row = props.gridData.find(
+          props.selected && row.node === props.selected.id
+        );
+        if (row && props.setInitialState(row)) {
+          //todo change box's color to match table one Box.css
+
+          // props.setLines((lines: TransitionModel[]) => {
+          //   const line = lines.find(
+          //     props.selected &&
+          //       (line.props.start === props.selected.id ||
+          //         line.props.end === props.selected.id)
+          //   );
+          //   line.props.labels=
+          // });
+        }
+
+        props.handleSelect(null);
+        break;
+
+      case "Toggle Final State":
+        break;
       // transition actions
       case "Remove Transition":
         console.log("remove transition triggered", props);

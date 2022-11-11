@@ -20,4 +20,6 @@ export type PlaygroundProps = {
   setTransitionValue: React.Dispatch<React.SetStateAction<string>>;
   oldTransitionValue: string;
   setOldTransitionValue: React.Dispatch<React.SetStateAction<string>>;
+  toggleInitialState: (row: RowModel) => void;
+  togglFinalState: (row: RowModel) => void;
 };

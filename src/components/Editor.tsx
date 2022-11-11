@@ -181,8 +181,9 @@ const Editor = () => {
     });
   };
 
-  const toggleInitialState = (row: RowModel) => {
+  const toggleInitialState = (row: RowModel): boolean => {
     console.log("toggleInitialState", row);
+    let isToggled = false;
     setGridData((prev) => {
       console.log("toggleInitialState prev", prev);
       if (!prev || isRowEmpty(row)) {
@@ -202,8 +203,10 @@ const Editor = () => {
       let newGridData = [...prev];
       newGridData[row.id].isInitial = !newGridData[row.id].isInitial;
       console.log("newGridData", newGridData);
+      isToggled = true;
       return newGridData;
     });
+    return isToggled;
   };
 
   const toggleFinalState = (row: RowModel) => {
@@ -294,6 +297,8 @@ const Editor = () => {
     setTransitionValue,
     oldTransitionValue,
     setOldTransitionValue,
+    toggleInitialState,
+    toggleFinalState,
   };
 
   return (
