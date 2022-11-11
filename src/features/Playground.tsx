@@ -22,6 +22,8 @@ const PlayGround = (props: PlaygroundProps) => {
     gridData: props.gridData,
     setGridData: props.setGridData,
     handleDeleteRow: props.handleDeleteRow,
+    toggleInitialState: props.toggleInitialState,
+    toggleFinalState: props.toggleFinalState,
   };
 
   const boxProps: BoxProps = {

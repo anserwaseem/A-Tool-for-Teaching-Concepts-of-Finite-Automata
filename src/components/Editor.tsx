@@ -131,7 +131,9 @@ const Editor = () => {
   };
 
   const isRowEmpty = (row: RowModel) => {
-    return row.node === "" && row.a === "" && row.b === "" && row.nul === "";
+    return !row
+      ? true
+      : row.node === "" && row.a === "" && row.b === "" && row.nul === "";
   };
 
   const handleSaveRow = (row: RowModel) => {
@@ -181,9 +183,8 @@ const Editor = () => {
     });
   };
 
-  const toggleInitialState = (row: RowModel): boolean => {
+  const toggleInitialState = (row: RowModel) => {
     console.log("toggleInitialState", row);
-    let isToggled = false;
     setGridData((prev) => {
       console.log("toggleInitialState prev", prev);
       if (!prev || isRowEmpty(row)) {
@@ -193,6 +194,7 @@ const Editor = () => {
 
       if (isRowEmpty(prev[row.id])) {
         alert("Kindly save the row before making it initial state.");
+        return prev;
       }
 
       if (prev.filter((r) => r.isInitial).length > 0 && !row.isInitial) {
@@ -203,10 +205,8 @@ const Editor = () => {
       let newGridData = [...prev];
       newGridData[row.id].isInitial = !newGridData[row.id].isInitial;
       console.log("newGridData", newGridData);
-      isToggled = true;
       return newGridData;
     });
-    return isToggled;
   };
 
   const toggleFinalState = (row: RowModel) => {

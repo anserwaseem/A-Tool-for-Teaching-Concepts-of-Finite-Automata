@@ -14,7 +14,7 @@ import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValu
 // import MaterialIcon from "material-icons-react";
 
 export const TopBar = (props: TopBarProps) => {
-  const handleEditAction = (action: any) => {
+  const handleEditAction = (e, action: any) => {
     console.log("handleEditAction", action, props);
     switch (action) {
       // state actions
@@ -168,26 +168,25 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Toggle Initial State":
-        const row = props.gridData.find(
-          props.selected && row.node === props.selected.id
+        const initialStateRow = props.gridData.find(
+          (row) => props.selected && row.node === (props.selected.id as string)
         );
-        if (row && props.setInitialState(row)) {
-          //todo change box's color to match table one Box.css
-
-          // props.setLines((lines: TransitionModel[]) => {
-          //   const line = lines.find(
-          //     props.selected &&
-          //       (line.props.start === props.selected.id ||
-          //         line.props.end === props.selected.id)
-          //   );
-          //   line.props.labels=
-          // });
+        if (initialStateRow) {
+          props.toggleInitialState(initialStateRow);
         }
 
         props.handleSelect(null);
         break;
 
       case "Toggle Final State":
+        const finalStateRow = props.gridData.find(
+          (row) => props.selected && row.node === (props.selected.id as string)
+        );
+        if (finalStateRow) {
+          props.toggleFinalState(finalStateRow);
+        }
+
+        props.handleSelect(null);
         break;
       // transition actions
       case "Remove Transition":
@@ -407,22 +406,11 @@ export const TopBar = (props: TopBarProps) => {
               <div
                 className="actionBubble"
                 key={i}
-                onClick={() => handleEditAction(action)}
+                onClick={(e) => handleEditAction(e, action)}
               >
                 {action}
               </div>
             ))}
-          </div>
-        );
-      case "Edit Name":
-        return (
-          <div className="actionBubbles">
-            <div
-              className="actionBubble"
-              onClick={() => handleEditAction("Edit Name")}
-            >
-              Edit Name
-            </div>
           </div>
         );
       case "Add Transition":

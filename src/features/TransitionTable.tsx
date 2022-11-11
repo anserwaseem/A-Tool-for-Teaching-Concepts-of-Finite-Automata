@@ -6,12 +6,12 @@ import { RowModel } from "../models";
 import { useEffect } from "react";
 
 const getBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
+  mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
 const TransitionTable = (props: TransitionTableProps) => {
   useEffect(() => {
     console.log("re rendering transition table", props);
-  });
+  }, [props.gridData]);
 
   return (
     <>
@@ -30,7 +30,7 @@ const TransitionTable = (props: TransitionTableProps) => {
           "& .super-app-theme--Both": {
             bgcolor: (theme) =>
               `${getBackgroundColor(
-                theme.palette.error.main,
+                theme.palette.info.light,
                 theme.palette.mode
               )} !important`,
           },
@@ -38,7 +38,7 @@ const TransitionTable = (props: TransitionTableProps) => {
           "& .super-app-theme--Initial": {
             bgcolor: (theme) =>
               `${getBackgroundColor(
-                theme.palette.info.main,
+                theme.palette.warning.light,
                 theme.palette.mode
               )} !important`,
           },
@@ -46,7 +46,7 @@ const TransitionTable = (props: TransitionTableProps) => {
           "& .super-app-theme--Final": {
             bgcolor: (theme) =>
               `${getBackgroundColor(
-                theme.palette.success.main,
+                theme.palette.success.light,
                 theme.palette.mode
               )} !important`,
           },

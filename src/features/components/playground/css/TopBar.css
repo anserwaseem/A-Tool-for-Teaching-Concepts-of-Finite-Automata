@@ -34,7 +34,7 @@
   align-items: center;
   width: calc(100% - 120px);
   justify-content: space-evenly;
-  /* border: 3px dashed yellow; */
+  margin-left: 50px;
 }
 
 .actionBubble {
@@ -51,4 +51,10 @@
 }
 .actionBubble:active {
   background: DeepSkyBlue;
+}
+
+@media screen and (max-width: 680px) {
+  .actionBubbles {
+    font-size: x-small;
+  }
 }

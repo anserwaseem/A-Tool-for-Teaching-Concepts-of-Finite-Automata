@@ -19,5 +19,5 @@ export type TopBarProps = {
   setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
   handleDeleteRow: (node: string) => void;
   toggleInitialState: (row: RowModel) => void;
-  togglFinalState: (row: RowModel) => void;
+  toggleFinalState: (row: RowModel) => void;
 };
