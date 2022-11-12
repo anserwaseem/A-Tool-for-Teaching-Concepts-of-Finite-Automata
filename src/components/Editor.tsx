@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Grid } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -12,6 +12,7 @@ import { TransitionTableProps } from "../features/props/TransitionTableProps";
 import TransitionTable from "../features/TransitionTable";
 import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
+import { StateNameMaxLength } from "../consts/StateNameMaxLength";
 
 const Editor = () => {
   console.log("re rendering Editor");
@@ -68,7 +69,7 @@ const Editor = () => {
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDeleteRow(params.row.id)}
+            onClick={() => handleDeleteRow(params.row)}
             showInMenu
           />,
           <GridActionsCellItem
@@ -92,61 +93,60 @@ const Editor = () => {
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
-  const [oldTransitionValue, setOldTransitionValue] = useState("");
 
   const handleAddRow = (row: RowModel) => {
     setGridData((prev) => [...prev, row]);
     setGridRowId((prev) => prev + 1);
   };
 
-  const handleDeleteRow = (node: string) => {
-    console.log("handleDeleteRow", node);
+  const handleDeleteRow = (row: RowModel) => {
+    console.log("handleDeleteRow", row);
     console.log(
       "resultant data",
-      gridData.filter((row) =>
-        row.node !== node
-          ? {
-              ...row,
-              ...Object.fromEntries(
-                PossibleTransitionValues.map((key) => [
-                  key === "^" ? "nul" : key,
-                  row[key === "^" ? "nul" : key].toString().includes(node)
-                    ? row[key === "^" ? "nul" : key]
-                        .toString()
-                        .replace(node, "")
-                    : row[key === "^" ? "nul" : key],
-                ])
-              ),
-            }
-          : {}
-      )
+      gridData
+        .filter((r) => r.id !== row.id)
+        .map((r) => {
+          return {
+            ...r,
+            ...Object.fromEntries(
+              PossibleTransitionValues.map((key) => [
+                key === "^" ? "nul" : key,
+                r[key === "^" ? "nul" : key].toString().includes(row.node)
+                  ? r[key === "^" ? "nul" : key]
+                      .toString()
+                      .replace(row.node, "")
+                  : r[key === "^" ? "nul" : key],
+              ])
+            ),
+          };
+        })
     );
-    // setGridData((rows) =>
-    //   rows.filter((row) => {
-    //     if (row.node !== node) {
-    //       PossibleTransitionValues.forEach((val) => {
-    //         if (row[val === "^" ? "nul" : val].toString().includes(node)) {
-    //           row[val === "^" ? "nul" : val].toString().replace(node, "");
-    //         }
-    //       });
-    //       return row;
-    //     }
-    //   })
-    // );
-    setGridData((rows) => {
-      return rows.filter((row) => {
-        if (row.node !== node) {
-          PossibleTransitionValues.forEach((val) => {
-            if (row[val === "^" ? "nul" : val].toString().includes(node)) {
-              row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
-                .toString()
-                .replace(node, "");
-            }
-          });
-          return row;
-        }
-      });
-    });
+
+    setGridData((rows) =>
+      rows
+        .filter((r) => r.id !== row.id)
+        .map((r) => {
+          return {
+            ...r,
+            ...Object.fromEntries(
+              PossibleTransitionValues.map((key) => [
+                key === "^" ? "nul" : key,
+                r[key === "^" ? "nul" : key].toString().includes(row.node)
+                  ? r[key === "^" ? "nul" : key]
+                      .toString()
+                      .replace(row.node, "")
+                  : r[key === "^" ? "nul" : key],
+              ])
+            ),
+          };
+        })
+    );
+
+    setLines((prev) =>
+      prev.filter((l) => l.props.start !== row.node && l.props.end !== row.node)
+    );
+
+    setBoxes((prev) => prev.filter((b) => b.id !== row.node));
   };
 
   const isRowEmpty = (row: RowModel) => {
@@ -157,12 +157,41 @@ const Editor = () => {
 
   const handleSaveRow = (row: RowModel) => {
     console.log("handleSaveRow", row);
+    console.log("handleSaveRow", gridData);
+
+    if (isRowEmpty(row)) {
+      alert("Cannot save empty row.");
+      return;
+    }
+
+    const previousRow = gridData.find((r) => r.id === row.id);
+    if (row.node.length > StateNameMaxLength) {
+      alert(`State name cannot be more than ${StateNameMaxLength} characters.`);
+      if (previousRow) {
+        setGridData((prev) =>
+          prev.map((r) => (r.id === row.id ? previousRow : r))
+        );
+      }
+      return;
+    }
+
     setGridData((prev) => {
       console.log("handleSaveRow prev", prev);
-      if (!prev || isRowEmpty(row)) {
-        alert("Cannot save empty row.");
-        return prev;
-      }
+      // if (!prev || isRowEmpty(row)) {
+      //   alert("Cannot save empty row.");
+      //   //TODO: remove row from grid
+      //   return prev;
+      // }
+
+      // const previousRow = prev.find((r) => r.id === row.id);
+      // if (row.node.length > StateNameMaxLength) {
+      //   alert(
+      //     `State name cannot be more than ${StateNameMaxLength} characters.`
+      //   );
+      //   return prev.map((r) =>
+      //     r.id === row.id ? { ...r, node: previousRow.node } : r
+      //   );
+      // }
 
       let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
       if (!availableNodeValues.includes(row.node))
@@ -186,18 +215,56 @@ const Editor = () => {
       }
 
       const nodeAlreadyExists = prev.find(
-        (r) => r.node === row.node && r.id !== row.id
+        (r) =>
+          r.node === row.node &&
+          r.a === row.a &&
+          r.b === row.b &&
+          r.nul === row.nul
       );
       if (nodeAlreadyExists) {
-        alert("This node value already exists. Kindly choose another value.");
+        alert("This state value already exists. Kindly choose another value.");
         return prev;
       }
 
-      let newGridData = [...prev];
-      newGridData[row.id] = row;
-      console.log("newGridData", newGridData);
-      return newGridData;
+      return [...prev].map((r) =>
+        r.id === row.id
+          ? {
+              ...r,
+              ...row,
+              ...Object.fromEntries(
+                PossibleTransitionValues.map((key) => [
+                  key === "^" ? "nul" : key,
+                  row[key === "^" ? "nul" : key]
+                    .toString()
+                    .includes(previousRow.node)
+                    ? row[key === "^" ? "nul" : key]
+                        .toString()
+                        .replace(previousRow.node, row.node)
+                    : row[key === "^" ? "nul" : key],
+                ])
+              ),
+            }
+          : {
+              ...r,
+              ...Object.fromEntries(
+                PossibleTransitionValues.map((key) => [
+                  key === "^" ? "nul" : key,
+                  r[key === "^" ? "nul" : key]
+                    .toString()
+                    .includes(previousRow.node)
+                    ? r[key === "^" ? "nul" : key]
+                        .toString()
+                        .replace(previousRow.node, row.node)
+                    : r[key === "^" ? "nul" : key],
+                ])
+              ),
+            }
+      );
     });
+
+    setBoxes((prev) =>
+      prev.map((b) => (b.id === previousRow.node ? { ...b, id: row.node } : b))
+    );
   };
 
   const toggleInitialState = (row: RowModel) => {
@@ -209,7 +276,11 @@ const Editor = () => {
         return prev;
       }
 
-      if (isRowEmpty(prev[row.id])) {
+      if (
+        isRowEmpty(
+          prev.filter((r) => r.node === row.node && r.id === row.id)[0]
+        )
+      ) {
         alert("Kindly save the row before making it initial state.");
         return prev;
       }
@@ -219,10 +290,12 @@ const Editor = () => {
         return prev;
       }
 
-      let newGridData = [...prev];
-      newGridData[row.id].isInitial = !newGridData[row.id].isInitial;
-      console.log("newGridData", newGridData);
-      return newGridData;
+      return prev.map((r) => {
+        if (r.node === row.node) {
+          return { ...r, isInitial: !r.isInitial };
+        }
+        return r;
+      });
     });
   };
 
@@ -235,14 +308,20 @@ const Editor = () => {
         return prev;
       }
 
-      if (isRowEmpty(prev[row.id])) {
+      if (
+        isRowEmpty(
+          prev.filter((r) => r.node === row.node && r.id === row.id)[0]
+        )
+      ) {
         alert("Kindly save the row before making it final state.");
       }
 
-      let newGridData = [...prev];
-      newGridData[row.id].isFinal = !newGridData[row.id].isFinal;
-      console.log("newGridData", newGridData);
-      return newGridData;
+      return prev.map((r) => {
+        if (r.node === row.node) {
+          return { ...r, isFinal: !r.isFinal };
+        }
+        return r;
+      });
     });
   };
 
@@ -263,10 +342,10 @@ const Editor = () => {
 
   const handleDropDynamic = (e: any) => {
     console.log("handleDropDynamic", e);
-    let l = boxes.length;
-    while (checkExsitence("q" + l)) l++;
+    // let l = boxes.length;
+    // while (checkExsitence("q" + l)) l++;
     let { x, y } = e.target.getBoundingClientRect();
-    const stateName = promptNewStateName(boxes, "q" + l);
+    const stateName = promptNewStateName(boxes, `q${gridRowId}`);
     if (stateName) {
       let newState = new DraggableStateModel(
         stateName,

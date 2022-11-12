@@ -32,7 +32,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
 
-        props.setLines((lines: TransitionModel[]) =>
+        props.setLines((lines) =>
           lines.map((line) => {
             if (props.selected && line.props.start === props.selected.id)
               return { ...line, props: { ...line.props, start: newName } };
@@ -42,7 +42,7 @@ export const TopBar = (props: TopBarProps) => {
           })
         );
 
-        props.setBoxes((boxes: DraggableStateModel[]) =>
+        props.setBoxes((boxes) =>
           boxes.map((box) =>
             props.selected && box.id === props.selected.id
               ? { ...box, id: newName }
@@ -66,9 +66,9 @@ export const TopBar = (props: TopBarProps) => {
             `Are you sure you want to remove all transitions of ${props.selected.id}?`
           )
         ) {
-          props.setLines((lines: TransitionModel[]) =>
+          props.setLines((lines) =>
             lines.filter(
-              (line: TransitionModel) =>
+              (line) =>
                 !(
                   props.selected &&
                   (line.props.start === props.selected.id ||
@@ -126,7 +126,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         ) {
           // first remove any transitions connected to the state.
-          props.setLines((lines: TransitionModel[]) =>
+          props.setLines((lines) =>
             lines.filter(
               (line) =>
                 !(
@@ -144,7 +144,7 @@ export const TopBar = (props: TopBarProps) => {
               .map((box) => box.id)
               .includes(props.selected.id as string)
           ) {
-            props.setBoxes((boxes: DraggableStateModel[]) =>
+            props.setBoxes((boxes) =>
               boxes.filter(
                 (box) => props.selected && !(box.id === props.selected.id)
               )
@@ -154,14 +154,18 @@ export const TopBar = (props: TopBarProps) => {
           // then remove that state from the transition table.
           if (props.selected) {
             console.log("selected id", props.selected.id);
-            props.handleDeleteRow(props.selected.id.toString());
+            props.handleDeleteRow(
+              props.gridData.find(
+                (row) => row.node === (props.selected.id as string)
+              ) as RowModel
+            );
           }
           props.handleSelect(null);
         }
         break;
 
       case "Toggle Initial State":
-        const initialStateRow = props.gridData.find(
+        const initialStateRow = [...props.gridData].find(
           (row) => props.selected && row.node === (props.selected.id as string)
         );
         if (initialStateRow) {
@@ -185,7 +189,7 @@ export const TopBar = (props: TopBarProps) => {
       // transition actions
       case "Remove Transition":
         console.log("remove transition triggered", props);
-        props.setLines((lines: TransitionModel[]) => {
+        props.setLines((lines) => {
           return lines.filter(
             (line) =>
               !(
@@ -238,7 +242,7 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Edit Properties":
-        props.setLines((lines: TransitionModel[]) =>
+        props.setLines((lines) =>
           lines.map((line) =>
             props.selected &&
             line.props.start === props.selected.id &&
@@ -259,7 +263,7 @@ export const TopBar = (props: TopBarProps) => {
         ); //send original value
         console.log("new value", newValue);
 
-        props.setLines((lines: TransitionModel[]) =>
+        props.setLines((lines) =>
           lines.map((line) =>
             props.selected &&
             line.props.start ===

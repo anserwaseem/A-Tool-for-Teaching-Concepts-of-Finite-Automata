@@ -1,4 +1,5 @@
 import { DraggableStateModel } from "../models";
+import { StateNameMaxLength } from "../consts/StateNameMaxLength";
 
 export const promptNewStateName = (
   boxes: DraggableStateModel[],
@@ -8,7 +9,7 @@ export const promptNewStateName = (
   while (
     !newName ||
     (newName && [...boxes].map((b) => b.id).includes(newName)) ||
-    newName.length > 4
+    newName.length > StateNameMaxLength
   ) {
     if (!newName)
       newName = prompt(
@@ -20,9 +21,9 @@ export const promptNewStateName = (
         "Name already taken, choose another one: ",
         originalName
       );
-    else if (newName.length > 4)
+    else if (newName.length > StateNameMaxLength)
       newName = prompt(
-        "Name cannot be longer than 4 characters: ",
+        `State name cannot be more than ${StateNameMaxLength} characters.`,
         originalName
       );
   }

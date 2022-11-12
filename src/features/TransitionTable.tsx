@@ -12,7 +12,10 @@ const TransitionTable = (props: TransitionTableProps) => {
   console.log("re rendering TransitionTable: props", props);
 
   useEffect(() => {
-    console.log("useEffect of transition table due to props.gridData: props", props);
+    console.log(
+      "useEffect of transition table due to props.gridData: props",
+      props
+    );
   }, [props.gridData]);
 
   return (
@@ -21,7 +24,15 @@ const TransitionTable = (props: TransitionTableProps) => {
         size="small"
         onClick={() =>
           props.handleAddRow(
-            new RowModel(props.gridRowId, "", "", "", "", false, false)
+            new RowModel(
+              props.gridRowId,
+              `q${props.gridRowId}`,
+              "",
+              "",
+              "",
+              false,
+              false
+            )
           )
         }
       >
