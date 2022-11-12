@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
 import SecurityIcon from "@mui/icons-material/Security";
 import { RowModel, DraggableStateModel, TransitionModel } from "../models";
-import PlayGround from "../features/Playground";
+import Playground from "../features/Playground";
 import { PlaygroundProps } from "../features/props/PlaygroundProps";
 import { SelectedElementType } from "../features/props/SelectedElementType";
 import { TransitionTableProps } from "../features/props/TransitionTableProps";
@@ -14,6 +14,8 @@ import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 
 const Editor = () => {
+  console.log("re rendering Editor");
+
   const [gridRowId, setGridRowId] = useState(0);
   const [gridData, setGridData] = useState<RowModel[]>([]);
   const gridColumns: GridColumns = [
@@ -90,7 +92,6 @@ const Editor = () => {
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
-  const [transitionValue, setTransitionValue] = useState("");
   const [oldTransitionValue, setOldTransitionValue] = useState("");
 
   const handleAddRow = (row: RowModel) => {
@@ -102,26 +103,44 @@ const Editor = () => {
     console.log("handleDeleteRow", node);
     console.log(
       "resultant data",
-      gridData.filter((row) => {
+      gridData.filter((row) =>
+        row.node !== node
+          ? {
+              ...row,
+              ...Object.fromEntries(
+                PossibleTransitionValues.map((key) => [
+                  key === "^" ? "nul" : key,
+                  row[key === "^" ? "nul" : key].toString().includes(node)
+                    ? row[key === "^" ? "nul" : key]
+                        .toString()
+                        .replace(node, "")
+                    : row[key === "^" ? "nul" : key],
+                ])
+              ),
+            }
+          : {}
+      )
+    );
+    // setGridData((rows) =>
+    //   rows.filter((row) => {
+    //     if (row.node !== node) {
+    //       PossibleTransitionValues.forEach((val) => {
+    //         if (row[val === "^" ? "nul" : val].toString().includes(node)) {
+    //           row[val === "^" ? "nul" : val].toString().replace(node, "");
+    //         }
+    //       });
+    //       return row;
+    //     }
+    //   })
+    // );
+    setGridData((rows) => {
+      return rows.filter((row) => {
         if (row.node !== node) {
           PossibleTransitionValues.forEach((val) => {
             if (row[val === "^" ? "nul" : val].toString().includes(node)) {
               row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
                 .toString()
                 .replace(node, "");
-            }
-          });
-          return row;
-        }
-      })
-    );
-    setGridData((rows) => {
-      // const filteredRows = rows.filter((row) => row.node !== node);
-      return rows.filter((row) => {
-        if (row.node !== node) {
-          PossibleTransitionValues.forEach((val) => {
-            if (row[val === "^" ? "nul" : val].toString().includes(node)) {
-              row[val === "^" ? "nul" : val].toString().replace(node, "");
             }
           });
           return row;
@@ -145,9 +164,7 @@ const Editor = () => {
         return prev;
       }
 
-      const availableNodeValues = prev
-        .map((r) => r.node)
-        .filter((v) => v !== "");
+      let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
       if (!availableNodeValues.includes(row.node))
         availableNodeValues.push(row.node);
 
@@ -230,12 +247,12 @@ const Editor = () => {
   };
 
   const handleSelect = (e: any) => {
-    console.log("PlayGround handleBoxSelect e", e);
+    console.log("Playground handleBoxSelect e", e);
     if (e === null) {
       setSelected(null);
       setActionState("Normal");
     } else {
-      console.log("PlayGround handleBoxSelect id", e.target.id);
+      console.log("Playground handleBoxSelect id", e.target.id);
       setSelected({ id: e.target.id, type: "box" });
     }
   };
@@ -293,10 +310,6 @@ const Editor = () => {
     gridData,
     setGridData,
     handleDeleteRow,
-    transitionValue,
-    setTransitionValue,
-    oldTransitionValue,
-    setOldTransitionValue,
     toggleInitialState,
     toggleFinalState,
   };
@@ -321,7 +334,7 @@ const Editor = () => {
           <Grid container item xs={12} md={8}>
             {/* Automata canvas grid */}
             <Grid item xs={12}>
-              <PlayGround {...playgroundProps} />
+              <Playground {...playgroundProps} />
             </Grid>
           </Grid>
         </Grid>

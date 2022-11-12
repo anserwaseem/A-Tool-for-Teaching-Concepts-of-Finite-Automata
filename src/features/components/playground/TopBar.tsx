@@ -11,9 +11,12 @@ import { promptNewTransitionValue } from "../../../utils/PromptNewTransitionValu
 import { TopBarActions } from "../../../consts/TopBarActions";
 import { TransitionValuesSeparator } from "../../../consts/TransitionValuesSeparator";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
+import { StyledTransitionLabel } from "./StyledTransitionLabel";
 // import MaterialIcon from "material-icons-react";
 
 export const TopBar = (props: TopBarProps) => {
+  console.log("re rendering TopBar: props", props);
+
   const handleEditAction = (e, action: any) => {
     console.log("handleEditAction", action, props);
     switch (action) {
@@ -21,54 +24,29 @@ export const TopBar = (props: TopBarProps) => {
       case "Edit Name":
         const newName = promptNewStateName(props.boxes, "");
 
-        props.setGridData((rows: RowModel[]) => {
-          const row = rows.find(
-            (row) => props.selected && row.node === props.selected.id
-          );
-          if (row) row.node = newName;
-          return rows;
-        });
-
-        console.log("lines before", props.lines);
-        console.log(
-          "lines after",
-          props.lines.map((line: any, i: number) => {
-            // console.log("line", i, line.props);
-            var lineProps = line.props;
-            if (props.selected && lineProps.start === props.selected.id)
-              return { ...line, props: { ...lineProps, start: newName } };
-            if (props.selected && line.props.end === props.selected.id)
-              return { ...line, props: { ...lineProps, end: newName } };
-            return { ...line };
-          })
+        props.setGridData((rows) =>
+          rows.map((row) =>
+            props.selected && row.node === props.selected.id
+              ? { ...row, node: newName }
+              : row
+          )
         );
 
         props.setLines((lines: TransitionModel[]) =>
-          lines.map((line: any, i: number) => {
-            var lineProps = line.props;
-            if (props.selected && lineProps.start === props.selected.id)
-              return { ...line, props: { ...lineProps, start: newName } };
+          lines.map((line) => {
+            if (props.selected && line.props.start === props.selected.id)
+              return { ...line, props: { ...line.props, start: newName } };
             if (props.selected && line.props.end === props.selected.id)
-              return { ...line, props: { ...lineProps, end: newName } };
-            return { ...line };
+              return { ...line, props: { ...line.props, end: newName } };
+            return line;
           })
-        );
-
-        console.log("boxes before", props.boxes);
-        console.log(
-          "boxes after",
-          props.boxes.map((box) =>
-            props.selected && box.id === props.selected.id
-              ? { ...box, id: newName }
-              : { ...box }
-          )
         );
 
         props.setBoxes((boxes: DraggableStateModel[]) =>
           boxes.map((box) =>
             props.selected && box.id === props.selected.id
               ? { ...box, id: newName }
-              : { ...box }
+              : box
           )
         );
 
@@ -77,16 +55,6 @@ export const TopBar = (props: TopBarProps) => {
 
       case "Add Transition":
         console.log("TopBar Add Transition", props);
-        // props.setGridData((rows: RowModel[]) => {
-        //   const row = rows.find(
-        //     (row) => props.selected && row.node === props.selected.id
-        //   );
-        //   if (row) {
-        //     // props.lines.forEach((line) => {
-
-        //   }
-        //   return rows;
-        // });
         props.setActionState(action);
         break;
 
@@ -109,17 +77,42 @@ export const TopBar = (props: TopBarProps) => {
             )
           );
 
-          props.setGridData((rows: RowModel[]) => {
-            const row = rows.find(
-              (row) => props.selected && row.node === props.selected.id
-            );
-            if (row) {
-              PossibleTransitionValues.forEach(
-                (val) => (row[val === "^" ? "nul" : val] = "")
-              );
-            }
-            return rows;
-          });
+          props.setGridData((rows) =>
+            rows.map((row) =>
+              props.selected && row.node === props.selected.id
+                ? // if row found, remove all its transition values
+                  {
+                    ...row,
+                    ...Object.fromEntries(
+                      PossibleTransitionValues.map((key) => [
+                        key === "^" ? "nul" : key,
+                        "",
+                      ])
+                    ),
+                  }
+                : // else, check if any of its transition values are pointing to other states and remove them
+                  {
+                    ...row,
+                    ...Object.fromEntries(
+                      PossibleTransitionValues.map((key) => [
+                        key === "^" ? "nul" : key,
+                        Array.from(
+                          // convert to array to use filter
+                          new Set( // remove duplicates
+                            row[key === "^" ? "nul" : key].toString().split(" ") // split values on space
+                          )
+                        )
+                          .filter((val) => val !== "") // remove empty values
+                          .includes(props.selected.id as string) // check if transition value is included in the selected state's transition values
+                          ? row[key === "^" ? "nul" : key] // if yes, remove it
+                              .toString()
+                              .replace(props.selected.id as string, "")
+                          : row[key === "^" ? "nul" : key], // if no, keep original value
+                      ])
+                    ),
+                  }
+            )
+          );
         }
 
         props.handleSelect(null);
@@ -188,6 +181,7 @@ export const TopBar = (props: TopBarProps) => {
 
         props.handleSelect(null);
         break;
+
       // transition actions
       case "Remove Transition":
         console.log("remove transition triggered", props);
@@ -217,25 +211,29 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
 
-        props.setGridData((rows: RowModel[]) => {
-          const row = rows.find(
-            (row) =>
-              props.selected &&
-              row.node === (props.selected.id as SelectedElementTypeId).start
-          );
-          if (row) {
-            PossibleTransitionValues.forEach(
-              (val) =>
-                (row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
-                  .toString()
-                  .replace(
-                    (props.selected.id as SelectedElementTypeId).end,
-                    ""
-                  ))
-            );
-          }
-          return rows;
-        });
+        props.setGridData((rows) =>
+          rows.map((row) =>
+            props.selected &&
+            row.node === (props.selected.id as SelectedElementTypeId).start
+              ? // if row found, remove selected transition value
+                {
+                  ...row,
+                  ...Object.fromEntries(
+                    PossibleTransitionValues.map((key) => [
+                      key === "^" ? "nul" : key,
+                      row[key === "^" ? "nul" : key]
+                        .toString()
+                        .replace(
+                          (props.selected.id as SelectedElementTypeId).end,
+                          ""
+                        ),
+                    ])
+                  ),
+                }
+              : row
+          )
+        );
+
         props.handleSelect(null);
         break;
 
@@ -271,8 +269,12 @@ export const TopBar = (props: TopBarProps) => {
                   ...line,
                   props: {
                     ...line.props,
-                    labels: newValue,
-                    value: newValue,
+                    labels:
+                      newValue === "" ? (
+                        ""
+                      ) : (
+                        <StyledTransitionLabel label={newValue} />
+                      ),
                   },
                 }
               : line
@@ -291,7 +293,6 @@ export const TopBar = (props: TopBarProps) => {
                   props: {
                     ...line.props,
                     labels: newValue,
-                    value: newValue,
                   },
                 }
               : line
@@ -303,9 +304,11 @@ export const TopBar = (props: TopBarProps) => {
         );
         console.log("transitionValues", transitionValues);
 
-        props.setGridData((rows: RowModel[]) => {
+        // console.log("setGridData edit value")
+        props.setGridData((rows) => {
           console.log("starting setGridData");
-          rows.map((row) => {
+          let newRows = [...rows];
+          newRows.map((row) => {
             if (
               props.selected &&
               row.node === (props.selected.id as SelectedElementTypeId).start
@@ -374,7 +377,7 @@ export const TopBar = (props: TopBarProps) => {
           });
 
           console.log("ending setGridData");
-          return rows;
+          return newRows;
         });
 
         props.setSelected({

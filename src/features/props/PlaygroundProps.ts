@@ -16,10 +16,6 @@ export type PlaygroundProps = {
   gridData: RowModel[];
   setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
   handleDeleteRow: (node: string) => void;
-  transitionValue: string;
-  setTransitionValue: React.Dispatch<React.SetStateAction<string>>;
-  oldTransitionValue: string;
-  setOldTransitionValue: React.Dispatch<React.SetStateAction<string>>;
   toggleInitialState: (row: RowModel) => void;
   toggleFinalState: (row: RowModel) => void;
 };

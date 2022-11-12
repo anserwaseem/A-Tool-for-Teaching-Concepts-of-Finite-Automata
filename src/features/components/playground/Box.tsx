@@ -3,114 +3,9 @@ import "./css/Box.css";
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
-import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
-
-let localOldTransVal = "";
-let oldTransitionValues: string[] = [];
-// let testval = "b";
 
 export const Box = (props: any) => {
-  console.log("re rendering box: props", props);
-  const [sourceState, setSourceState] = useState("");
-  const [targetState, setTargetState] = useState("");
-
-  // useEffect(() => {
-  //   console.log("useEffect", props, props.transitionValue);
-  //   // props.setLines &&
-  //   //   props.setLines((lines: TransitionModel[]) => {
-  //   //     (lines as TransitionModel[])?.map((line) => {
-  //   //       if (
-  //   //         props.selected &&
-  //   //         line.props.start === props.selected.id &&
-  //   //         line.props.end === props.box.id
-  //   //       ) {
-  //   //         line.props.value = props.transitionValue;
-  //   //       }
-  //   //       return line;
-  //   //     });
-  //   //   });
-  //   // console.log(
-  //   //   "setLines again",
-  //   //   (props.lines as TransitionModel[])?.map((line) => {
-  //   //     if (
-  //   //       props.selected &&
-  //   //       line.props.start === props.selected.id &&
-  //   //       line.props.end === props.box.id
-  //   //     ) {
-  //   //       line.props.value = props.transitionValue;
-  //   //     }
-  //   //     return line;
-  //   //   })
-  //   // );
-  //   props.setGridData((rows: RowModel[]) => {
-  //     if (sourceState !== "" && targetState !== "") {
-  //       const row = rows.find((row) => row.node === sourceState); //source row
-  //       console.log("useEffect setGridData found source row", row);
-
-  //       console.log(
-  //         "props.transitionValue",
-  //         props.transitionValue,
-  //         "row[props.transitionValue]",
-  //         row![props.transitionValue],
-  //         "sourceState",
-  //         sourceState,
-  //         "targetState",
-  //         targetState,
-  //         "props.oldTransitionValue",
-  //         props.oldTransitionValue,
-  //         "localOldTransVal",
-  //         localOldTransVal
-  //       );
-  //       if (row) {
-  //         const transitionValues: string[] = props.transitionValue.split("");
-  //         console.log(
-  //           "transitionValues",
-  //           transitionValues,
-  //           transitionValues.every((r: string) =>
-  //             PossibleTransitionValues.includes(r)
-  //           )
-  //         );
-
-  //         if (
-  //           transitionValues.every((r: string) =>
-  //             PossibleTransitionValues.includes(r)
-  //           )
-  //         ) {
-  //           // //clear all transition values of source row
-  //           // PossibleTransitionValues.forEach(
-  //           //   (val) => (row[val === "^" ? "nul" : val] = "")
-  //           // );
-
-  //           // if there already exists a transition value
-  //           if (oldTransitionValues.length > 0)
-  //             oldTransitionValues.filter(
-  //               (val) => val !== props.transitionValue
-  //             );
-  //           // if transitionValue is empty, then clear old transition value
-  //           if (props.transitionValue === "") {
-  //             row[localOldTransVal === "^" ? "nul" : localOldTransVal] = "";
-  //           }
-  //           // else, fill provided transition value(s) of source row
-  //           else
-  //             transitionValues.forEach(
-  //               (val: string) => (row[val === "^" ? "nul" : val] = targetState)
-  //             );
-  //           // let indexableTransitionValue = props.transitionValue;
-  //           // if (props.transitionValue === "^") indexableTransitionValue = "nul";
-
-  //           // clear all overwritten transition values of source row
-  //           // row.a = "";
-  //           // row.b = "";
-  //           // row.nul = "";
-
-  //           // row[indexableTransitionValue] = targetState;
-  //         }
-  //       }
-  //       console.log("row", row);
-  //       return rows;
-  //     } else return rows;
-  //   });
-  // }, [props.transitionValue]);
+  console.log("re rendering Box: props", props);
 
   const updateXarrow = useXarrow();
   const handleClick = (e: any) => {
@@ -120,52 +15,40 @@ export const Box = (props: any) => {
     if (props.actionState === "Normal") {
       console.log("Box handleClick Normal", props);
       props.handleSelect(e);
-    } else if (
-      props.actionState === "Add Transition" &&
-      props.selected.id !== props.box.id
-    ) {
+    } else if (props.actionState === "Add Transition") {
       console.log("Box handleClick Add Transition", props);
-      props.setLines((lines: TransitionModel[]) => [
-        ...lines,
-        {
-          props: {
-            labels: "",
-            start: props.selected.id,
-            end: props.box.id,
-            value: props.transitionValue,
-            // dashness: { animation: 10 },
-            animateDrawing: true,
+
+      // restrict adding new transition between states where a transition already exists
+      if (
+        !props.lines.find(
+          (line: TransitionModel) =>
+            line.props.start === props.selected.id &&
+            line.props.end === props.box.id
+        )
+      ) {
+        console.log("Box handleClick Add Transition setLines", props);
+        const isSelfTransition = props.selected.id === props.box.id;
+        props.setLines((lines: TransitionModel[]) => [
+          ...lines,
+          {
+            props: {
+              labels: "",
+              start: props.selected.id,
+              end: props.box.id,
+              // dashness: { animation: 10 },
+              animateDrawing: true,
+              _extendSVGcanvas: isSelfTransition ? 25 : 0,
+              _cpx1Offset: isSelfTransition ? -50 : 0,
+              _cpy1Offset: isSelfTransition ? -50 : 0,
+              _cpx2Offset: isSelfTransition ? 50 : 0,
+              _cpy2Offset: isSelfTransition ? -50 : 0,
+            },
+            menuWindowOpened: false,
           },
-          menuWindowOpened: false,
-        },
-      ]);
-
-      props.setGridData((rows: RowModel[]) => {
-        const row = rows.find(
-          (row) => props.selected && row.node === props.selected.id
-        );
-        console.log("row", row);
-
-        console.log(
-          "props.transitionValue",
-          props.transitionValue,
-          "row[props.transitionValue]",
-          row![props.transitionValue],
-          "sourceState",
-          sourceState,
-          "targetState",
-          targetState
-        );
-        if (row && props.transitionValue !== "" && sourceState !== "") {
-          let indexableTransitionValue = props.transitionValue;
-          if (props.transitionValue === "^") indexableTransitionValue = "nul";
-          row[indexableTransitionValue] = props.box.id;
-        }
-
-        console.log("row", row);
-        return rows;
-      });
+        ]);
+      }
     } else if (props.actionState === "Remove Transitions") {
+      console.log("Box handleClick Remove Transitions", props);
       props.setLines((lines: TransitionModel[]) =>
         lines.filter(
           (line) =>
@@ -175,7 +58,6 @@ export const Box = (props: any) => {
             )
         )
       );
-      //TODO: remove transition values from grid
     }
   };
 

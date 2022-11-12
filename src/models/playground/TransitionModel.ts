@@ -1,14 +1,13 @@
 type TransitionModelLabels = {
-  start: JSX.Element | string;
-  middle: JSX.Element | string;
-  end: JSX.Element | string;
+  start?: JSX.Element | string;
+  middle?: JSX.Element | string;
+  end?: JSX.Element | string;
 };
 
 type TransitionModelProps = {
   start: string;
   end: string;
-  value: string; //transitionValue: a, b or ^
-  labels?: TransitionModelLabels | JSX.Element | string;
+  labels?: TransitionModelLabels | JSX.Element | string; //transitionValue: a, b or ^
   color?: string;
   lineColor?: string;
   strokeWidth?: number;
@@ -21,6 +20,12 @@ type TransitionModelProps = {
         animation?: boolean | number;
       };
   animateDrawing?: boolean | number;
+  // for self-transitions
+  _extendSVGcanvas?: number;
+  _cpx1Offset?: number;
+  _cpy1Offset?: number;
+  _cpx2Offset?: number;
+  _cpy2Offset?: number;
 };
 
 export default class TransitionModel {

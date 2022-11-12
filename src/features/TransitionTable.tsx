@@ -9,8 +9,10 @@ const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
 const TransitionTable = (props: TransitionTableProps) => {
+  console.log("re rendering TransitionTable: props", props);
+
   useEffect(() => {
-    console.log("re rendering transition table", props);
+    console.log("useEffect of transition table due to props.gridData: props", props);
   }, [props.gridData]);
 
   return (

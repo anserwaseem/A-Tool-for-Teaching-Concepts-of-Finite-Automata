@@ -15,8 +15,4 @@ export type BoxProps = {
   actionState: string;
   gridData: RowModel[];
   setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
-  transitionValue: string;
-  setTransitionValue: React.Dispatch<React.SetStateAction<string>>;
-  oldTransitionValue: string;
-  setOldTransitionValue: React.Dispatch<React.SetStateAction<string>>;
 };

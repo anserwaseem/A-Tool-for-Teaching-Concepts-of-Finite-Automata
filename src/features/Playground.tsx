@@ -8,7 +8,9 @@ import { PlaygroundProps } from "./props/PlaygroundProps";
 import Box from "./components/playground/Box";
 import Xarrow from "./components/playground/Xarrow";
 
-const PlayGround = (props: PlaygroundProps) => {
+const Playground = (props: PlaygroundProps) => {
+  console.log("re rendering Playground: props", props);
+
   const topBarprops: TopBarProps = {
     boxes: props.boxes,
     setBoxes: props.setBoxes,
@@ -36,10 +38,6 @@ const PlayGround = (props: PlaygroundProps) => {
     actionState: props.actionState,
     gridData: props.gridData,
     setGridData: props.setGridData,
-    transitionValue: props.transitionValue,
-    setTransitionValue: props.setTransitionValue,
-    oldTransitionValue: props.oldTransitionValue,
-    setOldTransitionValue: props.setOldTransitionValue,
   };
 
   return (
@@ -112,4 +110,4 @@ const PlayGround = (props: PlaygroundProps) => {
     </div>
   );
 };
-export default PlayGround;
+export default Playground;

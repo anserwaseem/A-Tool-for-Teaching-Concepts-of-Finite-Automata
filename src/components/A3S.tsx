@@ -19,6 +19,8 @@ import Link from "@mui/material/Link";
 const pages = Object.values(Pages);
 
 export function NavBar() {
+  console.log("re rendering A3S -> Navbar");
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );

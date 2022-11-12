@@ -4,6 +4,7 @@ import { TransitionModel } from "../../../models";
 
 //{props: {line, setSelected, selected}}
 export default ({ setSelected, selected, line: { props } }: any) => {
+  console.log("re rendering Xarrow: props", props);
   const [state, setState] = useState({ color: "coral" });
   const defProps = {
     passProps: {
