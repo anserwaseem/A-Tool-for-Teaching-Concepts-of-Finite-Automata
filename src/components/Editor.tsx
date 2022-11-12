@@ -177,37 +177,29 @@ const Editor = () => {
 
     setGridData((prev) => {
       console.log("handleSaveRow prev", prev);
-      // if (!prev || isRowEmpty(row)) {
-      //   alert("Cannot save empty row.");
-      //   //TODO: remove row from grid
-      //   return prev;
-      // }
-
-      // const previousRow = prev.find((r) => r.id === row.id);
-      // if (row.node.length > StateNameMaxLength) {
-      //   alert(
-      //     `State name cannot be more than ${StateNameMaxLength} characters.`
-      //   );
-      //   return prev.map((r) =>
-      //     r.id === row.id ? { ...r, node: previousRow.node } : r
-      //   );
-      // }
-
       let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
       if (!availableNodeValues.includes(row.node))
         availableNodeValues.push(row.node);
 
       console.log("availableNodeValues", availableNodeValues);
 
-      const areTransitionValuesInvalid = [
-        row.a !== "" && !availableNodeValues.includes(row.a),
-        row.b !== "" && !availableNodeValues.includes(row.b),
-        row.nul !== "" && !availableNodeValues.includes(row.nul),
-      ];
+      const nulPossibleTransitionValues = PossibleTransitionValues.map((v) =>
+        v === "^" ? "nul" : v
+      );
+      const areTransitionValuesInvalid = nulPossibleTransitionValues.some(
+        (key) => {
+          const transitionValues = row[key]
+            .toString()
+            .split(" ")
+            .filter((v) => v !== "");
+          return transitionValues.some((v) => !availableNodeValues.includes(v));
+        }
+      );
+
       console.log("areTransitionValuesInvalid", areTransitionValuesInvalid);
-      if (areTransitionValuesInvalid.includes(true)) {
+      if (areTransitionValuesInvalid) {
         alert(
-          `Transition values must be empty or one of the following: ${availableNodeValues.join(
+          `Transition values must be empty or from the following: ${availableNodeValues.join(
             ", "
           )}`
         );
@@ -264,6 +256,25 @@ const Editor = () => {
 
     setBoxes((prev) =>
       prev.map((b) => (b.id === previousRow.node ? { ...b, id: row.node } : b))
+    );
+
+    setLines((prev) =>
+      prev.map((l) =>
+        l.props.start === previousRow.node && l.props.end === previousRow.node
+          ? {
+              ...l,
+              props: {
+                ...l.props,
+                start: row.node,
+                end: row.node,
+              },
+            }
+          : l.props.start === previousRow.node
+          ? { ...l, props: { ...l.props, start: row.node } }
+          : l.props.end === previousRow.node
+          ? { ...l, props: { ...l.props, end: row.node } }
+          : l
+      )
     );
   };
 
