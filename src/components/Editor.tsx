@@ -13,6 +13,7 @@ import TransitionTable from "../features/TransitionTable";
 import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { StateNameMaxLength } from "../consts/StateNameMaxLength";
+import { PlaygroundSize } from "./interfaces/playgroundSize";
 
 const Editor = () => {
   console.log("re rendering Editor");
@@ -93,10 +94,23 @@ const Editor = () => {
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
+  const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
   const handleAddRow = (row: RowModel) => {
     setGridData((prev) => [...prev, row]);
     setGridRowId((prev) => prev + 1);
+    console.log(
+      "added row, now adding new state at: ",
+      size.width,
+      size.height
+    );
+    let newBox = {
+      id: row.node,
+      x: Math.floor(Math.random() * size.width),
+      y: Math.floor(Math.random() * size.height),
+      shape: "state",
+    };
+    setBoxes((prev) => [...prev, newBox]);
   };
 
   const handleDeleteRow = (row: RowModel) => {
@@ -218,7 +232,7 @@ const Editor = () => {
         return prev;
       }
 
-      return [...prev].map((r) =>
+      return prev.map((r) =>
         r.id === row.id
           ? {
               ...r,
@@ -373,7 +387,11 @@ const Editor = () => {
     }
     console.log("boxes", boxes);
 
-    handleAddRow(new RowModel(gridRowId, stateName, "", "", "", false, false));
+    setGridData((prev) => [
+      ...prev,
+      new RowModel(gridRowId, stateName, "", "", "", false, false),
+    ]);
+    setGridRowId((prev) => prev + 1);
   };
 
   const transitionTableProps: TransitionTableProps = {
@@ -402,6 +420,7 @@ const Editor = () => {
     handleDeleteRow,
     toggleInitialState,
     toggleFinalState,
+    setSize,
   };
 
   return (

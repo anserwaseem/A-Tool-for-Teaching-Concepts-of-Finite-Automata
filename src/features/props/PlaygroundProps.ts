@@ -1,3 +1,4 @@
+import { PlaygroundSize } from "../../components/interfaces/playgroundSize";
 import { DraggableStateModel, RowModel, TransitionModel } from "../../models";
 import { SelectedElementType } from "./SelectedElementType";
 
@@ -18,4 +19,5 @@ export type PlaygroundProps = {
   handleDeleteRow: (row: RowModel) => void;
   toggleInitialState: (row: RowModel) => void;
   toggleFinalState: (row: RowModel) => void;
+  setSize: React.Dispatch<React.SetStateAction<PlaygroundSize>>;
 };

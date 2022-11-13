@@ -7,9 +7,17 @@ import TopBar from "./components/playground/TopBar";
 import { PlaygroundProps } from "./props/PlaygroundProps";
 import Box from "./components/playground/Box";
 import Xarrow from "./components/playground/Xarrow";
+import useElementSize from "./hooks/useElementSize";
+import { useEffect } from "react";
 
 const Playground = (props: PlaygroundProps) => {
   console.log("re rendering Playground: props", props);
+
+  const [boxRef, { width, height }] = useElementSize();
+  useEffect(() => {
+    console.log("useEffect of playground due to width & height", width, height);
+    props.setSize({ width, height });
+  }, [width, height]);
 
   const topBarprops: TopBarProps = {
     boxes: props.boxes,
@@ -73,6 +81,7 @@ const Playground = (props: PlaygroundProps) => {
             className="boxesContainer"
             onDragOver={(e) => e.preventDefault()}
             onDrop={props.handleDropDynamic}
+            ref={boxRef}
           >
             <TopBar {...topBarprops} />
 
