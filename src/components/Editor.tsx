@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import { Box, Grid } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -17,9 +17,24 @@ import { PlaygroundSize } from "./interfaces/playgroundSize";
 import { StyledTransitionLabel } from "../features/components/playground/StyledTransitionLabel";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 
-const Editor = () => {
+export const DataContext = createContext<{
+  rows: RowModel[];
+  columns: GridColumns;
+  states: DraggableStateModel[];
+  transitions: TransitionModel[];
+}>(
+  {} as {
+    rows: RowModel[];
+    columns: GridColumns;
+    states: DraggableStateModel[];
+    transitions: TransitionModel[];
+  }
+);
+
+export const Editor = () => {
   console.log("re rendering Editor");
 
+  // const [tempState, setTempState] = useState(23);
   const [rowId, setRowId] = useState(0);
   const [rows, setRows] = useState<RowModel[]>([]);
   const columns: GridColumns = [
@@ -644,31 +659,39 @@ const Editor = () => {
   };
 
   return (
-    <>
-      <Box sx={{ flexGrow: 1, m: 1 }}>
-        {/* Grid to incorporate Transition table and Automata */}
-        <Grid
-          container
-          columnSpacing={{
-            xs: 1,
-            sm: 2,
-            md: 3,
-          }}
-        >
-          {/* Transition table grid */}
-          <Grid item xs={12} md={4}>
-            <TransitionTable {...transitionTableProps} />
-          </Grid>
-          {/* Automata grid */}
-          <Grid container item xs={12} md={8}>
-            {/* Automata canvas grid */}
-            <Grid item xs={12}>
-              <Playground {...playgroundProps} />
+    <DataContext.Provider
+      value={{
+        rows,
+        columns,
+        states,
+        transitions,
+      }}
+    >
+      <>
+        <Box sx={{ flexGrow: 1, m: 1 }}>
+          {/* Grid to incorporate Transition table and Automata */}
+          <Grid
+            container
+            columnSpacing={{
+              xs: 1,
+              sm: 2,
+              md: 3,
+            }}
+          >
+            {/* Transition table grid */}
+            <Grid item xs={12} md={4}>
+              <TransitionTable {...transitionTableProps} />
+            </Grid>
+            {/* Automata grid */}
+            <Grid container item xs={12} md={8}>
+              {/* Automata canvas grid */}
+              <Grid item xs={12}>
+                <Playground {...playgroundProps} />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Box>
-    </>
+        </Box>
+      </>
+    </DataContext.Provider>
   );
 };
-export default Editor;
