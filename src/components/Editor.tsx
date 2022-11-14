@@ -14,6 +14,8 @@ import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { StateNameMaxLength } from "../consts/StateNameMaxLength";
 import { PlaygroundSize } from "./interfaces/playgroundSize";
+import { StyledTransitionLabel } from "../features/components/playground/StyledTransitionLabel";
+import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 
 const Editor = () => {
   console.log("re rendering Editor");
@@ -97,6 +99,10 @@ const Editor = () => {
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
   const handleAddRow = (row: RowModel) => {
+    if (boxes.length >= MaxNumberOfStates) {
+      alert(`Maximum ${MaxNumberOfStates} states allowed`);
+      return;
+    }
     setGridData((prev) => [...prev, row]);
     setGridRowId((prev) => prev + 1);
     console.log(
@@ -178,28 +184,54 @@ const Editor = () => {
       return;
     }
 
-    const previousRow = gridData.find((r) => r.id === row.id);
+    const oldRow = gridData.find((r) => r.id === row.id);
+    if (!oldRow) {
+      alert("Cannot save row.");
+      return;
+    }
+
     if (row.node.length > StateNameMaxLength) {
       alert(`State name cannot be more than ${StateNameMaxLength} characters.`);
-      if (previousRow) {
-        setGridData((prev) =>
-          prev.map((r) => (r.id === row.id ? previousRow : r))
-        );
+      if (oldRow) {
+        setGridData((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
       }
       return;
     }
 
+    // if state name is changed AND transition values are added/updated/removed, not allowed
+    if (
+      oldRow.node !== row.node &&
+      PossibleTransitionValues.some(
+        (key) =>
+          row[key === "^" ? "nul" : key] !== oldRow[key === "^" ? "nul" : key]
+      )
+    ) {
+      alert(
+        `Cannot change state name when transition values are added/updated/removed.`
+      );
+      if (oldRow) {
+        setGridData((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
+      }
+      return;
+    }
+
+    const nulPossibleTransitionValues = PossibleTransitionValues.map((v) =>
+      v === "^" ? "nul" : v
+    );
+    let updatedGridData: RowModel[] = [];
+    let errorWhileSavingRow = false;
     setGridData((prev) => {
       console.log("handleSaveRow prev", prev);
       let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
+      // if (oldRow.node !== row.node)
+      //   availableNodeValues = availableNodeValues
+      //     .filter((v) => v !== oldRow.node)
+      //     .concat(row.node);
+
       if (!availableNodeValues.includes(row.node))
         availableNodeValues.push(row.node);
-
       console.log("availableNodeValues", availableNodeValues);
 
-      const nulPossibleTransitionValues = PossibleTransitionValues.map((v) =>
-        v === "^" ? "nul" : v
-      );
       const areTransitionValuesInvalid = nulPossibleTransitionValues.some(
         (key) => {
           const transitionValues = row[key]
@@ -217,22 +249,24 @@ const Editor = () => {
             ", "
           )}`
         );
-        return prev;
+        errorWhileSavingRow = true;
+        return prev.map((r) => (r.id === row.id ? oldRow : r));
       }
 
-      const nodeAlreadyExists = prev.find(
+      const stateAlreadyExists = prev.find(
         (r) =>
           r.node === row.node &&
           r.a === row.a &&
           r.b === row.b &&
           r.nul === row.nul
       );
-      if (nodeAlreadyExists) {
+      if (stateAlreadyExists) {
         alert("This state value already exists. Kindly choose another value.");
+        errorWhileSavingRow = true;
         return prev;
       }
 
-      return prev.map((r) =>
+      updatedGridData = prev.map((r) =>
         r.id === row.id
           ? {
               ...r,
@@ -242,10 +276,10 @@ const Editor = () => {
                   key === "^" ? "nul" : key,
                   row[key === "^" ? "nul" : key]
                     .toString()
-                    .includes(previousRow.node)
+                    .includes(oldRow.node)
                     ? row[key === "^" ? "nul" : key]
                         .toString()
-                        .replace(previousRow.node, row.node)
+                        .replace(oldRow.node, row.node)
                     : row[key === "^" ? "nul" : key],
                 ])
               ),
@@ -255,41 +289,232 @@ const Editor = () => {
               ...Object.fromEntries(
                 PossibleTransitionValues.map((key) => [
                   key === "^" ? "nul" : key,
-                  r[key === "^" ? "nul" : key]
-                    .toString()
-                    .includes(previousRow.node)
+                  r[key === "^" ? "nul" : key].toString().includes(oldRow.node)
                     ? r[key === "^" ? "nul" : key]
                         .toString()
-                        .replace(previousRow.node, row.node)
+                        .replace(oldRow.node, row.node)
                     : r[key === "^" ? "nul" : key],
                 ])
               ),
             }
       );
+
+      return updatedGridData;
     });
 
-    setBoxes((prev) =>
-      prev.map((b) => (b.id === previousRow.node ? { ...b, id: row.node } : b))
-    );
+    if (!errorWhileSavingRow) {
+      setBoxes((prev) =>
+        prev.map((b) => (b.id === oldRow.node ? { ...b, id: row.node } : b))
+      );
 
-    setLines((prev) =>
-      prev.map((l) =>
-        l.props.start === previousRow.node && l.props.end === previousRow.node
-          ? {
-              ...l,
-              props: {
-                ...l.props,
-                start: row.node,
-                end: row.node,
-              },
+      // if only state name is changed
+      if (
+        oldRow.node !== row.node &&
+        PossibleTransitionValues.every(
+          (key) =>
+            row[key === "^" ? "nul" : key] === oldRow[key === "^" ? "nul" : key]
+        )
+      ) {
+        let updatedtransitions = lines.map((l) =>
+          l.props.start === oldRow.node && l.props.end === oldRow.node
+            ? {
+                ...l,
+                props: {
+                  ...l.props,
+                  start: row.node,
+                  end: row.node,
+                },
+              }
+            : l.props.start === oldRow.node
+            ? {
+                ...l,
+                props: {
+                  ...l.props,
+                  start: row.node,
+                },
+              }
+            : l.props.end === oldRow.node
+            ? {
+                ...l,
+                props: {
+                  ...l.props,
+                  end: row.node,
+                },
+              }
+            : l
+        );
+        console.log("updatedtransitions", updatedtransitions);
+        setLines(updatedtransitions);
+      } else {
+        // if new transitions are added
+
+        let addedTransitions: TransitionModel[] = [];
+        let removedTransitions: TransitionModel[] = [];
+
+        PossibleTransitionValues.forEach((key) => {
+          const oldTransitionValues = oldRow[key === "^" ? "nul" : key]
+            .toString()
+            .split(" ")
+            .filter((v) => v !== "");
+          console.log("oldTransitionValues", oldTransitionValues);
+
+          const newTransitionValues = row[key === "^" ? "nul" : key]
+            .toString()
+            .split(" ")
+            .filter((v) => v !== "");
+          console.log("newTransitionValues", newTransitionValues);
+
+          const addedTransitionValues = newTransitionValues.filter(
+            (v) => !oldTransitionValues.includes(v)
+          );
+          console.log("addedTransitionValues", addedTransitionValues);
+
+          const removedTransitionValues = oldTransitionValues.filter(
+            (v) => !newTransitionValues.includes(v)
+          );
+          console.log("removedTransitionValues", removedTransitionValues);
+
+          addedTransitionValues.forEach((v) => {
+            console.log("addedTransitionValues key, v: ", key, v);
+
+            // if transition value v is already present in the transitions array, then just update it's labels & value
+            const transitionAlreadyExists = addedTransitions.find(
+              (t) => t.props.start === row.node && t.props.end === v
+            );
+
+            if (transitionAlreadyExists) {
+              transitionAlreadyExists.props.labels = (
+                <StyledTransitionLabel
+                  label={transitionAlreadyExists.props.value + key}
+                />
+              );
+              transitionAlreadyExists.props.value =
+                transitionAlreadyExists.props.value + key;
+            } else {
+              const isSelfTransition = v === row.node;
+              const newLine: TransitionModel = {
+                props: {
+                  start: row.node,
+                  end: v,
+                  labels: <StyledTransitionLabel label={key} />,
+                  value: key,
+                  animateDrawing: true,
+                  _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                  _cpx1Offset: isSelfTransition ? -50 : 0,
+                  _cpy1Offset: isSelfTransition ? -50 : 0,
+                  _cpx2Offset: isSelfTransition ? 50 : 0,
+                  _cpy2Offset: isSelfTransition ? -50 : 0,
+                },
+                menuWindowOpened: false,
+              };
+              addedTransitions.push(newLine);
             }
-          : l.props.start === previousRow.node
-          ? { ...l, props: { ...l.props, start: row.node } }
-          : l.props.end === previousRow.node
-          ? { ...l, props: { ...l.props, end: row.node } }
-          : l
-      )
-    );
+          });
+          console.log("addedTransitions", addedTransitions);
+
+          removedTransitionValues.forEach((v) => {
+            console.log("removedTransitionValues key, v: ", key, v);
+            const removedTransition = lines.find(
+              (l) => l.props.start === row.node && l.props.end === v
+            );
+
+            // if removed transition's label (value) is of length 1, then remove the transition
+            if (removedTransition.props.value.length === 1) {
+              removedTransitions.push(removedTransition);
+            } else {
+              // else just update the transition's label & value
+              removedTransition.props.labels = (
+                <StyledTransitionLabel
+                  label={removedTransition.props.value.replace(key, "")}
+                />
+              );
+              removedTransition.props.value =
+                removedTransition.props.value.replace(key, "");
+            }
+          });
+          console.log("removedTransitions", removedTransitions);
+        });
+
+        setLines((prev) => {
+          // update removedTransitions's labels && value if it's already present
+          const updatedRemovedTransitions = prev.map((l) =>
+            removedTransitions.find(
+              (t) => t.props.start === l.props.start && t.props.end === l.props.end
+            )
+              ? {
+                  ...l,
+                  props: {
+                    ...l.props,
+                    labels: (
+                      <StyledTransitionLabel
+                        label={
+                          removedTransitions.find(
+                            (t) =>
+                              t.props.start === l.props.start &&
+                              t.props.end === l.props.end
+                          )?.props.value
+                        }
+                      />
+                    ),
+                    value:
+                      removedTransitions.find(
+                        (t) =>
+                          t.props.start === l.props.start &&
+                          t.props.end === l.props.end
+                      )?.props.value,
+                  },
+                }
+              : l
+          );
+
+
+          // const updatedRemovedTransitions = prev.filter(
+          //   (l) =>
+          //     !removedTransitions.find(
+          //       (r) =>
+          //         r.props.start === l.props.start && r.props.end === l.props.end
+          //     )
+          // );
+          console.log("updatedRemovedTransitions", updatedRemovedTransitions);
+
+          // update addedTransitions's labels & value if it's are already present
+          const updatedAddedTransitions = addedTransitions.map((a) => {
+            const transitionAlreadyExists = prev.find(
+              (p) =>
+                p.props.start === a.props.start && p.props.end === a.props.end
+            );
+            console.log(
+              "transitionAlreadyExists.props.value, a.props.value:",
+              transitionAlreadyExists?.props.value,
+              a.props.value
+            );
+            if (
+              transitionAlreadyExists &&
+              transitionAlreadyExists.props.value !== a.props.value
+            ) {
+              return {
+                ...transitionAlreadyExists,
+                props: {
+                  ...transitionAlreadyExists.props,
+                  labels: (
+                    <StyledTransitionLabel
+                      label={
+                        transitionAlreadyExists.props.value + a.props.value
+                      }
+                    />
+                  ),
+                  value: transitionAlreadyExists.props.value + a.props.value,
+                },
+              };
+            }
+            return a;
+          });
+          console.log("updatedAddedTransitions", updatedAddedTransitions);
+
+          return [...updatedRemovedTransitions, ...updatedAddedTransitions];
+        });
+      }
+    }
   };
 
   const toggleInitialState = (row: RowModel) => {
@@ -367,8 +592,11 @@ const Editor = () => {
 
   const handleDropDynamic = (e: any) => {
     console.log("handleDropDynamic", e);
-    // let l = boxes.length;
-    // while (checkExsitence("q" + l)) l++;
+    if (boxes.length >= MaxNumberOfStates) {
+      alert(`Maximum ${MaxNumberOfStates} states allowed.`);
+      return;
+    }
+
     let { x, y } = e.target.getBoundingClientRect();
     const stateName = promptNewStateName(boxes, `q${gridRowId}`);
     if (stateName) {

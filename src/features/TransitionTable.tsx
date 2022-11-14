@@ -4,6 +4,7 @@ import { darken, lighten } from "@mui/material/styles";
 import { TransitionTableProps } from "./props/TransitionTableProps";
 import { RowModel } from "../models";
 import { useEffect } from "react";
+import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
@@ -71,6 +72,7 @@ const TransitionTable = (props: TransitionTableProps) => {
           autoHeight
           hideFooter
           experimentalFeatures={{ newEditingApi: true }}
+          pageSize={MaxNumberOfStates}
           getRowClassName={(params) =>
             `super-app-theme--${
               params?.row?.isInitial && params?.row?.isFinal

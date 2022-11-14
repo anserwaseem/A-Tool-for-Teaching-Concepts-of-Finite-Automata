@@ -30,8 +30,8 @@ export default ({ setSelected, selected, line: { props } }: any) => {
   if (
     selected &&
     selected.type === "arrow" &&
-    selected.id.start === props.start &&
-    selected.id.end === props.end
+    selected?.id.start === props.start &&
+    selected?.id.end === props.end
   )
     color = "black";
   return (

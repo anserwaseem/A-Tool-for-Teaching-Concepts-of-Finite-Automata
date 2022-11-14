@@ -18,22 +18,23 @@ export const Box = (props: any) => {
     } else if (props.actionState === "Add Transition") {
       console.log("Box handleClick Add Transition", props);
 
-      // restrict adding new transition between states where a transition already exists
+      // restrict adding of new transition between states where a transition already exists
       if (
         !props.lines.find(
           (line: TransitionModel) =>
-            line.props.start === props.selected.id &&
+            line.props.start === props.selected?.id &&
             line.props.end === props.box.id
         )
       ) {
         console.log("Box handleClick Add Transition setLines", props);
-        const isSelfTransition = props.selected.id === props.box.id;
+        const isSelfTransition = props.selected?.id === props.box.id;
         props.setLines((lines: TransitionModel[]) => [
           ...lines,
           {
             props: {
               labels: "",
-              start: props.selected.id,
+              value: "",
+              start: props.selected?.id,
               end: props.box.id,
               // dashness: { animation: 10 },
               animateDrawing: true,
@@ -53,7 +54,7 @@ export const Box = (props: any) => {
         lines.filter(
           (line) =>
             !(
-              line.props.start === props.selected.id &&
+              line.props.start === props.selected?.id &&
               line.props.end === props.box.id
             )
         )
@@ -63,7 +64,7 @@ export const Box = (props: any) => {
 
   console.log("changing background color now", props.actionState);
   let background = null;
-  if (props.selected && props.selected.id === props.box.id) {
+  if (props.selected && props.selected?.id === props.box.id) {
     // background = "lightblue";
     background = "rgb(200, 200, 200)";
   } else if (
@@ -71,13 +72,13 @@ export const Box = (props: any) => {
       // props.sidePos !== "right" &&
       props.lines.filter(
         (line: TransitionModel) =>
-          line.props.start === props.selected.id &&
+          line.props.start === props.selected?.id &&
           line.props.end === props.box.id
       ).length === 0) ||
     (props.actionState === "Remove Transitions" &&
       props.lines.filter(
         (line: TransitionModel) =>
-          line.props.start === props.selected.id &&
+          line.props.start === props.selected?.id &&
           line.props.end === props.box.id
       ).length > 0)
   ) {
