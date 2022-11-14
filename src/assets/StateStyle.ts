@@ -1,4 +1,4 @@
-export const BoxStyle = {
+export const StateStyle = {
   position: "absolute",
   background: "white",
   border: "1px #999 solid",

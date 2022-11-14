@@ -4,13 +4,13 @@ import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
 
-export const Box = (props: any) => {
+export const State = (props: any) => {
   console.log("re rendering Box: props", props);
 
   const updateXarrow = useXarrow();
   const handleClick = (e: any) => {
     console.log("Box handleClick", props);
-    e.stopPropagation(); //so only the click event on the box will fire on not on the container itself
+    e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
 
     if (props.actionState === "Normal") {
       console.log("Box handleClick Normal", props);
@@ -21,13 +21,13 @@ export const Box = (props: any) => {
       // restrict adding of new transition between states where a transition already exists
       if (
         !props.transitions.find(
-          (line: TransitionModel) =>
-            line.props.start === props.selected?.id &&
-            line.props.end === props.box.id
+          (transition: TransitionModel) =>
+            transition.props.start === props.selected?.id &&
+            transition.props.end === props.state.id
         )
       ) {
         console.log("Box handleClick Add Transition setTransitions", props);
-        const isSelfTransition = props.selected?.id === props.box.id;
+        const isSelfTransition = props.selected?.id === props.state.id;
         props.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
           {
@@ -35,7 +35,7 @@ export const Box = (props: any) => {
               labels: "",
               value: "",
               start: props.selected?.id,
-              end: props.box.id,
+              end: props.state.id,
               // dashness: { animation: 10 },
               animateDrawing: true,
               _extendSVGcanvas: isSelfTransition ? 25 : 0,
@@ -52,10 +52,10 @@ export const Box = (props: any) => {
       console.log("Box handleClick Remove Transitions", props);
       props.setTransitions((transitions: TransitionModel[]) =>
         transitions.filter(
-          (line) =>
+          (transition) =>
             !(
-              line.props.start === props.selected?.id &&
-              line.props.end === props.box.id
+              transition.props.start === props.selected?.id &&
+              transition.props.end === props.state.id
             )
         )
       );
@@ -64,22 +64,22 @@ export const Box = (props: any) => {
 
   console.log("changing background color now", props.actionState);
   let background = null;
-  if (props.selected && props.selected?.id === props.box.id) {
+  if (props.selected && props.selected?.id === props.state.id) {
     // background = "lightblue";
     background = "rgb(200, 200, 200)";
   } else if (
     (props.actionState === "Add Transition" &&
       // props.sidePos !== "right" &&
       props.transitions.filter(
-        (line: TransitionModel) =>
-          line.props.start === props.selected?.id &&
-          line.props.end === props.box.id
+        (transition: TransitionModel) =>
+          transition.props.start === props.selected?.id &&
+          transition.props.end === props.state.id
       ).length === 0) ||
     (props.actionState === "Remove Transitions" &&
       props.transitions.filter(
-        (line: TransitionModel) =>
-          line.props.start === props.selected?.id &&
-          line.props.end === props.box.id
+        (transition: TransitionModel) =>
+          transition.props.start === props.selected?.id &&
+          transition.props.end === props.state.id
       ).length > 0)
   ) {
     background = "LemonChiffon";
@@ -88,19 +88,19 @@ export const Box = (props: any) => {
   else if (
     props.gridData.find(
       (row: RowModel) =>
-        row.node === props.box.id && row.isInitial && row.isFinal
+        row.node === props.state.id && row.isInitial && row.isFinal
     )
   ) {
     background = "#4fc3f7"; // mui theme.palette.info.light
   } else if (
     props.gridData.find(
-      (row: RowModel) => row.node === props.box.id && row.isInitial
+      (row: RowModel) => row.node === props.state.id && row.isInitial
     )
   ) {
     background = "#ffb74d"; // mui theme.palette.warning.light
   } else if (
     props.gridData.find(
-      (row: RowModel) => row.node === props.box.id && row.isFinal
+      (row: RowModel) => row.node === props.state.id && row.isFinal
     )
   ) {
     background = "#81c784"; // mui theme.palette.success.light;
@@ -114,25 +114,25 @@ export const Box = (props: any) => {
         onDrag={updateXarrow}
       >
         <div
-          ref={props.box.reference}
-          className={`${props.box.shape} ${props.position} hoverMarker`}
+          ref={props.state.reference}
+          className={`${props.state.shape} ${props.position} hoverMarker`}
           style={{
-            left: props.box.x,
-            top: props.box.y,
+            left: props.state.x,
+            top: props.state.y,
             background: background ?? undefined,
             // border: "black solid 2px",
           }}
           onClick={handleClick}
-          id={props.box.id}
+          id={props.state.id}
         >
-          {props.box.name ? props.box.name : props.box.id}
+          {props.state.name ? props.state.name : props.state.id}
         </div>
       </Draggable>
       {/* {type === "middleBox" && menuWindowOpened ?
-      <MenuWindow setStates={props.setStates} box={props.box}/> : null
+      <MenuWindow setStates={props.setStates} state={props.state}/> : null
       } */}
     </React.Fragment>
   );
 };
 
-export default Box;
+export default State;

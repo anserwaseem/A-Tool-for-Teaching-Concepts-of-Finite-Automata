@@ -110,13 +110,13 @@ const Editor = () => {
       size.width,
       size.height
     );
-    let newBox = {
+    let newstate = {
       id: row.node,
       x: Math.floor(Math.random() * size.width),
       y: Math.floor(Math.random() * size.height),
       shape: "state",
     };
-    setStates((prev) => [...prev, newBox]);
+    setStates((prev) => [...prev, newstate]);
   };
 
   const handleDeleteRow = (row: RowModel) => {
@@ -392,7 +392,7 @@ const Editor = () => {
                 transitionAlreadyExists.props.value + key;
             } else {
               const isSelfTransition = v === row.node;
-              const newLine: TransitionModel = {
+              const newTransition: TransitionModel = {
                 props: {
                   start: row.node,
                   end: v,
@@ -407,7 +407,7 @@ const Editor = () => {
                 },
                 menuWindowOpened: false,
               };
-              addedTransitions.push(newLine);
+              addedTransitions.push(newTransition);
             }
           });
           console.log("addedTransitions", addedTransitions);
@@ -568,13 +568,13 @@ const Editor = () => {
   };
 
   const handleSelect = (e: any) => {
-    console.log("Playground handleBoxSelect e", e);
+    console.log("Playground handleStateSelect e", e);
     if (e === null) {
       setSelected(null);
       setActionState("Normal");
     } else {
-      console.log("Playground handleBoxSelect id", e.target.id);
-      setSelected({ id: e.target.id, type: "box" });
+      console.log("Playground handleStateSelect id", e.target.id);
+      setSelected({ id: e.target.id, type: "state" });
     }
   };
 
@@ -597,13 +597,13 @@ const Editor = () => {
         e.clientX - x,
         e.clientY - y
       );
-      let newBox = {
+      let newstate = {
         id: stateName,
         x: e.clientX - x,
         y: e.clientY - y,
         shape: "state",
       };
-      setStates([...states, newBox]);
+      setStates([...states, newstate]);
     }
     console.log("states", states);
 

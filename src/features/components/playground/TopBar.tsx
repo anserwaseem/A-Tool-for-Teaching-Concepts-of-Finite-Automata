@@ -51,33 +51,45 @@ export const TopBar = (props: TopBarProps) => {
         );
 
         props.setTransitions((transitions) =>
-          transitions.map((line) => {
+          transitions.map((transition) => {
             if (
               props.selected &&
-              line.props.start === props.selected?.id &&
-              line.props.end === props.selected?.id
+              transition.props.start === props.selected?.id &&
+              transition.props.end === props.selected?.id
             )
               return {
-                ...line,
+                ...transition,
                 props: {
-                  ...line.props,
+                  ...transition.props,
                   start: newName,
                   end: newName,
                 },
               };
-            else if (props.selected && line.props.start === props.selected?.id)
-              return { ...line, props: { ...line.props, start: newName } };
-            else if (props.selected && line.props.end === props.selected?.id)
-              return { ...line, props: { ...line.props, end: newName } };
-            return line;
+            else if (
+              props.selected &&
+              transition.props.start === props.selected?.id
+            )
+              return {
+                ...transition,
+                props: { ...transition.props, start: newName },
+              };
+            else if (
+              props.selected &&
+              transition.props.end === props.selected?.id
+            )
+              return {
+                ...transition,
+                props: { ...transition.props, end: newName },
+              };
+            return transition;
           })
         );
 
         props.setStates((states) =>
-          states.map((box) =>
-            props.selected && box.id === props.selected?.id
-              ? { ...box, id: newName }
-              : box
+          states.map((state) =>
+            props.selected && state.id === props.selected?.id
+              ? { ...state, id: newName }
+              : state
           )
         );
 
@@ -99,11 +111,11 @@ export const TopBar = (props: TopBarProps) => {
         ) {
           props.setTransitions((transitions) =>
             transitions.filter(
-              (line) =>
+              (transition) =>
                 !(
                   props.selected &&
-                  (line.props.start === props.selected?.id ||
-                    line.props.end === props.selected?.id)
+                  (transition.props.start === props.selected?.id ||
+                    transition.props.end === props.selected?.id)
                 )
             )
           );
@@ -159,11 +171,11 @@ export const TopBar = (props: TopBarProps) => {
           // first remove any transitions connected to the state.
           props.setTransitions((transitions) =>
             transitions.filter(
-              (line) =>
+              (transition) =>
                 !(
                   props.selected &&
-                  (line.props.start === props.selected?.id ||
-                    line.props.end === props.selected?.id)
+                  (transition.props.start === props.selected?.id ||
+                    transition.props.end === props.selected?.id)
                 )
             )
           );
@@ -172,12 +184,12 @@ export const TopBar = (props: TopBarProps) => {
           if (
             props.selected &&
             props.states
-              .map((box) => box.id)
+              .map((state) => state.id)
               .includes(props.selected?.id as string)
           ) {
             props.setStates((states) =>
               states.filter(
-                (box) => props.selected && !(box.id === props.selected?.id)
+                (state) => props.selected && !(state.id === props.selected?.id)
               )
             );
           }
@@ -222,12 +234,12 @@ export const TopBar = (props: TopBarProps) => {
         console.log("remove transition triggered", props);
         props.setTransitions((transitions) => {
           return transitions.filter(
-            (line) =>
+            (transition) =>
               !(
                 props.selected &&
-                line.props.start ===
+                transition.props.start ===
                   (props.selected?.id as SelectedElementTypeId).start &&
-                line.props.end ===
+                transition.props.end ===
                   (props.selected?.id as SelectedElementTypeId).end
               )
           );
@@ -235,12 +247,12 @@ export const TopBar = (props: TopBarProps) => {
         console.log(
           "transitions after",
           props.transitions.filter(
-            (line) =>
+            (transition) =>
               !(
                 props.selected &&
-                line.props.start ===
+                transition.props.start ===
                   (props.selected?.id as SelectedElementTypeId).start &&
-                line.props.end ===
+                transition.props.end ===
                   (props.selected?.id as SelectedElementTypeId).end
               )
           )
@@ -274,15 +286,15 @@ export const TopBar = (props: TopBarProps) => {
 
       case "Edit Properties":
         props.setTransitions((transitions) =>
-          transitions.map((line) =>
+          transitions.map((transition) =>
             props.selected &&
-            line.props.start === props.selected?.id &&
-            line.props.end === props.selected?.id
+            transition.props.start === props.selected?.id &&
+            transition.props.end === props.selected?.id
               ? {
-                  ...line,
+                  ...transition,
                   menuWindowOpened: true,
                 }
-              : line
+              : transition
           )
         );
         break;
@@ -295,15 +307,16 @@ export const TopBar = (props: TopBarProps) => {
         console.log("new value", newValue);
 
         props.setTransitions((transitions) =>
-          transitions.map((line) =>
+          transitions.map((transition) =>
             props.selected &&
-            line.props.start ===
+            transition.props.start ===
               (props.selected?.id as SelectedElementTypeId).start &&
-            line.props.end === (props.selected?.id as SelectedElementTypeId).end
+            transition.props.end ===
+              (props.selected?.id as SelectedElementTypeId).end
               ? {
-                  ...line,
+                  ...transition,
                   props: {
-                    ...line.props,
+                    ...transition.props,
                     labels:
                       newValue === "" ? (
                         ""
@@ -313,21 +326,22 @@ export const TopBar = (props: TopBarProps) => {
                     value: newValue,
                   },
                 }
-              : line
+              : transition
           )
         );
         console.log(
           "transitions after Edit Value",
-          props.transitions.map((line) =>
+          props.transitions.map((transition) =>
             props.selected &&
             props.selected?.id &&
-            line.props.start ===
+            transition.props.start ===
               (props.selected?.id as SelectedElementTypeId).start &&
-            line.props.end === (props.selected?.id as SelectedElementTypeId).end
+            transition.props.end ===
+              (props.selected?.id as SelectedElementTypeId).end
               ? {
-                  ...line,
+                  ...transition,
                   props: {
-                    ...line.props,
+                    ...transition.props,
                     labels:
                       newValue === "" ? (
                         ""
@@ -337,7 +351,7 @@ export const TopBar = (props: TopBarProps) => {
                     value: newValue,
                   },
                 }
-              : line
+              : transition
           )
         );
 
@@ -428,7 +442,7 @@ export const TopBar = (props: TopBarProps) => {
             end: (props.selected?.id as SelectedElementTypeId).end,
             value: newValue,
           } as SelectedElementTypeId,
-          type: "arrow",
+          type: "transition",
         });
 
         break;

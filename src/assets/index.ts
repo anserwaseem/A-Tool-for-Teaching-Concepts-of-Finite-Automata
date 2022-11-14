@@ -1,5 +1,5 @@
-import { BoxStyle } from "./BoxStyle";
+import { StateStyle } from "./StateStyle";
 import { CanvasStyle } from "./CanvasStyle";
 import { AnchorsTypes } from "./AnchorsTypes";
 
-export { BoxStyle, CanvasStyle, AnchorsTypes };
+export { StateStyle, CanvasStyle, AnchorsTypes };

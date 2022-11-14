@@ -3,7 +3,10 @@ import Draggable from "react-draggable";
 import { TransitionModel } from "../../../models";
 import "./css/MenuWindow.css";
 
-export default ({ setTransitions, line: { props: lineProp } }: any) => {
+export default ({
+  setTransitions,
+  transition: { props: transitionProp },
+}: any) => {
   const [pos, setPos] = useState({ width: 200, height: 200 });
 
   //   const d = {
@@ -46,20 +49,23 @@ export default ({ setTransitions, line: { props: lineProp } }: any) => {
 
   const handleClose = () =>
     setTransitions((transitions: TransitionModel[]) =>
-      transitions.map((line) =>
-        line.props.start === lineProp.start && line.props.end === lineProp.end
+      transitions.map((transition) =>
+        transition.props.start === transitionProp.start &&
+        transition.props.end === transitionProp.end
           ? {
-              ...line,
+              ...transition,
               menuWindowOpened: false,
             }
-          : line
+          : transition
       )
     );
 
   return (
     <Draggable>
       <div className="menuWindowContainer">
-        <div className={"header"}>{`${lineProp.start}->${lineProp.end}`}</div>
+        <div
+          className={"header"}
+        >{`${transitionProp.start}->${transitionProp.end}`}</div>
         <hr style={{ width: "80%" }} />
         {/*<MaterialIcon*/}
         {/*  size={30}*/}

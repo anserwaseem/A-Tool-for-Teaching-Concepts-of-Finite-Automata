@@ -5,7 +5,7 @@ import {
 } from "../../../../models";
 import { SelectedElementType } from "../../../props/SelectedElementType";
 
-export type BoxProps = {
+export type StateProps = {
   states: DraggableStateModel[];
   setStates: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
   transitions: TransitionModel[];

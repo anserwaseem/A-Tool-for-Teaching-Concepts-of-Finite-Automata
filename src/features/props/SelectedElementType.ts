@@ -6,5 +6,5 @@ export type SelectedElementTypeId = {
 
 export type SelectedElementType = {
   id: string | SelectedElementTypeId;
-  type: "arrow" | "box";
+  type: "transition" | "state";
 };

@@ -1,11 +1,11 @@
 import "./css/Playground.css";
 import { Xwrapper } from "react-xarrows";
 import MenuWindow from "./components/playground/MenuWindow";
-import { BoxProps } from "./components/playground/props/BoxProps";
+import { StateProps } from "./components/playground/props/StateProps";
 import { TopBarProps } from "./components/playground/props/TopBarProps";
 import TopBar from "./components/playground/TopBar";
 import { PlaygroundProps } from "./props/PlaygroundProps";
-import Box from "./components/playground/Box";
+import State from "./components/playground/State";
 import Xarrow from "./components/playground/Xarrow";
 import useElementSize from "./hooks/useElementSize";
 import { useEffect } from "react";
@@ -36,7 +36,7 @@ const Playground = (props: PlaygroundProps) => {
     toggleFinalState: props.toggleFinalState,
   };
 
-  const boxProps: BoxProps = {
+  const stateProps: StateProps = {
     states: props.states,
     setStates: props.setStates,
     transitions: props.transitions,
@@ -77,40 +77,40 @@ const Playground = (props: PlaygroundProps) => {
             </div>
           </div>
           <div
-            id="boxesContainer"
-            className="boxesContainer"
+            id="statesContainer"
+            className="statesContainer"
             onDragOver={(e) => e.preventDefault()}
             onDrop={props.handleDropDynamic}
             ref={boxRef}
           >
             <TopBar {...topBarprops} />
 
-            {props.states.map((box) => (
-              <Box
-                {...boxProps}
-                key={box.id}
-                box={box}
+            {props.states.map((state) => (
+              <State
+                {...stateProps}
+                key={state.id}
+                state={state}
                 position="absolute"
                 sidePos="middle"
               />
             ))}
           </div>
           {/* xarrow connections*/}
-          {props.transitions.map((line, i) => (
+          {props.transitions.map((transition, i) => (
             <Xarrow
-              key={line.props.start + "-" + line.props.end + i}
-              line={line}
+              key={transition.props.start + "-" + transition.props.end + i}
+              transition={transition}
               selected={props.selected}
               setSelected={props.setSelected}
             />
           ))}
           {/* props.states menu that may be opened */}
-          {props.transitions.map((line, i) =>
-            line.menuWindowOpened ? (
+          {props.transitions.map((transition, i) =>
+            transition.menuWindowOpened ? (
               <MenuWindow
-                key={line.props.start + "-" + line.props.end + i}
+                key={transition.props.start + "-" + transition.props.end + i}
                 setTransitions={props.setTransitions}
-                line={line}
+                transition={transition}
               />
             ) : null
           )}
