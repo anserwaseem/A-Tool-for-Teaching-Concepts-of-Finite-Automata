@@ -20,9 +20,9 @@ import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 const Editor = () => {
   console.log("re rendering Editor");
 
-  const [gridRowId, setGridRowId] = useState(0);
-  const [gridData, setGridData] = useState<RowModel[]>([]);
-  const gridColumns: GridColumns = [
+  const [rowId, setRowId] = useState(0);
+  const [rows, setRows] = useState<RowModel[]>([]);
+  const columns: GridColumns = [
     { field: "id", hide: true, hideable: false },
     {
       field: "node",
@@ -103,8 +103,8 @@ const Editor = () => {
       alert(`Maximum ${MaxNumberOfStates} states allowed`);
       return;
     }
-    setGridData((prev) => [...prev, row]);
-    setGridRowId((prev) => prev + 1);
+    setRows((prev) => [...prev, row]);
+    setRowId((prev) => prev + 1);
     console.log(
       "added row, now adding new state at: ",
       size.width,
@@ -123,7 +123,7 @@ const Editor = () => {
     console.log("handleDeleteRow", row);
     console.log(
       "resultant data",
-      gridData
+      rows
         .filter((r) => r.id !== row.id)
         .map((r) => {
           return {
@@ -142,7 +142,7 @@ const Editor = () => {
         })
     );
 
-    setGridData((rows) =>
+    setRows((rows) =>
       rows
         .filter((r) => r.id !== row.id)
         .map((r) => {
@@ -177,14 +177,14 @@ const Editor = () => {
 
   const handleSaveRow = (row: RowModel) => {
     console.log("handleSaveRow", row);
-    console.log("handleSaveRow", gridData);
+    console.log("handleSaveRow", rows);
 
     if (isRowEmpty(row)) {
       alert("Cannot save empty row.");
       return;
     }
 
-    const oldRow = gridData.find((r) => r.id === row.id);
+    const oldRow = rows.find((r) => r.id === row.id);
     if (!oldRow) {
       alert("Cannot save row.");
       return;
@@ -193,7 +193,7 @@ const Editor = () => {
     if (row.node.length > StateNameMaxLength) {
       alert(`State name cannot be more than ${StateNameMaxLength} characters.`);
       if (oldRow) {
-        setGridData((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
+        setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
       }
       return;
     }
@@ -210,7 +210,7 @@ const Editor = () => {
         `Cannot change state name when transition values are added/updated/removed.`
       );
       if (oldRow) {
-        setGridData((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
+        setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
       }
       return;
     }
@@ -218,9 +218,9 @@ const Editor = () => {
     const nulPossibleTransitionValues = PossibleTransitionValues.map((v) =>
       v === "^" ? "nul" : v
     );
-    let updatedGridData: RowModel[] = [];
+    let updatedRows: RowModel[] = [];
     let errorWhileSavingRow = false;
-    setGridData((prev) => {
+    setRows((prev) => {
       console.log("handleSaveRow prev", prev);
       let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
       // if (oldRow.node !== row.node)
@@ -266,7 +266,7 @@ const Editor = () => {
         return prev;
       }
 
-      updatedGridData = prev.map((r) =>
+      updatedRows = prev.map((r) =>
         r.id === row.id
           ? {
               ...r,
@@ -299,7 +299,7 @@ const Editor = () => {
             }
       );
 
-      return updatedGridData;
+      return updatedRows;
     });
 
     if (!errorWhileSavingRow) {
@@ -511,7 +511,7 @@ const Editor = () => {
 
   const toggleInitialState = (row: RowModel) => {
     console.log("toggleInitialState", row);
-    setGridData((prev) => {
+    setRows((prev) => {
       console.log("toggleInitialState prev", prev);
       if (!prev || isRowEmpty(row)) {
         alert("Cannot make empty row initial state.");
@@ -543,7 +543,7 @@ const Editor = () => {
 
   const toggleFinalState = (row: RowModel) => {
     console.log("toggleFinalState", row);
-    setGridData((prev) => {
+    setRows((prev) => {
       console.log("toggleFinalState prev", prev);
       if (!prev || isRowEmpty(row)) {
         alert("Cannot make empty row final state.");
@@ -590,7 +590,7 @@ const Editor = () => {
     }
 
     let { x, y } = e.target.getBoundingClientRect();
-    const stateName = promptNewStateName(states, `q${gridRowId}`);
+    const stateName = promptNewStateName(states, `q${rowId}`);
     if (stateName) {
       let newState = new DraggableStateModel(
         stateName,
@@ -607,19 +607,19 @@ const Editor = () => {
     }
     console.log("states", states);
 
-    setGridData((prev) => [
+    setRows((prev) => [
       ...prev,
-      new RowModel(gridRowId, stateName, "", "", "", false, false),
+      new RowModel(rowId, stateName, "", "", "", false, false),
     ]);
-    setGridRowId((prev) => prev + 1);
+    setRowId((prev) => prev + 1);
   };
 
   const transitionTableProps: TransitionTableProps = {
-    gridData,
-    setGridData,
-    gridColumns,
-    gridRowId,
-    setGridRowId,
+    rows,
+    setRows,
+    columns,
+    rowId,
+    setRowId,
     handleAddRow,
   };
 
@@ -635,8 +635,8 @@ const Editor = () => {
     handleSelect,
     checkExsitence,
     handleDropDynamic,
-    gridData,
-    setGridData,
+    rows,
+    setRows,
     handleDeleteRow,
     toggleInitialState,
     toggleFinalState,

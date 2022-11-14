@@ -14,10 +14,10 @@ const TransitionTable = (props: TransitionTableProps) => {
 
   useEffect(() => {
     console.log(
-      "useEffect of transition table due to props.gridData: props",
+      "useEffect of transition table due to props.rows: props",
       props
     );
-  }, [props.gridData]);
+  }, [props.rows]);
 
   return (
     <>
@@ -26,8 +26,8 @@ const TransitionTable = (props: TransitionTableProps) => {
         onClick={() =>
           props.handleAddRow(
             new RowModel(
-              props.gridRowId,
-              `q${props.gridRowId}`,
+              props.rowId,
+              `q${props.rowId}`,
               "",
               "",
               "",
@@ -67,8 +67,8 @@ const TransitionTable = (props: TransitionTableProps) => {
         }}
       >
         <DataGrid
-          rows={props.gridData}
-          columns={props.gridColumns}
+          rows={props.rows}
+          columns={props.columns}
           autoHeight
           hideFooter
           experimentalFeatures={{ newEditingApi: true }}

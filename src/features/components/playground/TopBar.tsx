@@ -27,7 +27,7 @@ export const TopBar = (props: TopBarProps) => {
           props.selected?.id as string
         );
 
-        props.setGridData((rows) =>
+        props.setRows((rows) =>
           rows.map((row) =>
             props.selected
               ? {
@@ -120,7 +120,7 @@ export const TopBar = (props: TopBarProps) => {
             )
           );
 
-          props.setGridData((rows) =>
+          props.setRows((rows) =>
             rows.map((row) =>
               props.selected && row.node === props.selected?.id
                 ? // if row found, remove all its transition values
@@ -198,7 +198,7 @@ export const TopBar = (props: TopBarProps) => {
           if (props.selected) {
             console.log("selected id", props.selected?.id);
             props.handleDeleteRow(
-              props.gridData.find(
+              props.rows.find(
                 (row) => row.node === (props.selected?.id as string)
               ) as RowModel
             );
@@ -208,7 +208,7 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Toggle Initial State":
-        const initialStateRow = [...props.gridData].find(
+        const initialStateRow = [...props.rows].find(
           (row) => props.selected && row.node === (props.selected?.id as string)
         );
         if (initialStateRow) {
@@ -219,7 +219,7 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Toggle Final State":
-        const finalStateRow = props.gridData.find(
+        const finalStateRow = props.rows.find(
           (row) => props.selected && row.node === (props.selected?.id as string)
         );
         if (finalStateRow) {
@@ -258,7 +258,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
 
-        props.setGridData((rows) =>
+        props.setRows((rows) =>
           rows.map((row) =>
             props.selected &&
             row.node === (props.selected?.id as SelectedElementTypeId).start
@@ -360,9 +360,9 @@ export const TopBar = (props: TopBarProps) => {
         );
         console.log("transitionValues", transitionValues);
 
-        // console.log("setGridData edit value")
-        props.setGridData((rows) => {
-          console.log("starting setGridData");
+        // console.log("setRows edit value")
+        props.setRows((rows) => {
+          console.log("starting setRows");
           let newRows = [...rows];
           newRows.map((row) => {
             if (
@@ -432,7 +432,7 @@ export const TopBar = (props: TopBarProps) => {
             return row;
           });
 
-          console.log("ending setGridData");
+          console.log("ending setRows");
           return newRows;
         });
 

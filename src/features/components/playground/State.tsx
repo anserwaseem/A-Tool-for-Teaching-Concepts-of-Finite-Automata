@@ -86,20 +86,20 @@ export const State = (props: any) => {
   }
   // link for these color names and codes: https://mui.com/material-ui/customization/palette/
   else if (
-    props.gridData.find(
+    props.rows.find(
       (row: RowModel) =>
         row.node === props.state.id && row.isInitial && row.isFinal
     )
   ) {
     background = "#4fc3f7"; // mui theme.palette.info.light
   } else if (
-    props.gridData.find(
+    props.rows.find(
       (row: RowModel) => row.node === props.state.id && row.isInitial
     )
   ) {
     background = "#ffb74d"; // mui theme.palette.warning.light
   } else if (
-    props.gridData.find(
+    props.rows.find(
       (row: RowModel) => row.node === props.state.id && row.isFinal
     )
   ) {

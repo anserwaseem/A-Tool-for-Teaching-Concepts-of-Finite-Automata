@@ -14,8 +14,8 @@ export type PlaygroundProps = {
   handleSelect: (e: any) => void;
   checkExsitence: (id: string) => boolean;
   handleDropDynamic: (e: any) => void;
-  gridData: RowModel[];
-  setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
+  rows: RowModel[];
+  setRows: React.Dispatch<React.SetStateAction<RowModel[]>>;
   handleDeleteRow: (row: RowModel) => void;
   toggleInitialState: (row: RowModel) => void;
   toggleFinalState: (row: RowModel) => void;

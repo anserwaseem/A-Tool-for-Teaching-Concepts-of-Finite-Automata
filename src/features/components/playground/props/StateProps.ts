@@ -13,6 +13,6 @@ export type StateProps = {
   selected: SelectedElementType | null;
   handleSelect: (e: any) => void;
   actionState: string;
-  gridData: RowModel[];
-  setGridData: React.Dispatch<React.SetStateAction<RowModel[]>>;
+  rows: RowModel[];
+  setRows: React.Dispatch<React.SetStateAction<RowModel[]>>;
 };

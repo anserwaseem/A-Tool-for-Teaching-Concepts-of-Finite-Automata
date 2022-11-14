@@ -29,8 +29,8 @@ const Playground = (props: PlaygroundProps) => {
     handleSelect: props.handleSelect,
     actionState: props.actionState,
     setActionState: props.setActionState,
-    gridData: props.gridData,
-    setGridData: props.setGridData,
+    rows: props.rows,
+    setRows: props.setRows,
     handleDeleteRow: props.handleDeleteRow,
     toggleInitialState: props.toggleInitialState,
     toggleFinalState: props.toggleFinalState,
@@ -44,8 +44,8 @@ const Playground = (props: PlaygroundProps) => {
     selected: props.selected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
-    gridData: props.gridData,
-    setGridData: props.setGridData,
+    rows: props.rows,
+    setRows: props.setRows,
   };
 
   return (
