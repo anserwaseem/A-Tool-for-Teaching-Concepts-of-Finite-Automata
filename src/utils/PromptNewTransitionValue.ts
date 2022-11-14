@@ -3,7 +3,7 @@ import { TransitionValuesSeparator } from "../consts/TransitionValuesSeparator";
 import { TransitionModel } from "../models";
 
 export const promptNewTransitionValue = (
-  lines: TransitionModel[],
+  transitions: TransitionModel[],
   originalValue: string
 ) => {
   var newValue = prompt(

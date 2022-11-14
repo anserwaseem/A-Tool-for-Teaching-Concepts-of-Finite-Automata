@@ -6,10 +6,10 @@ import {
 import { SelectedElementType } from "../../../props/SelectedElementType";
 
 export type BoxProps = {
-  boxes: DraggableStateModel[];
-  setBoxes: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
-  lines: TransitionModel[];
-  setLines: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
+  states: DraggableStateModel[];
+  setStates: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
+  transitions: TransitionModel[];
+  setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   selected: SelectedElementType | null;
   handleSelect: (e: any) => void;
   actionState: string;

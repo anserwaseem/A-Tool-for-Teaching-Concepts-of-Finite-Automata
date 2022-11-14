@@ -20,10 +20,10 @@ const Playground = (props: PlaygroundProps) => {
   }, [width, height]);
 
   const topBarprops: TopBarProps = {
-    boxes: props.boxes,
-    setBoxes: props.setBoxes,
-    lines: props.lines,
-    setLines: props.setLines,
+    states: props.states,
+    setStates: props.setStates,
+    transitions: props.transitions,
+    setTransitions: props.setTransitions,
     selected: props.selected,
     setSelected: props.setSelected,
     handleSelect: props.handleSelect,
@@ -37,10 +37,10 @@ const Playground = (props: PlaygroundProps) => {
   };
 
   const boxProps: BoxProps = {
-    boxes: props.boxes,
-    setBoxes: props.setBoxes,
-    lines: props.lines,
-    setLines: props.setLines,
+    states: props.states,
+    setStates: props.setStates,
+    transitions: props.transitions,
+    setTransitions: props.setTransitions,
     selected: props.selected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
@@ -85,7 +85,7 @@ const Playground = (props: PlaygroundProps) => {
           >
             <TopBar {...topBarprops} />
 
-            {props.boxes.map((box) => (
+            {props.states.map((box) => (
               <Box
                 {...boxProps}
                 key={box.id}
@@ -96,7 +96,7 @@ const Playground = (props: PlaygroundProps) => {
             ))}
           </div>
           {/* xarrow connections*/}
-          {props.lines.map((line, i) => (
+          {props.transitions.map((line, i) => (
             <Xarrow
               key={line.props.start + "-" + line.props.end + i}
               line={line}
@@ -104,12 +104,12 @@ const Playground = (props: PlaygroundProps) => {
               setSelected={props.setSelected}
             />
           ))}
-          {/* props.boxes menu that may be opened */}
-          {props.lines.map((line, i) =>
+          {/* props.states menu that may be opened */}
+          {props.transitions.map((line, i) =>
             line.menuWindowOpened ? (
               <MenuWindow
                 key={line.props.start + "-" + line.props.end + i}
-                setLines={props.setLines}
+                setTransitions={props.setTransitions}
                 line={line}
               />
             ) : null

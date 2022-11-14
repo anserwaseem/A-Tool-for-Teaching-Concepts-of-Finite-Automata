@@ -91,15 +91,15 @@ const Editor = () => {
       },
     },
   ];
-  const [boxes, setBoxes] = useState<DraggableStateModel[]>([]);
-  const [lines, setLines] = useState<TransitionModel[]>([]);
+  const [states, setStates] = useState<DraggableStateModel[]>([]);
+  const [transitions, setTransitions] = useState<TransitionModel[]>([]);
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
   const handleAddRow = (row: RowModel) => {
-    if (boxes.length >= MaxNumberOfStates) {
+    if (states.length >= MaxNumberOfStates) {
       alert(`Maximum ${MaxNumberOfStates} states allowed`);
       return;
     }
@@ -116,7 +116,7 @@ const Editor = () => {
       y: Math.floor(Math.random() * size.height),
       shape: "state",
     };
-    setBoxes((prev) => [...prev, newBox]);
+    setStates((prev) => [...prev, newBox]);
   };
 
   const handleDeleteRow = (row: RowModel) => {
@@ -162,11 +162,11 @@ const Editor = () => {
         })
     );
 
-    setLines((prev) =>
+    setTransitions((prev) =>
       prev.filter((l) => l.props.start !== row.node && l.props.end !== row.node)
     );
 
-    setBoxes((prev) => prev.filter((b) => b.id !== row.node));
+    setStates((prev) => prev.filter((b) => b.id !== row.node));
   };
 
   const isRowEmpty = (row: RowModel) => {
@@ -303,7 +303,7 @@ const Editor = () => {
     });
 
     if (!errorWhileSavingRow) {
-      setBoxes((prev) =>
+      setStates((prev) =>
         prev.map((b) => (b.id === oldRow.node ? { ...b, id: row.node } : b))
       );
 
@@ -315,7 +315,7 @@ const Editor = () => {
             row[key === "^" ? "nul" : key] === oldRow[key === "^" ? "nul" : key]
         )
       ) {
-        let updatedtransitions = lines.map((l) =>
+        let updatedtransitions = transitions.map((l) =>
           l.props.start === oldRow.node && l.props.end === oldRow.node
             ? {
                 ...l,
@@ -344,7 +344,7 @@ const Editor = () => {
             : l
         );
         console.log("updatedtransitions", updatedtransitions);
-        setLines(updatedtransitions);
+        setTransitions(updatedtransitions);
       } else {
         // if new transitions are added
 
@@ -414,7 +414,7 @@ const Editor = () => {
 
           removedTransitionValues.forEach((v) => {
             console.log("removedTransitionValues key, v: ", key, v);
-            const removedTransition = lines.find(
+            const removedTransition = transitions.find(
               (l) => l.props.start === row.node && l.props.end === v
             );
 
@@ -435,11 +435,12 @@ const Editor = () => {
           console.log("removedTransitions", removedTransitions);
         });
 
-        setLines((prev) => {
+        setTransitions((prev) => {
           // update removedTransitions's labels && value if it's already present
           const updatedRemovedTransitions = prev.map((l) =>
             removedTransitions.find(
-              (t) => t.props.start === l.props.start && t.props.end === l.props.end
+              (t) =>
+                t.props.start === l.props.start && t.props.end === l.props.end
             )
               ? {
                   ...l,
@@ -456,12 +457,11 @@ const Editor = () => {
                         }
                       />
                     ),
-                    value:
-                      removedTransitions.find(
-                        (t) =>
-                          t.props.start === l.props.start &&
-                          t.props.end === l.props.end
-                      )?.props.value,
+                    value: removedTransitions.find(
+                      (t) =>
+                        t.props.start === l.props.start &&
+                        t.props.end === l.props.end
+                    )?.props.value,
                   },
                 }
               : l
@@ -579,18 +579,18 @@ const Editor = () => {
   };
 
   const checkExsitence = (id: string) => {
-    return [...boxes].map((b) => b.id).includes(id);
+    return [...states].map((b) => b.id).includes(id);
   };
 
   const handleDropDynamic = (e: any) => {
     console.log("handleDropDynamic", e);
-    if (boxes.length >= MaxNumberOfStates) {
+    if (states.length >= MaxNumberOfStates) {
       alert(`Maximum ${MaxNumberOfStates} states allowed.`);
       return;
     }
 
     let { x, y } = e.target.getBoundingClientRect();
-    const stateName = promptNewStateName(boxes, `q${gridRowId}`);
+    const stateName = promptNewStateName(states, `q${gridRowId}`);
     if (stateName) {
       let newState = new DraggableStateModel(
         stateName,
@@ -603,9 +603,9 @@ const Editor = () => {
         y: e.clientY - y,
         shape: "state",
       };
-      setBoxes([...boxes, newBox]);
+      setStates([...states, newBox]);
     }
-    console.log("boxes", boxes);
+    console.log("states", states);
 
     setGridData((prev) => [
       ...prev,
@@ -624,10 +624,10 @@ const Editor = () => {
   };
 
   const playgroundProps: PlaygroundProps = {
-    boxes,
-    setBoxes,
-    lines,
-    setLines,
+    states,
+    setStates,
+    transitions,
+    setTransitions,
     selected,
     setSelected,
     actionState,

@@ -3,10 +3,10 @@ import { DraggableStateModel, RowModel, TransitionModel } from "../../models";
 import { SelectedElementType } from "./SelectedElementType";
 
 export type PlaygroundProps = {
-  boxes: DraggableStateModel[];
-  setBoxes: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
-  lines: TransitionModel[];
-  setLines: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
+  states: DraggableStateModel[];
+  setStates: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
+  transitions: TransitionModel[];
+  setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   selected: SelectedElementType | null;
   setSelected: React.Dispatch<React.SetStateAction<SelectedElementType | null>>;
   actionState: string;

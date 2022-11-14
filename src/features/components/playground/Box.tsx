@@ -20,16 +20,16 @@ export const Box = (props: any) => {
 
       // restrict adding of new transition between states where a transition already exists
       if (
-        !props.lines.find(
+        !props.transitions.find(
           (line: TransitionModel) =>
             line.props.start === props.selected?.id &&
             line.props.end === props.box.id
         )
       ) {
-        console.log("Box handleClick Add Transition setLines", props);
+        console.log("Box handleClick Add Transition setTransitions", props);
         const isSelfTransition = props.selected?.id === props.box.id;
-        props.setLines((lines: TransitionModel[]) => [
-          ...lines,
+        props.setTransitions((transitions: TransitionModel[]) => [
+          ...transitions,
           {
             props: {
               labels: "",
@@ -50,8 +50,8 @@ export const Box = (props: any) => {
       }
     } else if (props.actionState === "Remove Transitions") {
       console.log("Box handleClick Remove Transitions", props);
-      props.setLines((lines: TransitionModel[]) =>
-        lines.filter(
+      props.setTransitions((transitions: TransitionModel[]) =>
+        transitions.filter(
           (line) =>
             !(
               line.props.start === props.selected?.id &&
@@ -70,13 +70,13 @@ export const Box = (props: any) => {
   } else if (
     (props.actionState === "Add Transition" &&
       // props.sidePos !== "right" &&
-      props.lines.filter(
+      props.transitions.filter(
         (line: TransitionModel) =>
           line.props.start === props.selected?.id &&
           line.props.end === props.box.id
       ).length === 0) ||
     (props.actionState === "Remove Transitions" &&
-      props.lines.filter(
+      props.transitions.filter(
         (line: TransitionModel) =>
           line.props.start === props.selected?.id &&
           line.props.end === props.box.id
@@ -129,7 +129,7 @@ export const Box = (props: any) => {
         </div>
       </Draggable>
       {/* {type === "middleBox" && menuWindowOpened ?
-      <MenuWindow setBoxes={props.setBoxes} box={props.box}/> : null
+      <MenuWindow setStates={props.setStates} box={props.box}/> : null
       } */}
     </React.Fragment>
   );

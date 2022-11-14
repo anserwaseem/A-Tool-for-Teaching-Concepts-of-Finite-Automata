@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 import { TransitionModel } from "../../../models";
 import "./css/MenuWindow.css";
 
-export default ({ setLines, line: { props: lineProp } }: any) => {
+export default ({ setTransitions, line: { props: lineProp } }: any) => {
   const [pos, setPos] = useState({ width: 200, height: 200 });
 
   //   const d = {
@@ -45,8 +45,8 @@ export default ({ setLines, line: { props: lineProp } }: any) => {
   //   console.log(typeof state);
 
   const handleClose = () =>
-    setLines((lines: TransitionModel[]) =>
-      lines.map((line) =>
+    setTransitions((transitions: TransitionModel[]) =>
+      transitions.map((line) =>
         line.props.start === lineProp.start && line.props.end === lineProp.end
           ? {
               ...line,
