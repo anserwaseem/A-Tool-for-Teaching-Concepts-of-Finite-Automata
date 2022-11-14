@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Grid } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -467,14 +467,6 @@ const Editor = () => {
               : l
           );
 
-
-          // const updatedRemovedTransitions = prev.filter(
-          //   (l) =>
-          //     !removedTransitions.find(
-          //       (r) =>
-          //         r.props.start === l.props.start && r.props.end === l.props.end
-          //     )
-          // );
           console.log("updatedRemovedTransitions", updatedRemovedTransitions);
 
           // update addedTransitions's labels & value if it's are already present
