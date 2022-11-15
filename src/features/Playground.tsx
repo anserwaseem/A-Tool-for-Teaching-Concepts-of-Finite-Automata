@@ -1,6 +1,5 @@
 import "./css/Playground.css";
 import { Xwrapper } from "react-xarrows";
-import MenuWindow from "./components/playground/MenuWindow";
 import { StateProps } from "./components/playground/props/StateProps";
 import { TopBarProps } from "./components/playground/props/TopBarProps";
 import TopBar from "./components/playground/TopBar";
@@ -104,16 +103,6 @@ const Playground = (props: PlaygroundProps) => {
               setSelected={props.setSelected}
             />
           ))}
-          {/* props.states menu that may be opened */}
-          {props.transitions.map((transition, i) =>
-            transition.menuWindowOpened ? (
-              <MenuWindow
-                key={transition.props.start + "-" + transition.props.end + i}
-                setTransitions={props.setTransitions}
-                transition={transition}
-              />
-            ) : null
-          )}
         </div>
       </Xwrapper>
     </div>

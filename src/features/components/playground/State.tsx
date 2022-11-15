@@ -44,7 +44,6 @@ export const State = (props: any) => {
               _cpx2Offset: isSelfTransition ? 50 : 0,
               _cpy2Offset: isSelfTransition ? -50 : 0,
             },
-            menuWindowOpened: false,
           },
         ]);
       }
@@ -128,9 +127,6 @@ export const State = (props: any) => {
           {props.state.name ? props.state.name : props.state.id}
         </div>
       </Draggable>
-      {/* {type === "middleBox" && menuWindowOpened ?
-      <MenuWindow setStates={props.setStates} state={props.state}/> : null
-      } */}
     </React.Fragment>
   );
 };

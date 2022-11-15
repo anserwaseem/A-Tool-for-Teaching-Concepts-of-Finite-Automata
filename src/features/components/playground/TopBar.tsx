@@ -286,21 +286,6 @@ export const TopBar = (props: TopBarProps) => {
         props.handleSelect(null);
         break;
 
-      case "Edit Properties":
-        props.setTransitions((transitions) =>
-          transitions.map((transition) =>
-            props.selected &&
-            transition.props.start === props.selected?.id &&
-            transition.props.end === props.selected?.id
-              ? {
-                  ...transition,
-                  menuWindowOpened: true,
-                }
-              : transition
-          )
-        );
-        break;
-
       case "Edit Value":
         const newValue = promptNewTransitionValue(
           props.transitions,

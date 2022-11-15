@@ -31,7 +31,6 @@ type TransitionModelProps = {
 
 export default class TransitionModel {
   constructor(
-    public menuWindowOpened: boolean,
     public props: TransitionModelProps
   ) {}
 }
