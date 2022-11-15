@@ -14,7 +14,11 @@ export const Download = ({
       onClick={() => {
         handleCloseUserMenu();
         if (!data) {
-          console.log("no data");
+          console.log("no data.");
+          return;
+        }
+        if (data?.states?.length === 0) {
+          alert("no data to download.");
           return;
         }
         const element = document.createElement("a");

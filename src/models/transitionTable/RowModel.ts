@@ -5,7 +5,7 @@ interface IRowModel {
 export default class RowModel implements IRowModel {
   constructor(
     public id: number,
-    public node: string,
+    public state: string,
     public a: string,
     public b: string,
     public nul: string,

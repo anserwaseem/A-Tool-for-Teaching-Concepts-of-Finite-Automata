@@ -88,19 +88,19 @@ export const State = (props: any) => {
   else if (
     props.rows.find(
       (row: RowModel) =>
-        row.node === props.state.id && row.isInitial && row.isFinal
+        row.state === props.state.id && row.isInitial && row.isFinal
     )
   ) {
     background = "#4fc3f7"; // mui theme.palette.info.light
   } else if (
     props.rows.find(
-      (row: RowModel) => row.node === props.state.id && row.isInitial
+      (row: RowModel) => row.state === props.state.id && row.isInitial
     )
   ) {
     background = "#ffb74d"; // mui theme.palette.warning.light
   } else if (
     props.rows.find(
-      (row: RowModel) => row.node === props.state.id && row.isFinal
+      (row: RowModel) => row.state === props.state.id && row.isFinal
     )
   ) {
     background = "#81c784"; // mui theme.palette.success.light;

@@ -40,8 +40,8 @@ export const Editor = () => {
   const columns: GridColumns = [
     { field: "id", hide: true, hideable: false },
     {
-      field: "node",
-      headerName: "Node",
+      field: "state",
+      headerName: "State",
       editable: true,
       disableColumnMenu: true,
       sortable: false,
@@ -126,7 +126,7 @@ export const Editor = () => {
       size.height
     );
     let newstate = {
-      id: row.node,
+      id: row.state,
       x: Math.floor(Math.random() * size.width),
       y: Math.floor(Math.random() * size.height),
       shape: "state",
@@ -146,10 +146,10 @@ export const Editor = () => {
             ...Object.fromEntries(
               PossibleTransitionValues.map((key) => [
                 key === "^" ? "nul" : key,
-                r[key === "^" ? "nul" : key].toString().includes(row.node)
+                r[key === "^" ? "nul" : key].toString().includes(row.state)
                   ? r[key === "^" ? "nul" : key]
                       .toString()
-                      .replace(row.node, "")
+                      .replace(row.state, "")
                   : r[key === "^" ? "nul" : key],
               ])
             ),
@@ -166,10 +166,10 @@ export const Editor = () => {
             ...Object.fromEntries(
               PossibleTransitionValues.map((key) => [
                 key === "^" ? "nul" : key,
-                r[key === "^" ? "nul" : key].toString().includes(row.node)
+                r[key === "^" ? "nul" : key].toString().includes(row.state)
                   ? r[key === "^" ? "nul" : key]
                       .toString()
-                      .replace(row.node, "")
+                      .replace(row.state, "")
                   : r[key === "^" ? "nul" : key],
               ])
             ),
@@ -178,16 +178,18 @@ export const Editor = () => {
     );
 
     setTransitions((prev) =>
-      prev.filter((l) => l.props.start !== row.node && l.props.end !== row.node)
+      prev.filter(
+        (t) => t.props.start !== row.state && t.props.end !== row.state
+      )
     );
 
-    setStates((prev) => prev.filter((b) => b.id !== row.node));
+    setStates((prev) => prev.filter((s) => s.id !== row.state));
   };
 
   const isRowEmpty = (row: RowModel) => {
     return !row
       ? true
-      : row.node === "" && row.a === "" && row.b === "" && row.nul === "";
+      : row.state === "" && row.a === "" && row.b === "" && row.nul === "";
   };
 
   const handleSaveRow = (row: RowModel) => {
@@ -205,7 +207,7 @@ export const Editor = () => {
       return;
     }
 
-    if (row.node.length > StateNameMaxLength) {
+    if (row.state.length > StateNameMaxLength) {
       alert(`State name cannot be more than ${StateNameMaxLength} characters.`);
       if (oldRow) {
         setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
@@ -215,7 +217,7 @@ export const Editor = () => {
 
     // if state name is changed AND transition values are added/updated/removed, not allowed
     if (
-      oldRow.node !== row.node &&
+      oldRow.state !== row.state &&
       PossibleTransitionValues.some(
         (key) =>
           row[key === "^" ? "nul" : key] !== oldRow[key === "^" ? "nul" : key]
@@ -237,15 +239,17 @@ export const Editor = () => {
     let errorWhileSavingRow = false;
     setRows((prev) => {
       console.log("handleSaveRow prev", prev);
-      let availableNodeValues = prev.map((r) => r.node).filter((v) => v !== "");
-      // if (oldRow.node !== row.node)
-      //   availableNodeValues = availableNodeValues
-      //     .filter((v) => v !== oldRow.node)
-      //     .concat(row.node);
+      let availableStateValues = prev
+        .map((r) => r.state)
+        .filter((v) => v !== "");
+      // if (oldRow.state !== row.state)
+      //   availableStateValues = availableStateValues
+      //     .filter((v) => v !== oldRow.state)
+      //     .concat(row.state);
 
-      if (!availableNodeValues.includes(row.node))
-        availableNodeValues.push(row.node);
-      console.log("availableNodeValues", availableNodeValues);
+      if (!availableStateValues.includes(row.state))
+        availableStateValues.push(row.state);
+      console.log("availableStateValues", availableStateValues);
 
       const areTransitionValuesInvalid = nulPossibleTransitionValues.some(
         (key) => {
@@ -253,14 +257,16 @@ export const Editor = () => {
             .toString()
             .split(" ")
             .filter((v) => v !== "");
-          return transitionValues.some((v) => !availableNodeValues.includes(v));
+          return transitionValues.some(
+            (v) => !availableStateValues.includes(v)
+          );
         }
       );
 
       console.log("areTransitionValuesInvalid", areTransitionValuesInvalid);
       if (areTransitionValuesInvalid) {
         alert(
-          `Transition values must be empty or from the following: ${availableNodeValues.join(
+          `Transition values must be empty or from the following: ${availableStateValues.join(
             ", "
           )}`
         );
@@ -270,7 +276,7 @@ export const Editor = () => {
 
       const stateAlreadyExists = prev.find(
         (r) =>
-          r.node === row.node &&
+          r.state === row.state &&
           r.a === row.a &&
           r.b === row.b &&
           r.nul === row.nul
@@ -291,10 +297,10 @@ export const Editor = () => {
                   key === "^" ? "nul" : key,
                   row[key === "^" ? "nul" : key]
                     .toString()
-                    .includes(oldRow.node)
+                    .includes(oldRow.state)
                     ? row[key === "^" ? "nul" : key]
                         .toString()
-                        .replace(oldRow.node, row.node)
+                        .replace(oldRow.state, row.state)
                     : row[key === "^" ? "nul" : key],
                 ])
               ),
@@ -304,10 +310,10 @@ export const Editor = () => {
               ...Object.fromEntries(
                 PossibleTransitionValues.map((key) => [
                   key === "^" ? "nul" : key,
-                  r[key === "^" ? "nul" : key].toString().includes(oldRow.node)
+                  r[key === "^" ? "nul" : key].toString().includes(oldRow.state)
                     ? r[key === "^" ? "nul" : key]
                         .toString()
-                        .replace(oldRow.node, row.node)
+                        .replace(oldRow.state, row.state)
                     : r[key === "^" ? "nul" : key],
                 ])
               ),
@@ -319,97 +325,74 @@ export const Editor = () => {
 
     if (!errorWhileSavingRow) {
       setStates((prev) =>
-        prev.map((b) => (b.id === oldRow.node ? { ...b, id: row.node } : b))
+        prev.map((s) => (s.id === oldRow.state ? { ...s, id: row.state } : s))
       );
 
       // if only state name is changed
       if (
-        oldRow.node !== row.node &&
+        oldRow.state !== row.state &&
         PossibleTransitionValues.every(
           (key) =>
             row[key === "^" ? "nul" : key] === oldRow[key === "^" ? "nul" : key]
         )
       ) {
-        let updatedtransitions = transitions.map((l) =>
-          l.props.start === oldRow.node && l.props.end === oldRow.node
+        let updatedtransitions = transitions.map((t) =>
+          t.props.start === oldRow.state && t.props.end === oldRow.state
             ? {
-                ...l,
+                ...t,
                 props: {
-                  ...l.props,
-                  start: row.node,
-                  end: row.node,
+                  ...t.props,
+                  start: row.state,
+                  end: row.state,
                 },
               }
-            : l.props.start === oldRow.node
+            : t.props.start === oldRow.state
             ? {
-                ...l,
+                ...t,
                 props: {
-                  ...l.props,
-                  start: row.node,
+                  ...t.props,
+                  start: row.state,
                 },
               }
-            : l.props.end === oldRow.node
+            : t.props.end === oldRow.state
             ? {
-                ...l,
+                ...t,
                 props: {
-                  ...l.props,
-                  end: row.node,
+                  ...t.props,
+                  end: row.state,
                 },
               }
-            : l
+            : t
         );
         console.log("updatedtransitions", updatedtransitions);
         setTransitions(updatedtransitions);
-      } else {
-        // if new transitions are added
+      } // if new transitions are added
+      else {
+        // remove those transitions which are going from this state
+        let updatedtransitions = transitions.filter(
+          (t) => t.props.start !== oldRow.state
+        );
 
-        let addedTransitions: TransitionModel[] = [];
-        let removedTransitions: TransitionModel[] = [];
-
+        // for each possible transition value, add new transitions which are going from this state
         PossibleTransitionValues.forEach((key) => {
-          const oldTransitionValues = oldRow[key === "^" ? "nul" : key]
+          const transitionValues = row[key === "^" ? "nul" : key]
             .toString()
             .split(" ")
             .filter((v) => v !== "");
-          console.log("oldTransitionValues", oldTransitionValues);
-
-          const newTransitionValues = row[key === "^" ? "nul" : key]
-            .toString()
-            .split(" ")
-            .filter((v) => v !== "");
-          console.log("newTransitionValues", newTransitionValues);
-
-          const addedTransitionValues = newTransitionValues.filter(
-            (v) => !oldTransitionValues.includes(v)
-          );
-          console.log("addedTransitionValues", addedTransitionValues);
-
-          const removedTransitionValues = oldTransitionValues.filter(
-            (v) => !newTransitionValues.includes(v)
-          );
-          console.log("removedTransitionValues", removedTransitionValues);
-
-          addedTransitionValues.forEach((v) => {
-            console.log("addedTransitionValues key, v: ", key, v);
-
-            // if transition value v is already present in the transitions array, then just update it's labels & value
-            const transitionAlreadyExists = addedTransitions.find(
-              (t) => t.props.start === row.node && t.props.end === v
-            );
-
-            if (transitionAlreadyExists) {
-              transitionAlreadyExists.props.labels = (
-                <StyledTransitionLabel
-                  label={transitionAlreadyExists.props.value + key}
-                />
-              );
-              transitionAlreadyExists.props.value =
-                transitionAlreadyExists.props.value + key;
-            } else {
-              const isSelfTransition = v === row.node;
-              const newTransition: TransitionModel = {
+          console.log("transitionValues", transitionValues);
+          transitionValues.forEach((v) => {
+            // console.log("key, v: ", key, v);
+            const isSelfTransition = v === row.state;
+            // if transition is not already added, add new transition
+            if (
+              !updatedtransitions.find(
+                (t) => t.props.start === row.state && t.props.end === v
+              )
+            ) {
+              // console.log("adding new transition");
+              updatedtransitions.push({
                 props: {
-                  start: row.node,
+                  start: row.state,
                   end: v,
                   labels: <StyledTransitionLabel label={key} />,
                   value: key,
@@ -421,105 +404,188 @@ export const Editor = () => {
                   _cpy2Offset: isSelfTransition ? -50 : 0,
                 },
                 menuWindowOpened: false,
-              };
-              addedTransitions.push(newTransition);
-            }
-          });
-          console.log("addedTransitions", addedTransitions);
-
-          removedTransitionValues.forEach((v) => {
-            console.log("removedTransitionValues key, v: ", key, v);
-            const removedTransition = transitions.find(
-              (l) => l.props.start === row.node && l.props.end === v
-            );
-
-            // if removed transition's label (value) is of length 1, then remove the transition
-            if (removedTransition.props.value.length === 1) {
-              removedTransitions.push(removedTransition);
-            } else {
-              // else just update the transition's label & value
-              removedTransition.props.labels = (
-                <StyledTransitionLabel
-                  label={removedTransition.props.value.replace(key, "")}
-                />
+              });
+            } // if transition is already added, update its labels & value
+            else {
+              // console.log("updating existing transition");
+              updatedtransitions = updatedtransitions.map((t) =>
+                t.props.start === row.state && t.props.end === v
+                  ? {
+                      ...t,
+                      props: {
+                        ...t.props,
+                        labels: (
+                          <StyledTransitionLabel label={t.props.value + key} />
+                        ),
+                        value: t.props.value + key,
+                      },
+                    }
+                  : t
               );
-              removedTransition.props.value =
-                removedTransition.props.value.replace(key, "");
             }
           });
-          console.log("removedTransitions", removedTransitions);
         });
 
-        setTransitions((prev) => {
-          // update removedTransitions's labels && value if it's already present
-          const updatedRemovedTransitions = prev.map((l) =>
-            removedTransitions.find(
-              (t) =>
-                t.props.start === l.props.start && t.props.end === l.props.end
-            )
-              ? {
-                  ...l,
-                  props: {
-                    ...l.props,
-                    labels: (
-                      <StyledTransitionLabel
-                        label={
-                          removedTransitions.find(
-                            (t) =>
-                              t.props.start === l.props.start &&
-                              t.props.end === l.props.end
-                          )?.props.value
-                        }
-                      />
-                    ),
-                    value: removedTransitions.find(
-                      (t) =>
-                        t.props.start === l.props.start &&
-                        t.props.end === l.props.end
-                    )?.props.value,
-                  },
-                }
-              : l
-          );
+        // console.log("updatedtransitions", updatedtransitions);
+        setTransitions(updatedtransitions);
 
-          console.log("updatedRemovedTransitions", updatedRemovedTransitions);
+        // let addedTransitions: TransitionModel[] = [];
+        // let removedTransitions: TransitionModel[] = [];
 
-          // update addedTransitions's labels & value if it's are already present
-          const updatedAddedTransitions = addedTransitions.map((a) => {
-            const transitionAlreadyExists = prev.find(
-              (p) =>
-                p.props.start === a.props.start && p.props.end === a.props.end
-            );
-            console.log(
-              "transitionAlreadyExists.props.value, a.props.value:",
-              transitionAlreadyExists?.props.value,
-              a.props.value
-            );
-            if (
-              transitionAlreadyExists &&
-              transitionAlreadyExists.props.value !== a.props.value
-            ) {
-              return {
-                ...transitionAlreadyExists,
-                props: {
-                  ...transitionAlreadyExists.props,
-                  labels: (
-                    <StyledTransitionLabel
-                      label={
-                        transitionAlreadyExists.props.value + a.props.value
-                      }
-                    />
-                  ),
-                  value: transitionAlreadyExists.props.value + a.props.value,
-                },
-              };
-            }
-            return a;
-          });
-          console.log("updatedAddedTransitions", updatedAddedTransitions);
+        // PossibleTransitionValues.forEach((key) => {
+        //   const oldTransitionValues = oldRow[key === "^" ? "nul" : key]
+        //     .toString()
+        //     .split(" ")
+        //     .filter((v) => v !== "");
+        //   console.log("oldTransitionValues", oldTransitionValues);
 
-          return [...updatedRemovedTransitions, ...updatedAddedTransitions];
-        });
+        //   const newTransitionValues = row[key === "^" ? "nul" : key]
+        //     .toString()
+        //     .split(" ")
+        //     .filter((v) => v !== "");
+        //   console.log("newTransitionValues", newTransitionValues);
+
+        //   const addedTransitionValues = newTransitionValues.filter(
+        //     (v) => !oldTransitionValues.includes(v)
+        //   );
+        //   console.log("addedTransitionValues", addedTransitionValues);
+
+        //   const removedTransitionValues = oldTransitionValues.filter(
+        //     (v) => !newTransitionValues.includes(v)
+        //   );
+        //   console.log("removedTransitionValues", removedTransitionValues);
+
+        //   addedTransitionValues.forEach((v) => {
+        //     console.log("addedTransitionValues key, v: ", key, v);
+
+        //     // if transition value v is already present in the transitions array, then just update it's labels & value
+        //     const transitionAlreadyExists = addedTransitions.find(
+        //       (t) => t.props.start === row.state && t.props.end === v
+        //     );
+
+        //     if (transitionAlreadyExists) {
+        //       transitionAlreadyExists.props.labels = (
+        //         <StyledTransitionLabel
+        //           label={transitionAlreadyExists.props.value + key}
+        //         />
+        //       );
+        //       transitionAlreadyExists.props.value =
+        //         transitionAlreadyExists.props.value + key;
+        //     } else {
+        //       const isSelfTransition = v === row.state;
+        //       const newTransition: TransitionModel = {
+        //         props: {
+        //           start: row.state,
+        //           end: v,
+        //           labels: <StyledTransitionLabel label={key} />,
+        //           value: key,
+        //           animateDrawing: true,
+        //           _extendSVGcanvas: isSelfTransition ? 25 : 0,
+        //           _cpx1Offset: isSelfTransition ? -50 : 0,
+        //           _cpy1Offset: isSelfTransition ? -50 : 0,
+        //           _cpx2Offset: isSelfTransition ? 50 : 0,
+        //           _cpy2Offset: isSelfTransition ? -50 : 0,
+        //         },
+        //         menuWindowOpened: false,
+        //       };
+        //       addedTransitions.push(newTransition);
+        //     }
+        //   });
+        //   console.log("addedTransitions", addedTransitions);
+
+        //   removedTransitionValues.forEach((v) => {
+        //     console.log("removedTransitionValues key, v: ", key, v);
+        //     const removedTransition = transitions.find(
+        //       (t) => t.props.start === row.state && t.props.end === v
+        //     );
+
+        //     // if removed transition's label (value) is of length 1, then remove the transition
+        //     if (removedTransition.props.value.length === 1) {
+        //       removedTransitions.push(removedTransition);
+        //     } else {
+        //       // else just update the transition's label & value
+        //       removedTransition.props.labels = (
+        //         <StyledTransitionLabel
+        //           label={removedTransition.props.value.replace(key, "")}
+        //         />
+        //       );
+        //       removedTransition.props.value =
+        //         removedTransition.props.value.replace(key, "");
+        //     }
+        //   });
+        //   console.log("removedTransitions", removedTransitions);
+        // });
+
+        // setTransitions((prev) => {
+        //   // update removedTransitions's labels && value if it's already present
+        //   const updatedRemovedTransitions = prev.map((t) =>
+        //     removedTransitions.find(
+        //       (t) =>
+        //         t.props.start === t.props.start && t.props.end === t.props.end
+        //     )
+        //       ? {
+        //           ...t,
+        //           props: {
+        //             ...t.props,
+        //             labels: (
+        //               <StyledTransitionLabel
+        //                 label={
+        //                   removedTransitions.find(
+        //                     (t) =>
+        //                       t.props.start === t.props.start &&
+        //                       t.props.end === t.props.end
+        //                   )?.props.value
+        //                 }
+        //               />
+        //             ),
+        //             value: removedTransitions.find(
+        //               (t) =>
+        //                 t.props.start === t.props.start &&
+        //                 t.props.end === t.props.end
+        //             )?.props.value,
+        //           },
+        //         }
+        //       : t
+        //   );
+
+        //   console.log("updatedRemovedTransitions", updatedRemovedTransitions);
+
+        //   // update addedTransitions's labels & value if it's are already present
+        //   const updatedAddedTransitions = addedTransitions.map((a) => {
+        //     const transitionAlreadyExists = prev.find(
+        //       (p) =>
+        //         p.props.start === a.props.start && p.props.end === a.props.end
+        //     );
+        //     console.log(
+        //       "transitionAlreadyExists.props.value, a.props.value:",
+        //       transitionAlreadyExists?.props.value,
+        //       a.props.value
+        //     );
+        //     if (
+        //       transitionAlreadyExists &&
+        //       transitionAlreadyExists.props.value !== a.props.value
+        //     ) {
+        //       return {
+        //         ...transitionAlreadyExists,
+        //         props: {
+        //           ...transitionAlreadyExists.props,
+        //           labels: (
+        //             <StyledTransitionLabel
+        //               label={
+        //                 transitionAlreadyExists.props.value + a.props.value
+        //               }
+        //             />
+        //           ),
+        //           value: transitionAlreadyExists.props.value + a.props.value,
+        //         },
+        //       };
+        //     }
+        //     return a;
+        //   });
+        //   console.log("updatedAddedTransitions", updatedAddedTransitions);
+
+        //   return [...updatedRemovedTransitions, ...updatedAddedTransitions];
+        // });
       }
     }
   };
@@ -535,7 +601,7 @@ export const Editor = () => {
 
       if (
         isRowEmpty(
-          prev.filter((r) => r.node === row.node && r.id === row.id)[0]
+          prev.filter((r) => r.state === row.state && r.id === row.id)[0]
         )
       ) {
         alert("Kindly save the row before making it initial state.");
@@ -548,7 +614,7 @@ export const Editor = () => {
       }
 
       return prev.map((r) => {
-        if (r.node === row.node) {
+        if (r.state === row.state) {
           return { ...r, isInitial: !r.isInitial };
         }
         return r;
@@ -567,14 +633,14 @@ export const Editor = () => {
 
       if (
         isRowEmpty(
-          prev.filter((r) => r.node === row.node && r.id === row.id)[0]
+          prev.filter((r) => r.state === row.state && r.id === row.id)[0]
         )
       ) {
         alert("Kindly save the row before making it final state.");
       }
 
       return prev.map((r) => {
-        if (r.node === row.node) {
+        if (r.state === row.state) {
           return { ...r, isFinal: !r.isFinal };
         }
         return r;
@@ -594,7 +660,7 @@ export const Editor = () => {
   };
 
   const checkExsitence = (id: string) => {
-    return [...states].map((b) => b.id).includes(id);
+    return [...states].map((s) => s.id).includes(id);
   };
 
   const handleDropDynamic = (e: any) => {

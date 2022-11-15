@@ -32,7 +32,7 @@ export const TopBar = (props: TopBarProps) => {
             props.selected
               ? {
                   ...row,
-                  node: row.node === props.selected?.id ? newName : row.node,
+                  state: row.state === props.selected?.id ? newName : row.state,
                   ...Object.fromEntries(
                     PossibleTransitionValues.map((key) => [
                       key === "^" ? "nul" : key,
@@ -122,7 +122,7 @@ export const TopBar = (props: TopBarProps) => {
 
           props.setRows((rows) =>
             rows.map((row) =>
-              props.selected && row.node === props.selected?.id
+              props.selected && row.state === props.selected?.id
                 ? // if row found, remove all its transition values
                   {
                     ...row,
@@ -199,7 +199,7 @@ export const TopBar = (props: TopBarProps) => {
             console.log("selected id", props.selected?.id);
             props.handleDeleteRow(
               props.rows.find(
-                (row) => row.node === (props.selected?.id as string)
+                (row) => row.state === (props.selected?.id as string)
               ) as RowModel
             );
           }
@@ -209,7 +209,8 @@ export const TopBar = (props: TopBarProps) => {
 
       case "Toggle Initial State":
         const initialStateRow = [...props.rows].find(
-          (row) => props.selected && row.node === (props.selected?.id as string)
+          (row) =>
+            props.selected && row.state === (props.selected?.id as string)
         );
         if (initialStateRow) {
           props.toggleInitialState(initialStateRow);
@@ -220,7 +221,8 @@ export const TopBar = (props: TopBarProps) => {
 
       case "Toggle Final State":
         const finalStateRow = props.rows.find(
-          (row) => props.selected && row.node === (props.selected?.id as string)
+          (row) =>
+            props.selected && row.state === (props.selected?.id as string)
         );
         if (finalStateRow) {
           props.toggleFinalState(finalStateRow);
@@ -261,7 +263,7 @@ export const TopBar = (props: TopBarProps) => {
         props.setRows((rows) =>
           rows.map((row) =>
             props.selected &&
-            row.node === (props.selected?.id as SelectedElementTypeId).start
+            row.state === (props.selected?.id as SelectedElementTypeId).start
               ? // if row found, remove selected transition value
                 {
                   ...row,
@@ -367,7 +369,7 @@ export const TopBar = (props: TopBarProps) => {
           newRows.map((row) => {
             if (
               props.selected &&
-              row.node === (props.selected?.id as SelectedElementTypeId).start
+              row.state === (props.selected?.id as SelectedElementTypeId).start
             ) {
               //if same target state's values are already in the row, remove them.
               PossibleTransitionValues.forEach((val) => {
