@@ -13,28 +13,16 @@ import TransitionTable from "../features/TransitionTable";
 import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { StateNameMaxLength } from "../consts/StateNameMaxLength";
-import { PlaygroundSize } from "./interfaces/playgroundSize";
+import { PlaygroundSize } from "./types/PlaygroundSize";
 import { StyledTransitionLabel } from "../features/components/playground/StyledTransitionLabel";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
+import { AutomataData } from "./types/AutomataData";
 
-export const DataContext = createContext<{
-  rows: RowModel[];
-  columns: GridColumns;
-  states: DraggableStateModel[];
-  transitions: TransitionModel[];
-}>(
-  {} as {
-    rows: RowModel[];
-    columns: GridColumns;
-    states: DraggableStateModel[];
-    transitions: TransitionModel[];
-  }
-);
+export const DataContext = createContext<AutomataData>({} as AutomataData);
 
 export const Editor = () => {
   console.log("re rendering Editor");
 
-  // const [tempState, setTempState] = useState(23);
   const [rowId, setRowId] = useState(0);
   const [rows, setRows] = useState<RowModel[]>([]);
   const columns: GridColumns = [
@@ -125,13 +113,12 @@ export const Editor = () => {
       size.width,
       size.height
     );
-    let newstate = {
-      id: row.state,
-      x: Math.floor(Math.random() * size.width),
-      y: Math.floor(Math.random() * size.height),
-      shape: "state",
-    };
-    setStates((prev) => [...prev, newstate]);
+    const newState = new DraggableStateModel(
+      row.state,
+      Math.floor(Math.random() * size.width),
+      Math.floor(Math.random() * size.height)
+    );
+    setStates((prev) => [...prev, newState]);
   };
 
   const handleDeleteRow = (row: RowModel) => {
@@ -514,18 +501,12 @@ export const Editor = () => {
     let { x, y } = e.target.getBoundingClientRect();
     const stateName = promptNewStateName(states, `q${rowId}`);
     if (stateName) {
-      let newState = new DraggableStateModel(
+      const newState = new DraggableStateModel(
         stateName,
         e.clientX - x,
         e.clientY - y
       );
-      let newstate = {
-        id: stateName,
-        x: e.clientX - x,
-        y: e.clientY - y,
-        shape: "state",
-      };
-      setStates([...states, newstate]);
+      setStates([...states, newState]);
     }
     console.log("states", states);
 
@@ -569,7 +550,6 @@ export const Editor = () => {
     <DataContext.Provider
       value={{
         rows,
-        columns,
         states,
         transitions,
       }}

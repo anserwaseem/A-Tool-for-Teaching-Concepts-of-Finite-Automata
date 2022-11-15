@@ -1,6 +1,6 @@
 import { MutableRefObject, useLayoutEffect, useRef, useState } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
-import { PlaygroundSize } from "../../components/interfaces/playgroundSize";
+import { PlaygroundSize } from "../../components/types/PlaygroundSize";
 
 export default function useElementSize<
   T extends HTMLElement = HTMLDivElement

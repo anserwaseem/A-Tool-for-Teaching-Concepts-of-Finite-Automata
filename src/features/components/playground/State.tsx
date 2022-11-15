@@ -114,7 +114,7 @@ export const State = (props: any) => {
       >
         <div
           ref={props.state.reference}
-          className={`${props.state.shape} ${props.position} hoverMarker`}
+          className={`state ${props.position} hoverMarker`}
           style={{
             left: props.state.x,
             top: props.state.y,

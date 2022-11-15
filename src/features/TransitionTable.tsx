@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Download } from "./Download";
+import { Upload } from "./Upload";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
@@ -28,7 +29,7 @@ const TransitionTable = (props: TransitionTableProps) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseToolsMenu = () => {
     setAnchorElUser(null);
   };
 
@@ -90,10 +91,10 @@ const TransitionTable = (props: TransitionTableProps) => {
                 horizontal: "left",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={handleCloseToolsMenu}
             >
-              <Download handleCloseUserMenu={handleCloseUserMenu} />
-              <MenuItem onClick={handleCloseUserMenu}>Upload</MenuItem>
+              <Download handleCloseToolsMenu={handleCloseToolsMenu} />
+              <Upload handleCloseToolsMenu={handleCloseToolsMenu} />
             </Menu>
           </Box>
         </Grid>

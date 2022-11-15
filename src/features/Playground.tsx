@@ -59,20 +59,12 @@ const Playground = (props: PlaygroundProps) => {
             <div className="toolboxTitle">Drag & drop me!</div>
             <hr />
             <div className="toolboxContainer">
-              {/* {shapes.map((shapeName) => ( */}
               <div
                 className="state"
-                // onDragStart={(e) => {
-                //   console.log("drag start");
-                //   e.dataTransfer.setData("shape", "state");
-                // }}
                 draggable
               >
                 state
-                {/* <div style={{ textAlign: "center" }}> state</div>
-                  <img src={shapeName2Icon[shapeName]} alt="SwitchIcon" className={"switchIcon"} /> */}
               </div>
-              {/* ))} */}
             </div>
           </div>
           <div

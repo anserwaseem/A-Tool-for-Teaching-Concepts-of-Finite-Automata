@@ -1,18 +1,19 @@
-import { Button, Tooltip, Menu, MenuItem } from "@mui/material";
+import { Button, MenuItem } from "@mui/material";
 import { useContext } from "react";
 import { DataContext } from "../components/Editor";
+import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 
 export const Download = ({
-  handleCloseUserMenu,
+  handleCloseToolsMenu,
 }: {
-  handleCloseUserMenu: () => void;
+  handleCloseToolsMenu: () => void;
 }) => {
   const data = useContext(DataContext);
 
   return (
     <MenuItem
       onClick={() => {
-        handleCloseUserMenu();
+        handleCloseToolsMenu();
         if (!data) {
           console.log("no data.");
           return;
@@ -31,7 +32,13 @@ export const Download = ({
         element.click();
       }}
     >
-      Download
+      <Button
+        variant="text"
+        component="label"
+        startIcon={<FileDownloadRoundedIcon />}
+      >
+        Download
+      </Button>
     </MenuItem>
   );
 };
