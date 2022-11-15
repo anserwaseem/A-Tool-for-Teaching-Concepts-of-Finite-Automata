@@ -27,7 +27,7 @@ const TransitionTable = (props: TransitionTableProps) => {
 
   return (
     <>
-      <Grid container alignItems={"center"}>
+      {/* <Grid container alignItems={"center"}>
         <Grid item xs={11}>
           <Button
             size="small"
@@ -83,7 +83,7 @@ const TransitionTable = (props: TransitionTableProps) => {
             </Menu>
           </Box>
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <Box
         sx={{

@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
@@ -17,6 +17,8 @@ import { PlaygroundSize } from "./types/PlaygroundSize";
 import { StyledTransitionLabel } from "../features/components/playground/StyledTransitionLabel";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import { AutomataData } from "./types/AutomataData";
+import { Tools } from "./Tools";
+import { ToolsProps } from "./props/ToolsProps";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -546,6 +548,10 @@ export const Editor = () => {
     setSize,
   };
 
+  const toolsProps: ToolsProps = {
+    rows,
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -561,7 +567,7 @@ export const Editor = () => {
     >
       <>
         <Box sx={{ flexGrow: 1, m: 1 }}>
-          {/* Grid to incorporate Transition table and Automata */}
+          {/* Grid to incorporate Transition table and Playground */}
           <Grid
             container
             columnSpacing={{
@@ -572,14 +578,38 @@ export const Editor = () => {
           >
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
+              {/* Grid for Add a Row button and Tools */}
+              <Grid container alignItems={"center"}>
+                <Grid item xs={10}>
+                  <Button
+                    size="small"
+                    onClick={() =>
+                      handleAddRow(
+                        new RowModel(
+                          rowId,
+                          `q${rowId}`,
+                          "",
+                          "",
+                          "",
+                          false,
+                          false
+                        )
+                      )
+                    }
+                  >
+                    Add a row
+                  </Button>
+                </Grid>
+
+                <Grid item xs={2}>
+                  <Tools {...toolsProps} />
+                </Grid>
+              </Grid>
               <TransitionTable {...transitionTableProps} />
             </Grid>
-            {/* Automata grid */}
-            <Grid container item xs={12} md={8}>
-              {/* Automata canvas grid */}
-              <Grid item xs={12}>
-                <Playground {...playgroundProps} />
-              </Grid>
+            {/* Playground grid */}
+            <Grid item xs={12} md={8}>
+              <Playground {...playgroundProps} />
             </Grid>
           </Grid>
         </Box>

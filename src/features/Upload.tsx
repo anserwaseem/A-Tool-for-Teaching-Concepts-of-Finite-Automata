@@ -25,6 +25,7 @@ export const Upload = ({
   };
 
   const handleFileChange = (event: any) => {
+    event.preventDefault();
     console.log("handleFileChange");
     if (event?.target?.files?.length > 0) {
       const newFile: File = event?.target?.files[0];
@@ -61,6 +62,7 @@ export const Upload = ({
         console.log("Successfuly uploaded data.");
       };
       reader.readAsText(newFile);
+      //clear file input (cache)
       event.target.value = "";
     }
     handleCloseToolsMenu();
