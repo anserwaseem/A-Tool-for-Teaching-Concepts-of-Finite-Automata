@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Xarrow from "react-xarrows";
-import { TransitionModel } from "../../../models";
 
-//{props: {transition, setSelected, selected}}
 export default ({ setSelected, selected, transition: { props } }: any) => {
   console.log("re rendering Xarrow: props", props);
   const [state, setState] = useState({ color: "coral" });

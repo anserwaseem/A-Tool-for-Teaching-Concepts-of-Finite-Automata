@@ -1,17 +1,9 @@
-import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Tooltip,
-} from "@mui/material";
+import { Box, Button, Grid, IconButton, Menu, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { darken, lighten } from "@mui/material/styles";
 import { TransitionTableProps } from "./props/TransitionTableProps";
 import { RowModel } from "../models";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Download } from "./Download";
@@ -32,13 +24,6 @@ const TransitionTable = (props: TransitionTableProps) => {
   const handleCloseToolsMenu = () => {
     setAnchorElUser(null);
   };
-
-  useEffect(() => {
-    console.log(
-      "useEffect of transition table due to props.rows: props",
-      props
-    );
-  }, [props.rows]);
 
   return (
     <>

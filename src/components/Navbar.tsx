@@ -1,4 +1,3 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,23 +6,20 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Pages } from "../enums/Pages";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
-import { useContext } from "react";
-import { DataContext } from "./Editor";
+import { useState } from "react";
 
 const pages = Object.values(Pages);
 
 export function NavBar() {
   console.log("re rendering Navbar");
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(
     null
   );
 
@@ -34,8 +30,6 @@ export function NavBar() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
-  const data = useContext(DataContext);
 
   return (
     <AppBar position="static">

@@ -8,15 +8,18 @@ import State from "./components/playground/State";
 import Xarrow from "./components/playground/Xarrow";
 import useElementSize from "./hooks/useElementSize";
 import { useEffect } from "react";
+import { XarrowProps } from "./components/playground/props/XarrowProps";
 
 const Playground = (props: PlaygroundProps) => {
   console.log("re rendering Playground: props", props);
 
   const [boxRef, { width, height }] = useElementSize();
+  const { setSize } = props;
+
   useEffect(() => {
     console.log("useEffect of playground due to width & height", width, height);
-    props.setSize({ width, height });
-  }, [width, height]);
+    setSize({ width, height });
+  }, [width, height, setSize]);
 
   const topBarprops: TopBarProps = {
     states: props.states,
@@ -47,6 +50,11 @@ const Playground = (props: PlaygroundProps) => {
     setRows: props.setRows,
   };
 
+  const xarrowProps: XarrowProps = {
+    selected: props.selected,
+    setSelected: props.setSelected,
+  };
+
   return (
     <div>
       <Xwrapper>
@@ -59,10 +67,7 @@ const Playground = (props: PlaygroundProps) => {
             <div className="toolboxTitle">Drag & drop me!</div>
             <hr />
             <div className="toolboxContainer">
-              <div
-                className="state"
-                draggable
-              >
+              <div className="state" draggable>
                 state
               </div>
             </div>
@@ -89,10 +94,9 @@ const Playground = (props: PlaygroundProps) => {
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
+              {...xarrowProps}
               key={transition.props.start + "-" + transition.props.end + i}
               transition={transition}
-              selected={props.selected}
-              setSelected={props.setSelected}
             />
           ))}
         </div>

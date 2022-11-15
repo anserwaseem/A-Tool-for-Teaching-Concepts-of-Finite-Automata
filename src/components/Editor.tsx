@@ -549,9 +549,14 @@ export const Editor = () => {
   return (
     <DataContext.Provider
       value={{
+        rowId,
+        setRowId,
         rows,
+        setRows,
         states,
+        setStates,
         transitions,
+        setTransitions,
       }}
     >
       <>

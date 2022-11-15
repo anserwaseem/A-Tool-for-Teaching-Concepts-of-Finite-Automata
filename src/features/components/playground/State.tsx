@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import "./css/Box.css";
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
@@ -106,7 +105,7 @@ export const State = (props: any) => {
   }
 
   return (
-    <React.Fragment>
+    <>
       <Draggable
         onStart={props.position !== "static" ? () => {} : undefined}
         bounds="parent"
@@ -127,7 +126,7 @@ export const State = (props: any) => {
           {props.state.name ? props.state.name : props.state.id}
         </div>
       </Draggable>
-    </React.Fragment>
+    </>
   );
 };
 

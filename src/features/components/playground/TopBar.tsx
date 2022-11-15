@@ -1,10 +1,6 @@
 import "./css/TopBar.css";
 import { TopBarProps } from "./props/TopBarProps";
-import {
-  DraggableStateModel,
-  RowModel,
-  TransitionModel,
-} from "../../../models";
+import { RowModel } from "../../../models";
 import { SelectedElementTypeId } from "../../props/SelectedElementType";
 import { promptNewStateName } from "../../../utils/PromptNewStateName";
 import { promptNewTransitionValue } from "../../../utils/PromptNewTransitionValue";

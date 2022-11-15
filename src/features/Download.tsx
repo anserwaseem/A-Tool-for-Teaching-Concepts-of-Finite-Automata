@@ -8,22 +8,22 @@ export const Download = ({
 }: {
   handleCloseToolsMenu: () => void;
 }) => {
-  const data = useContext(DataContext);
+  const dataContext = useContext(DataContext);
 
   return (
     <MenuItem
       onClick={() => {
         handleCloseToolsMenu();
-        if (!data) {
+        if (!dataContext) {
           console.log("no data.");
           return;
         }
-        if (data?.states?.length === 0) {
+        if (dataContext?.states?.length === 0) {
           alert("no data to download.");
           return;
         }
         const element = document.createElement("a");
-        const file = new Blob([JSON.stringify(data)], {
+        const file = new Blob([JSON.stringify(dataContext)], {
           type: "application/json",
         });
         element.href = URL.createObjectURL(file);
