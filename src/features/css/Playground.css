@@ -4,22 +4,6 @@
   --canvasHeightVh: 85vh;
 }
 
-.fixedBoxStyle {
-  border: 1px #999 solid;
-  border-radius: 10px;
-  text-align: center;
-  position: static;
-  width: 100%;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-}
-.fixedBoxStyle:hover {
-  background: rgb(230, 230, 230);
-}
-
 .statesContainer {
   position: relative;
   height: 100%;
@@ -40,13 +24,6 @@
   background: white;
   color: black;
 }
-
-/* .canvasContainerStyle {
-  position: relative;
-  background: white;
-  color: black;
-  width: var(--canvasWidthVw);
-} */
 
 .toolboxMenu {
   width: 100px;
@@ -75,29 +52,4 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.triangle {
-  width: 0;
-  height: 0;
-  border-left: 25px solid transparent;
-  border-right: 25px solid transparent;
-  border-bottom: 50px solid #555;
-}
-
-.switchIcon {
-  top: 0;
-  width: 50px;
-  height: 50px;
-}
-
-.iconContainer {
-  background: white;
-  border-color: #999;
-  border-style: solid;
-  border-width: 1px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 10px;
 }

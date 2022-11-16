@@ -25,7 +25,7 @@ import {
   DFA_TO_MINIMIZED_DFA,
   NFA_TO_DFA,
   TEST_A_STRING,
-} from "./types/OperatableTools";
+} from "./types/AvailableTools";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -50,6 +50,7 @@ export const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
+      flex: 1,
     },
     {
       field: "b",
@@ -57,6 +58,7 @@ export const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
+      flex: 1,
     },
     {
       field: "nul",
@@ -64,13 +66,14 @@ export const Editor = () => {
       editable: true,
       disableColumnMenu: true,
       sortable: false,
+      flex: 1,
     },
     {
       field: "action",
       headerName: "Action",
       disableColumnMenu: true,
       sortable: false,
-      width: 70,
+      width: 60,
       type: "actions",
       getActions: (params) => {
         return [
@@ -110,7 +113,7 @@ export const Editor = () => {
   const [actionState, setActionState] = useState("Normal");
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
-  const [toolOperatable, setToolOperatable] = useState<
+  const [toolSelected, setToolSelected] = useState<
     | typeof NFA_TO_DFA
     | typeof DFA_TO_MINIMIZED_DFA
     | typeof TEST_A_STRING
@@ -566,7 +569,7 @@ export const Editor = () => {
     rows,
     states,
     transitions,
-    setToolOperatable,
+    setToolSelected,
   };
 
   const nfaToDfaProps: NfaToDfaProps = {
@@ -636,7 +639,7 @@ export const Editor = () => {
             </Grid>
           </Grid>
         </Box>
-        {toolOperatable && toolOperatable === NFA_TO_DFA && (
+        {toolSelected && toolSelected === NFA_TO_DFA && (
           <NfaToDfa {...nfaToDfaProps} />
         )}
       </>

@@ -3,13 +3,13 @@ import {
   NFA_TO_DFA,
   DFA_TO_MINIMIZED_DFA,
   TEST_A_STRING,
-} from "../types/OperatableTools";
+} from "../types/AvailableTools";
 
 export type ToolsProps = {
   rows: RowModel[];
   states: DraggableStateModel[];
   transitions: TransitionModel[];
-  setToolOperatable: React.Dispatch<
+  setToolSelected: React.Dispatch<
     React.SetStateAction<
       | typeof NFA_TO_DFA
       | typeof DFA_TO_MINIMIZED_DFA

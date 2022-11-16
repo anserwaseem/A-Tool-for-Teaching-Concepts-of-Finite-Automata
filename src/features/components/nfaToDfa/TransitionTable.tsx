@@ -1,14 +1,14 @@
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { darken, lighten } from "@mui/material/styles";
-import { TransitionTableProps } from "./props/TransitionTableProps";
-import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
+import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
+import { TransitionTableProps } from "../../props/TransitionTableProps";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
-const TransitionTable = (props: TransitionTableProps) => {
-  console.log("re rendering TransitionTable: props", props);
+export const NfaToDfaTransitionTable = (props: TransitionTableProps) => {
+  console.log("re rendering NfaToDfaTransitionTable: props", props);
 
   return (
     <Box
@@ -43,7 +43,6 @@ const TransitionTable = (props: TransitionTableProps) => {
         columns={props.columns}
         autoHeight
         hideFooter
-        experimentalFeatures={{ newEditingApi: true }}
         pageSize={MaxNumberOfStates}
         getRowClassName={(params) =>
           `super-app-theme--${
@@ -58,4 +57,3 @@ const TransitionTable = (props: TransitionTableProps) => {
     </Box>
   );
 };
-export default TransitionTable;

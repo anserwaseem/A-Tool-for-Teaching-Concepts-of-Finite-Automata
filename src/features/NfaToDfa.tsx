@@ -9,54 +9,58 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { useState } from "react";
+import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
+import { useEffect, useState } from "react";
 import { Tools } from "../components/Tools";
 import { AnimationTimeOptions } from "../consts/AnimationTimeOptions";
-import { RowModel } from "../models";
+import { DraggableStateModel, RowModel, TransitionModel } from "../models";
+import { NfaToDfaTransitionTableProps } from "./components/nfaToDfa/props/TransitionTableProps";
 import { AnimationController } from "./components/tools/AnimationController";
 import { AnimationControllerProps } from "./components/tools/props/AnimationControllerProps";
 import Playground from "./Playground";
 import { NfaToDfaProps } from "./props/NfaToDfaProps";
-import TransitionTable from "./TransitionTable";
+import { NfaToDfaTransitionTable } from "./components/nfaToDfa/TransitionTable";
+import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
+import { NfaToDfaPlaygroundProps } from "./components/nfaToDfa/props/PlaygroundProps";
+import { NfaToDfaPlayground } from "./components/nfaToDfa/Playground";
+import { NullClosure } from "./components/nfaToDfa/NullClosure";
+import { NullClosureProps } from "./components/nfaToDfa/props/NullClosureProps";
 
 export const NfaToDfa = (props: NfaToDfaProps) => {
-  const [duration, setDuration] = useState(AnimationTimeOptions[0]);
+  const [nullClosureRowId, setNullClosureRowId] = useState(0);
+  const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
+  const [modifiedRowId, setModifiedRowId] = useState(0);
+  const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]);
+  const [dfaRowId, setDfaRowId] = useState(0);
+  const [dfaRows, setDfaRows] = useState<RowModel[]>([]);
+  const [nullClosureStates, setNullClosureStates] = useState<
+    DraggableStateModel[]
+  >([]);
+  const [nullClosureTransitions, setNullClosureTransitions] = useState<
+    TransitionModel[]
+  >([]);
+  const [dfaStates, setDfaStates] = useState<DraggableStateModel[]>([]);
+  const [dfaTransitions, setDfaTransitions] = useState<TransitionModel[]>([]);
 
-  const handleTimeChange = (event: SelectChangeEvent) => {
-    setDuration(Number(event.target.value));
+  let isNullClosureTableComplete = false;
+  let isModifiedTransitionTableComplete = false;
+  let isDfaTableComplete = false;
+
+  useEffect(() => {
+    setNullClosureRows(props.rows);
+    setNullClosureStates(props.states);
+    setNullClosureTransitions(props.transitions);
+  }, [props]);
+
+  const handleAnimationPlay = () => {
+    console.log("Play");
   };
 
-  const animationControllerProps: AnimationControllerProps = {
-    duration: duration,
-    handleTimeChange: handleTimeChange,
+  const nullClosureProps: NullClosureProps = {
+    rows: nullClosureRows,
+    states: nullClosureStates,
+    transitions: nullClosureTransitions,
   };
 
-  return (
-    <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
-      {/* Grid to incorporate Transition table and Playground */}
-      <Grid
-        container
-        columnSpacing={{
-          xs: 1,
-          sm: 2,
-          md: 3,
-        }}
-      >
-        {/* Transition table grid */}
-        <Grid item xs={12} md={4}>
-          {/* Grid for Add a Row button and Tools */}
-          <Grid container alignItems={"center"}>
-            <Grid item xs={12}>
-              <AnimationController {...animationControllerProps} />
-            </Grid>
-          </Grid>
-          {/* <TransitionTable {...transitionTableProps} /> */}
-        </Grid>
-        {/* Playground grid */}
-        <Grid item xs={12} md={8}>
-          {/* <Playground {...playgroundProps} /> */}
-        </Grid>
-      </Grid>
-    </Box>
-  );
+  return <NullClosure {...nullClosureProps} />;
 };

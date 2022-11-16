@@ -1,4 +1,4 @@
-import "./css/Box.css";
+import "./css/State.css";
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
@@ -63,7 +63,6 @@ export const State = (props: any) => {
   console.log("changing background color now", props.actionState);
   let background = null;
   if (props.selected && props.selected?.id === props.state.id) {
-    // background = "lightblue";
     background = "rgb(200, 200, 200)";
   } else if (
     (props.actionState === "Add Transition" &&
