@@ -1,6 +1,6 @@
 {
   "name": "a-tool-for-teaching-concepts-of-finite-automata",
-  "version": "1.0.0",
+  "version": "v1.0.0",
   "private": true,
   "homepage": "https://anserwaseem.github.io/A-Tool-for-Teaching-Concepts-of-Finite-Automata/",
   "dependencies": {
