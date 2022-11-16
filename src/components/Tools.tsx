@@ -23,6 +23,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { ToolsProps } from "./props/ToolsProps";
 import { IsDFA } from "../utils/IsDFA";
+import { NFA_TO_DFA } from "./types/OperatableTools";
 
 export const Tools = (props: ToolsProps) => {
   console.log("re rendering Tools: props");
@@ -141,9 +142,15 @@ export const Tools = (props: ToolsProps) => {
             IsDFA(props.rows);
           }}
         >
-          <Button variant="text" component="label">
-            Is DFA
-          </Button>
+          Is DFA
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleCloseToolsMenu();
+            props.setToolOperatable(NFA_TO_DFA);
+          }}
+        >
+          NFA To DFA
         </MenuItem>
       </Menu>
     </Box>

@@ -19,6 +19,13 @@ import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import { AutomataData } from "./types/AutomataData";
 import { Tools } from "./Tools";
 import { ToolsProps } from "./props/ToolsProps";
+import { NfaToDfa } from "../features/NfaToDfa";
+import { NfaToDfaProps } from "../features/props/NfaToDfaProps";
+import {
+  DFA_TO_MINIMIZED_DFA,
+  NFA_TO_DFA,
+  TEST_A_STRING,
+} from "./types/OperatableTools";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -102,6 +109,13 @@ export const Editor = () => {
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
+
+  const [toolOperatable, setToolOperatable] = useState<
+    | typeof NFA_TO_DFA
+    | typeof DFA_TO_MINIMIZED_DFA
+    | typeof TEST_A_STRING
+    | null
+  >(null);
 
   const handleAddRow = (row: RowModel) => {
     if (states.length >= MaxNumberOfStates) {
@@ -550,6 +564,15 @@ export const Editor = () => {
 
   const toolsProps: ToolsProps = {
     rows,
+    states,
+    transitions,
+    setToolOperatable,
+  };
+
+  const nfaToDfaProps: NfaToDfaProps = {
+    rows,
+    states,
+    transitions,
   };
 
   return (
@@ -613,6 +636,9 @@ export const Editor = () => {
             </Grid>
           </Grid>
         </Box>
+        {toolOperatable && toolOperatable === NFA_TO_DFA && (
+          <NfaToDfa {...nfaToDfaProps} />
+        )}
       </>
     </DataContext.Provider>
   );
