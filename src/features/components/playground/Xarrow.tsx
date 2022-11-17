@@ -33,7 +33,13 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
   )
     color = "black";
   return (
-    // console.log("custom Xarrow props", props),
-    <Xarrow {...{ ...defProps, ...props, ...state, color }} />
+    console.log(
+      "custom Xarrow defProps, props, state, color",
+      defProps,
+      props,
+      state,
+      color
+    ),
+    (<Xarrow {...{ ...defProps, ...props, ...state, color }} />)
   );
 };

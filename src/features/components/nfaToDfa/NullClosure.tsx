@@ -1,15 +1,24 @@
-import { Box, Grid, SelectChangeEvent, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { AnimationTimeOptions } from "../../../consts/AnimationTimeOptions";
+import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import {
   RowModel,
   DraggableStateModel,
   TransitionModel,
 } from "../../../models";
-import { AnimationController } from "../tools/AnimationController";
-import { AnimationControllerProps } from "../tools/props/AnimationControllerProps";
 import { ModifiedTable } from "./ModifiedTable";
 import { NfaToDfaPlayground } from "./Playground";
 import { ModifiedTableProps } from "./props/ModifiedTable";
@@ -17,18 +26,23 @@ import { NullClosureProps } from "./props/NullClosureProps";
 import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
 import { NfaToDfaTransitionTableProps } from "./props/TransitionTableProps";
 import { NfaToDfaTransitionTable } from "./TransitionTable";
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
+import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
+import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
+import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 
-let duration = AnimationTimeOptions[3];
-let index = 1;
+const numberOfColumns = 2; // one for state and one for null
+let index = numberOfColumns;
 
 export const NullClosure = (props: NullClosureProps) => {
   console.log("re-rendering null closure, props: ", props);
-  //   const [duration, setDuration] = useState(AnimationTimeOptions[1]);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
+  const [isReady, setIsReady] = useState(false); // set to true when animation is completed and user clicks on "Complete" button i.e., when user is ready to move on to next step
 
-  const [nullClosureRowId, setNullClosureRowId] = useState(0);
+  const [nullClosureRowId, setNullClosureRowId] = useState(0); // TODO why is this needed?
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const columns: GridColumns = [
     { field: "id", hide: true, hideable: false },
@@ -64,41 +78,109 @@ export const NullClosure = (props: NullClosureProps) => {
     if (isPlaying) {
       let timer = setTimeout(() => {
         console.log("inside set timeout, index", index);
-        setNullClosureRowId(index);
-        setNullClosureRows(props.rows.slice(0, index));
-        setNullClosureStates(props.states.slice(0, index));
-        setNullClosureTransitions(props.transitions.slice(0, index));
+        const rowIndex = Math.floor(index / numberOfColumns);
+        console.log(
+          "before handleUpdateData: index, rowIndex: ",
+          index,
+          rowIndex,
+          props.rows.length
+        );
 
-        if (index === props.rows.length) setIsPlaying(false);
-        index++;
+        handleUpdateData(
+          rowIndex,
+          props.rows.slice(0, rowIndex),
+          props.states.slice(0, rowIndex),
+          props.transitions
+        );
+
+        // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
+        if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
+          setIsComplete(true);
+          setIsPlaying(false);
+        } else index++;
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [props, nullClosureRows]);
+  }, [props, nullClosureRows, isPlaying]);
 
-  //   useEffect(() => {
-  //     setNullClosureRows(props.rows);
-  //     setNullClosureStates(props.states);
-  //     setNullClosureTransitions(props.transitions);
-  //   }, [props]);
-
-  const handleTimeChange = (event: SelectChangeEvent) => {
+  const handleUpdateData = (
+    rowIndex: number,
+    rows: RowModel[],
+    states: DraggableStateModel[],
+    transitions: TransitionModel[]
+  ) => {
     console.log(
-      "NullClosure handle time change, event.target.value, duration: ",
+      "handleUpdateData, rowIndex, index, rows: ",
+      rowIndex,
+      index,
+      rows
+    );
+    setNullClosureRowId(rowIndex);
+    // copy all null transitions for each row and paste them in the null column alongwith state name
+    setNullClosureRows(
+      rows.map((row, mapIndex) => {
+        console.log("index, rowIndex, mapIndex: ", index, rowIndex, mapIndex);
+        return {
+          ...row,
+          nul:
+            // display null transitions for every row except the last row
+            rowIndex - 1 === mapIndex && index % 2 === 0
+              ? ""
+              : row.state + (row.nul ? ", " : "") + row.nul,
+        };
+      })
+    );
+
+    setNullClosureStates(states);
+    setNullClosureTransitions(
+      transitions.filter(
+        (transition) =>
+          transition.props.value.includes("^") &&
+          states.findIndex((state) => state.id === transition.props.start) !==
+            -1 &&
+          states.findIndex((state) => state.id === transition.props.end) !== -1
+      )
+    );
+  };
+
+  const handleDurationChange = (event: SelectChangeEvent) => {
+    console.log(
+      "NullClosure handleDurationChange, event.target.value, duration: ",
       event.target.value,
       duration
     );
-    duration = Number(event.target.value);
+    setDuration(Number(event.target.value));
   };
 
-  const handleAnimationPause = () => {
-    console.log("NullClosure Pause");
-    setIsPlaying(false);
+  const handleAnimation = () => {
+    console.log("NullClosure handleAnimation");
+    if (isComplete) {
+      // when replay button is clicked, null clossure component is re-rendered
+      // so, modified transition table AND resultant dfa are made hidden until animation is completed
+      // because modified transition table and resultant dfa are dependent on null closure table
+      setIsReady(false);
+      setIsComplete(false);
+      index = 1;
+      setIsPlaying(true);
+    } else setIsPlaying((v) => !v);
   };
 
-  const handleAnimationPlay = () => {
-    console.log("NullClosure Play");
-    setIsPlaying(true);
+  const showNextRow = () => {
+    console.log("NullClosure show next row, index: ", index);
+    const rowIndex = Math.floor(index / numberOfColumns);
+    if (isComplete) setIsReady(true);
+    handleUpdateData(
+      rowIndex,
+      props.rows.slice(0, rowIndex),
+      props.states.slice(0, rowIndex),
+      props.transitions
+    );
+
+    // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
+    if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
+      setIsComplete(true);
+      setIsPlaying(false);
+    } else index++;
   };
 
   const handleAddRow = (row: RowModel) => {
@@ -168,16 +250,23 @@ export const NullClosure = (props: NullClosureProps) => {
     // setStates((prev) => prev.filter((s) => s.id !== row.state));
   };
 
-  const animationControllerProps: AnimationControllerProps = {
-    duration: duration,
-    handleTimeChange: handleTimeChange,
-    handleAnimationPause: handleAnimationPause,
-    handleAnimationPlay: handleAnimationPlay,
-    setIsComplete: setIsComplete,
-  };
-
   const transitionTableProps: NfaToDfaTransitionTableProps = {
-    rows: nullClosureRows,
+    rows: nullClosureRows.map((row) => {
+      return {
+        ...row,
+        ...Object.fromEntries(
+          PossibleTransitionValues.concat("state").map((key) => [
+            key === "^" ? "nul" : key,
+            row[key === "^" ? "nul" : key]
+              .toString()
+              .split(" ")
+              .filter((key) => key !== "")
+              .map((tv) => tv.replace("nc", ""))
+              .join(" ") ?? row[key === "^" ? "nul" : key],
+          ])
+        ),
+      };
+    }),
     setRows: setNullClosureRows,
     columns: columns,
     rowId: nullClosureRowId,
@@ -227,7 +316,52 @@ export const NullClosure = (props: NullClosureProps) => {
           <Grid item xs={12} md={4}>
             {/* Grid for Add a Row button and Tools */}
             <Grid container item xs={12} alignItems={"center"}>
-              <AnimationController {...animationControllerProps} />
+              <ButtonGroup
+                disableElevation
+                fullWidth
+                variant="outlined"
+                size="large"
+              >
+                <FormControl fullWidth>
+                  <InputLabel id="delay-select-label">Delay</InputLabel>
+                  <Select
+                    labelId="delay-select-label"
+                    id="delay-select"
+                    value={duration.toString()}
+                    label="Delay"
+                    onChange={handleDurationChange}
+                  >
+                    {AnimationDurationOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
+                <Button
+                  onClick={handleAnimation}
+                  startIcon={
+                    isPlaying ? (
+                      <PauseRoundedIcon />
+                    ) : isComplete ? (
+                      <ReplayRoundedIcon />
+                    ) : (
+                      <PlayArrowRoundedIcon />
+                    )
+                  }
+                >
+                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+                </Button>
+                <Button
+                  variant={isComplete ? "contained" : "outlined"}
+                  onClick={showNextRow}
+                  disabled={isReady}
+                >
+                  {isComplete ? "Complete" : "Next"}
+                </Button>
+              </ButtonGroup>
+              {/* <AnimationController {...animationControllerProps} /> */}
             </Grid>
             <NfaToDfaTransitionTable {...transitionTableProps} />
           </Grid>
@@ -237,7 +371,7 @@ export const NullClosure = (props: NullClosureProps) => {
           </Grid>
         </Grid>
       </Box>
-      {isComplete && <ModifiedTable {...modifiedTableProps} />}
+      {isReady && <ModifiedTable {...modifiedTableProps} />}
     </>
   );
 };

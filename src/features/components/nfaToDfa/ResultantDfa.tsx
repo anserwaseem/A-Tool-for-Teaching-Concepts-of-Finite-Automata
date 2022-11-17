@@ -1,7 +1,7 @@
 import { Box, Grid, SelectChangeEvent, Typography } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { AnimationTimeOptions } from "../../../consts/AnimationTimeOptions";
+import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import {
   RowModel,
@@ -17,10 +17,10 @@ import { NfaToDfaTransitionTableProps } from "./props/TransitionTableProps";
 import { NfaToDfaTransitionTable } from "./TransitionTable";
 
 export const ResultantDfa = (props: ResultantDfaProps) => {
-  const [duration, setDuration] = useState(AnimationTimeOptions[0]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  
+
   const [resultantDfaRowId, setResultantDfaRowId] = useState(0);
   const [resultantDfaRows, setResultantDfaRows] = useState<RowModel[]>([]);
   const columns: GridColumns = [

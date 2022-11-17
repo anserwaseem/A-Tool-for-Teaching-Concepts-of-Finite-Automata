@@ -44,15 +44,15 @@ export const NfaToDfaTransitionTable = (props: TransitionTableProps) => {
         autoHeight
         hideFooter
         pageSize={MaxNumberOfStates}
-        getRowClassName={(params) =>
-          `super-app-theme--${
-            params?.row?.isInitial && params?.row?.isFinal
-              ? "Both"
-              : params?.row?.isInitial
-              ? "Initial"
-              : params?.row?.isFinal && "Final"
-          }`
-        }
+        // getRowClassName={(params) =>
+        //   `super-app-theme--${
+        //     params?.row?.isInitial && params?.row?.isFinal
+        //       ? "Both"
+        //       : params?.row?.isInitial
+        //       ? "Initial"
+        //       : params?.row?.isFinal && "Final"
+        //   }`
+        // }
       ></DataGrid>
     </Box>
   );

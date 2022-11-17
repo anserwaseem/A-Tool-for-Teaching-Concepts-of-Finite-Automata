@@ -26,7 +26,7 @@ export const Upload = ({
 
   const handleFileChange = (event: any) => {
     event.preventDefault();
-    console.log("handleFileChange");
+    console.log("handleFileChange event", event);
     if (event?.target?.files?.length > 0) {
       const newFile: File = event?.target?.files[0];
 
@@ -41,8 +41,13 @@ export const Upload = ({
         const rawData = JSON.parse(e.target?.result as string);
         console.log("raw data", rawData);
 
-        // data is corrupted if there are more or less arrays
-        if (Object.keys(rawData)?.length !== 4) {
+        // data is corrupted if there is no rowId, rows, states, transitions
+        if (
+          !rawData?.rowId ||
+          !rawData?.rows ||
+          !rawData?.states ||
+          !rawData?.transitions
+        ) {
           alert("Data is corrupted.");
           return;
         }

@@ -8,7 +8,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useState } from "react";
-import { AnimationTimeOptions } from "../../../consts/AnimationTimeOptions";
+import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { AnimationControllerProps } from "./props/AnimationControllerProps";
 
 export const AnimationController = (props: AnimationControllerProps) => {
@@ -24,7 +24,7 @@ export const AnimationController = (props: AnimationControllerProps) => {
           label="Time"
           onChange={props.handleTimeChange}
         >
-          {AnimationTimeOptions.map((option) => (
+          {AnimationDurationOptions.map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -33,9 +33,7 @@ export const AnimationController = (props: AnimationControllerProps) => {
       </FormControl>
       <Button onClick={props.handleAnimationPause}>Pause</Button>
       <Button onClick={props.handleAnimationPlay}>Play</Button>
-      <Button variant="contained" onClick={() => props.setIsComplete(true)}>
-        Next
-      </Button>
+      <Button onClick={() => props.setIsComplete(true)}>Next</Button>
     </ButtonGroup>
   );
 };

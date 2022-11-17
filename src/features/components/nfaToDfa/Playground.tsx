@@ -6,15 +6,6 @@ import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
 export const NfaToDfaPlayground = (props: NfaToDfaPlaygroundProps) => {
   console.log("re rendering NfaToDfaPlayground: props", props);
 
-  //   const stateProps: StateProps = {
-  //     states: props.states,
-  //     setStates: props.setStates,
-  //     transitions: props.transitions,
-  //     setTransitions: props.setTransitions,
-  //     rows: props.rows,
-  //     setRows: props.setRows,
-  //   };
-
   return (
     <div>
       <Xwrapper>
@@ -30,22 +21,19 @@ export const NfaToDfaPlayground = (props: NfaToDfaPlaygroundProps) => {
                 }}
                 id={state.id}
               >
-                {state.id}
+                {state.id.replace("nc", "")}
               </div>
-              // <State
-              //   // {...stateProps}
-              //   key={state.id}
-              //   state={state}
-              //   position="absolute"
-              //   sidePos="middle"
-              // />
             ))}
           </div>
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
-              key={transition.props.start + "-" + transition.props.end + i}
+              key={
+                transition.props.start + "-" + transition.props.end + i + "nc"
+              }
               transition={transition}
+              selected={null}
+              setSelected={() => {}}
             />
           ))}
         </div>
