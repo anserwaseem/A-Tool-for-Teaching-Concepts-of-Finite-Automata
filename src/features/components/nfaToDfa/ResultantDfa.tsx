@@ -13,7 +13,7 @@ import { AnimationControllerProps } from "../tools/props/AnimationControllerProp
 import { NfaToDfaPlayground } from "./Playground";
 import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
 import { ResultantDfaProps } from "./props/ResultantDfaProps";
-import { NfaToDfaTransitionTableProps } from "./props/TransitionTableProps";
+import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
 import { NfaToDfaTransitionTable } from "./TransitionTable";
 
 export const ResultantDfa = (props: ResultantDfaProps) => {
@@ -74,73 +74,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     setIsPlaying(true);
   };
 
-  const handleAddRow = (row: RowModel) => {
-    if (resultantDfaStates.length >= MaxNumberOfStates) {
-      alert(`Maximum ${MaxNumberOfStates} states allowed`);
-      return;
-    }
-    setResultantDfaRows((prev) => [...prev, row]);
-    setResultantDfaRowId((prev) => prev + 1);
-    // const newState = new DraggableStateModel(
-    //   row.state,
-    //   Math.floor(Math.random() * size.width),
-    //   Math.floor(Math.random() * size.height)
-    // );
-    // setStates((prev) => [...prev, newState]);
-  };
-
-  const handleDeleteRow = (row: RowModel) => {
-    console.log("handleDeleteRow", row);
-    // console.log(
-    //   "resultant data",
-    //   rows
-    //     .filter((r) => r.id !== row.id)
-    //     .map((r) => {
-    //       return {
-    //         ...r,
-    //         ...Object.fromEntries(
-    //           PossibleTransitionValues.map((key) => [
-    //             key === "^" ? "nul" : key,
-    //             r[key === "^" ? "nul" : key].toString().includes(row.state)
-    //               ? r[key === "^" ? "nul" : key]
-    //                   .toString()
-    //                   .replace(row.state, "")
-    //               : r[key === "^" ? "nul" : key],
-    //           ])
-    //         ),
-    //       };
-    //     })
-    // );
-
-    // setRows((rows) =>
-    //   rows
-    //     .filter((r) => r.id !== row.id)
-    //     .map((r) => {
-    //       return {
-    //         ...r,
-    //         ...Object.fromEntries(
-    //           PossibleTransitionValues.map((key) => [
-    //             key === "^" ? "nul" : key,
-    //             r[key === "^" ? "nul" : key].toString().includes(row.state)
-    //               ? r[key === "^" ? "nul" : key]
-    //                   .toString()
-    //                   .replace(row.state, "")
-    //               : r[key === "^" ? "nul" : key],
-    //           ])
-    //         ),
-    //       };
-    //     })
-    // );
-
-    // setTransitions((prev) =>
-    //   prev.filter(
-    //     (t) => t.props.start !== row.state && t.props.end !== row.state
-    //   )
-    // );
-
-    // setStates((prev) => prev.filter((s) => s.id !== row.state));
-  };
-
   const animationControllerProps: AnimationControllerProps = {
     duration: duration,
     handleTimeChange: handleTimeChange,
@@ -155,7 +88,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     columns: columns,
     rowId: resultantDfaRowId,
     setRowId: setResultantDfaRowId,
-    handleAddRow: handleAddRow,
   };
 
   const playgroundProps: NfaToDfaPlaygroundProps = {
@@ -165,7 +97,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     setTransitions: setResultantDfaTransitions,
     rows: resultantDfaRows,
     setRows: setResultantDfaRows,
-    handleDeleteRow: handleDeleteRow,
   };
 
   return (
@@ -197,7 +128,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               <AnimationController {...animationControllerProps} />
             </Grid>
           </Grid>
-          <NfaToDfaTransitionTable {...transitionTableProps} />
+          <NfaToDfaTransitionTable handleAddRow={function (row: RowModel): void {
+            throw new Error("Function not implemented.");
+          } } {...transitionTableProps} />
         </Grid>
         {/* Playground grid */}
         <Grid item xs={12} md={8}>

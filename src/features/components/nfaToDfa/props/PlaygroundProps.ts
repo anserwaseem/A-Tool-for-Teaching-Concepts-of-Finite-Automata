@@ -9,5 +9,4 @@ export type NfaToDfaPlaygroundProps = {
   setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   rows: RowModel[];
   setRows: React.Dispatch<React.SetStateAction<RowModel[]>>;
-  handleDeleteRow: (row: RowModel) => void;
 };

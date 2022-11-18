@@ -21,10 +21,10 @@ import {
 } from "../../../models";
 import { ModifiedTable } from "./ModifiedTable";
 import { NfaToDfaPlayground } from "./Playground";
-import { ModifiedTableProps } from "./props/ModifiedTable";
+import { ModifiedTableProps } from "./props/ModifiedTableProps";
 import { NullClosureProps } from "./props/NullClosureProps";
 import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
-import { NfaToDfaTransitionTableProps } from "./props/TransitionTableProps";
+import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
 import { NfaToDfaTransitionTable } from "./TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
@@ -36,7 +36,7 @@ let index = numberOfColumns;
 
 export const NullClosure = (props: NullClosureProps) => {
   console.log("re-rendering null closure, props: ", props);
-  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -71,7 +71,7 @@ export const NullClosure = (props: NullClosureProps) => {
   // populate props rows in null closure table one by one with null closure states and transitions according to specified duration and isPlaying
   useEffect(() => {
     console.log(
-      "null closure useEffect, isPlaying, duration: ",
+      "NullClosure useEffect, isPlaying, duration: ",
       isPlaying,
       duration
     );
@@ -94,7 +94,10 @@ export const NullClosure = (props: NullClosureProps) => {
         );
 
         // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
-        if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
+        if (
+          rowIndex === props.rows.length &&
+          index % numberOfColumns === numberOfColumns - 1
+        ) {
           setIsComplete(true);
           setIsPlaying(false);
         } else index++;
@@ -168,7 +171,13 @@ export const NullClosure = (props: NullClosureProps) => {
   const showNextRow = () => {
     console.log("NullClosure show next row, index: ", index);
     const rowIndex = Math.floor(index / numberOfColumns);
-    if (isComplete) setIsReady(true);
+    if (isComplete) {
+      setIsReady(true);
+      props.setRows(nullClosureRows);
+      props.setStates(nullClosureStates);
+      props.setTransitions(nullClosureTransitions);
+      props.setIsNullClosureTableComplete(true);
+    }
     handleUpdateData(
       rowIndex,
       props.rows.slice(0, rowIndex),
@@ -181,73 +190,6 @@ export const NullClosure = (props: NullClosureProps) => {
       setIsComplete(true);
       setIsPlaying(false);
     } else index++;
-  };
-
-  const handleAddRow = (row: RowModel) => {
-    if (nullClosureStates.length >= MaxNumberOfStates) {
-      alert(`Maximum ${MaxNumberOfStates} states allowed`);
-      return;
-    }
-    setNullClosureRows((prev) => [...prev, row]);
-    setNullClosureRowId((prev) => prev + 1);
-    // const newState = new DraggableStateModel(
-    //   row.state,
-    //   Math.floor(Math.random() * size.width),
-    //   Math.floor(Math.random() * size.height)
-    // );
-    // setStates((prev) => [...prev, newState]);
-  };
-
-  const handleDeleteRow = (row: RowModel) => {
-    console.log("handleDeleteRow", row);
-    // console.log(
-    //   "resultant data",
-    //   rows
-    //     .filter((r) => r.id !== row.id)
-    //     .map((r) => {
-    //       return {
-    //         ...r,
-    //         ...Object.fromEntries(
-    //           PossibleTransitionValues.map((key) => [
-    //             key === "^" ? "nul" : key,
-    //             r[key === "^" ? "nul" : key].toString().includes(row.state)
-    //               ? r[key === "^" ? "nul" : key]
-    //                   .toString()
-    //                   .replace(row.state, "")
-    //               : r[key === "^" ? "nul" : key],
-    //           ])
-    //         ),
-    //       };
-    //     })
-    // );
-
-    // setRows((rows) =>
-    //   rows
-    //     .filter((r) => r.id !== row.id)
-    //     .map((r) => {
-    //       return {
-    //         ...r,
-    //         ...Object.fromEntries(
-    //           PossibleTransitionValues.map((key) => [
-    //             key === "^" ? "nul" : key,
-    //             r[key === "^" ? "nul" : key].toString().includes(row.state)
-    //               ? r[key === "^" ? "nul" : key]
-    //                   .toString()
-    //                   .replace(row.state, "")
-    //               : r[key === "^" ? "nul" : key],
-    //           ])
-    //         ),
-    //       };
-    //     })
-    // );
-
-    // setTransitions((prev) =>
-    //   prev.filter(
-    //     (t) => t.props.start !== row.state && t.props.end !== row.state
-    //   )
-    // );
-
-    // setStates((prev) => prev.filter((s) => s.id !== row.state));
   };
 
   const transitionTableProps: NfaToDfaTransitionTableProps = {
@@ -271,7 +213,6 @@ export const NullClosure = (props: NullClosureProps) => {
     columns: columns,
     rowId: nullClosureRowId,
     setRowId: setNullClosureRowId,
-    handleAddRow: handleAddRow,
   };
 
   const playgroundProps: NfaToDfaPlaygroundProps = {
@@ -281,13 +222,6 @@ export const NullClosure = (props: NullClosureProps) => {
     setTransitions: setNullClosureTransitions,
     rows: nullClosureRows,
     setRows: setNullClosureRows,
-    handleDeleteRow: handleDeleteRow,
-  };
-
-  const modifiedTableProps: ModifiedTableProps = {
-    rows: nullClosureRows,
-    // states: nullClosureStates,
-    // transitions: nullClosureTransitions,
   };
 
   return (
@@ -363,7 +297,12 @@ export const NullClosure = (props: NullClosureProps) => {
               </ButtonGroup>
               {/* <AnimationController {...animationControllerProps} /> */}
             </Grid>
-            <NfaToDfaTransitionTable {...transitionTableProps} />
+            <NfaToDfaTransitionTable
+              handleAddRow={function (row: RowModel): void {
+                throw new Error("Function not implemented.");
+              }}
+              {...transitionTableProps}
+            />
           </Grid>
           {/* Playground grid */}
           <Grid item xs={12} md={8}>
@@ -371,7 +310,7 @@ export const NullClosure = (props: NullClosureProps) => {
           </Grid>
         </Grid>
       </Box>
-      {isReady && <ModifiedTable {...modifiedTableProps} />}
+      {/* {isReady && <ModifiedTable {...modifiedTableProps} />} */}
     </>
   );
 };

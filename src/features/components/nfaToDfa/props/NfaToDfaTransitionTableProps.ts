@@ -7,5 +7,4 @@ export type NfaToDfaTransitionTableProps = {
   columns: GridColumns;
   rowId: number;
   setRowId: React.Dispatch<React.SetStateAction<number>>;
-  handleAddRow: (row: RowModel) => void;
 };

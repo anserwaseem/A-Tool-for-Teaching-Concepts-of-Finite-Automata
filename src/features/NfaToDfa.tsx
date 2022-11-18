@@ -1,33 +1,15 @@
-import {
-  Box,
-  Grid,
-  Button,
-  ButtonGroup,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
-import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { Tools } from "../components/Tools";
-import { AnimationDurationOptions } from "../consts/AnimationDurationOptions";
 import { DraggableStateModel, RowModel, TransitionModel } from "../models";
-import { NfaToDfaTransitionTableProps } from "./components/nfaToDfa/props/TransitionTableProps";
-import { AnimationController } from "./components/tools/AnimationController";
-import { AnimationControllerProps } from "./components/tools/props/AnimationControllerProps";
-import Playground from "./Playground";
 import { NfaToDfaProps } from "./props/NfaToDfaProps";
-import { NfaToDfaTransitionTable } from "./components/nfaToDfa/TransitionTable";
-import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
-import { NfaToDfaPlaygroundProps } from "./components/nfaToDfa/props/PlaygroundProps";
-import { NfaToDfaPlayground } from "./components/nfaToDfa/Playground";
 import { NullClosure } from "./components/nfaToDfa/NullClosure";
 import { NullClosureProps } from "./components/nfaToDfa/props/NullClosureProps";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
+import { ModifiedTable } from "./components/nfaToDfa/ModifiedTable";
+import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTableProps";
 
 export const NfaToDfa = (props: NfaToDfaProps) => {
+  const [isNullClosureTableComplete, setIsNullClosureTableComplete] =
+    useState(false);
   const [nullClosureRowId, setNullClosureRowId] = useState(0);
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const [nullClosureStates, setNullClosureStates] = useState<
@@ -37,14 +19,18 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     TransitionModel[]
   >([]);
   const [modifiedRowId, setModifiedRowId] = useState(0);
+  const [
+    isModifiedTransitionTableComplete,
+    setIsModifiedTransitionTableComplete,
+  ] = useState(false);
   const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]);
   const [dfaRowId, setDfaRowId] = useState(0);
   const [dfaRows, setDfaRows] = useState<RowModel[]>([]);
   const [dfaStates, setDfaStates] = useState<DraggableStateModel[]>([]);
   const [dfaTransitions, setDfaTransitions] = useState<TransitionModel[]>([]);
 
-  let isNullClosureTableComplete = false;
-  let isModifiedTransitionTableComplete = false;
+  // let isNullClosureTableComplete = false;
+  // let isModifiedTransitionTableComplete = false;
   let isDfaTableComplete = false;
 
   useEffect(() => {
@@ -94,9 +80,38 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
 
   const nullClosureProps: NullClosureProps = {
     rows: nullClosureRows,
+    setRows: setNullClosureRows,
     states: nullClosureStates,
+    setStates: setNullClosureStates,
     transitions: nullClosureTransitions,
+    setTransitions: setNullClosureTransitions,
+    setIsNullClosureTableComplete: setIsNullClosureTableComplete,
   };
 
-  return <NullClosure {...nullClosureProps} />;
+  let modifiedTableProps: ModifiedTableProps = {
+    rows: nullClosureRows.map((row) => {
+      return {
+        ...row,
+        ...Object.fromEntries(
+          PossibleTransitionValues.concat("state").map((key) => [
+            key === "^" ? "nul" : key,
+            row[key === "^" ? "nul" : key]
+              .toString()
+              .split(" ")
+              .filter((key) => key !== "")
+              .map((tv) => tv.replace("nc", "mt"))
+              .join(" ") ?? row[key === "^" ? "nul" : key],
+          ])
+        ),
+      };
+    }),
+    setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
+  };
+
+  return (
+    <>
+      <NullClosure {...nullClosureProps} />
+      {isNullClosureTableComplete && <ModifiedTable {...modifiedTableProps} />}
+    </>
+  );
 };
