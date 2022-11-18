@@ -105,6 +105,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
         ),
       };
     }),
+    setRows: setModifiedRows,
     setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
   };
 

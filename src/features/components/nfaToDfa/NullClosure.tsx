@@ -10,18 +10,15 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
+import { GridColumns } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
-import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import {
   RowModel,
   DraggableStateModel,
   TransitionModel,
 } from "../../../models";
-import { ModifiedTable } from "./ModifiedTable";
 import { NfaToDfaPlayground } from "./Playground";
-import { ModifiedTableProps } from "./props/ModifiedTableProps";
 import { NullClosureProps } from "./props/NullClosureProps";
 import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
 import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
@@ -178,6 +175,7 @@ export const NullClosure = (props: NullClosureProps) => {
       props.setTransitions(nullClosureTransitions);
       props.setIsNullClosureTableComplete(true);
     }
+
     handleUpdateData(
       rowIndex,
       props.rows.slice(0, rowIndex),

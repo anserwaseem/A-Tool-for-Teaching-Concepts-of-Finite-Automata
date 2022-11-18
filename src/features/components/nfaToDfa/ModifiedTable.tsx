@@ -10,24 +10,13 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
+import { GridColumns } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
-import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
-import {
-  RowModel,
-  DraggableStateModel,
-  TransitionModel,
-} from "../../../models";
-import { AnimationController } from "../tools/AnimationController";
-import { AnimationControllerProps } from "../tools/props/AnimationControllerProps";
-import { NfaToDfaPlayground } from "./Playground";
+import { RowModel } from "../../../models";
 import { ModifiedTableProps } from "./props/ModifiedTableProps";
 import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
-import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
-import { ResultantDfaProps } from "./props/ResultantDfaProps";
-import { ResultantDfa } from "./ResultantDfa";
 import { NfaToDfaTransitionTable } from "./TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
@@ -81,51 +70,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       let timer = setTimeout(() => {
         console.log("inside set timeout, index", index);
         const rowIndex = Math.floor(index / numberOfColumns);
-        // console.log(
-        //   "before handleUpdateData ModifiedTable:",
-        //   props.rows,
-        //   props.rows.map((row, mapIndex) => {
-        //     console.log(
-        //       "rowIndex, index, mapIndex: ",
-        //       rowIndex,
-        //       index,
-        //       mapIndex
-        //     );
-        //     return {
-        //       ...row,
-        //       // ...Object.fromEntries(
-        //       //   PossibleTransitionValues.filter(
-        //       //     (transition) => transition !== "^"
-        //       //   ).map((key, tvIndex) => [
-        //       //     key,
-        //       //     row[key] // for each Possible Transition Value except ^, replace each value with its corresponding nul closure
-        //       //       .toString()
-        //       //       .split(", ")
-        //       //       .map((tv) => tv.replace(tv, row.nul))
-        //       //       .join(", "),
-        //       //   ])
-        //       // ),
-        //       a:
-        //         rowIndex - 1 === mapIndex
-        //           ? (index - 1) % rowIndex === 0
-        //             ? row.nul // replace each state name with its corresponding nul closure
-        //                 .split(", ")
-        //                 .map((tv) => tv.replace(tv, row.nul))
-        //                 .join(", ")
-        //             : ""
-        //           : row.a,
-        //       b:
-        //         rowIndex - 1 === mapIndex
-        //           ? (index - 1) % rowIndex === 1
-        //             ? row.nul // replace each state name with its corresponding nul closure
-        //                 .split(", ")
-        //                 .map((tv) => tv.replace(tv, row.nul))
-        //                 .join(", ")
-        //             : ""
-        //           : row.b,
-        //     };
-        //   })
-        // );
 
         setModifiedTableRowId(rowIndex);
         setModifiedTableRows(
@@ -233,12 +177,11 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   const showNextRow = () => {
     console.log("ModifiedTable show next row, index: ", index);
     const rowIndex = Math.floor(index / numberOfColumns);
-    console.log(
-      "before handleUpdateData: index, rowIndex: ",
-      index,
-      rowIndex,
-      props.rows.length
-    );
+    if (isComplete) {
+      setIsReady(true);
+      props.setRows(modifiedTableRows);
+      props.setIsModifiedTransitionTableComplete(true);
+    }
 
     setModifiedTableRowId(rowIndex);
     setModifiedTableRows(
@@ -318,12 +261,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     columns: columns,
     rowId: modifiedTableRowId,
     setRowId: setModifiedTableRowId,
-  };
-
-  const resultantDfaProps: ResultantDfaProps = {
-    rows: modifiedTableRows,
-    // states: originalStates,
-    // transitions: originalTransitions,
   };
 
   return (
