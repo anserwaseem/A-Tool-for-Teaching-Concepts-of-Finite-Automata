@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/css/main.718a38bb.css",
-    "main.js": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.6f043f01.js",
+    "main.js": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.db7a616a.js",
     "static/js/787.1f7a2659.chunk.js": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/787.1f7a2659.chunk.js",
     "index.html": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/index.html",
     "main.718a38bb.css.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/css/main.718a38bb.css.map",
-    "main.6f043f01.js.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.6f043f01.js.map",
+    "main.db7a616a.js.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.db7a616a.js.map",
     "787.1f7a2659.chunk.js.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/787.1f7a2659.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.718a38bb.css",
-    "static/js/main.6f043f01.js"
+    "static/js/main.db7a616a.js"
   ]
 }
