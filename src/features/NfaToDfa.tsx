@@ -130,6 +130,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     states: props.states,
     transitions: props.transitions,
     setIsResultantDfaComplete: setIsResultantDfaComplete,
+    editorPlaygroundSize: props.editorPlaygroundSize,
   };
 
   // useEffect(() => {

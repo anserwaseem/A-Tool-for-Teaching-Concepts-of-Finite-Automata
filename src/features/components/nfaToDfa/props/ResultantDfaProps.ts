@@ -1,3 +1,4 @@
+import { PlaygroundSize } from "../../../../components/types/PlaygroundSize";
 import {
   DraggableStateModel,
   RowModel,
@@ -9,4 +10,5 @@ export type ResultantDfaProps = {
   states: DraggableStateModel[];
   transitions: TransitionModel[];
   setIsResultantDfaComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  editorPlaygroundSize: PlaygroundSize;
 };

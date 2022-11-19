@@ -576,6 +576,7 @@ export const Editor = () => {
     rows,
     states,
     transitions,
+    editorPlaygroundSize: size,
   };
 
   return (

@@ -36,7 +36,8 @@ let index = numberOfColumns;
 let noNewStateFound = 0;
 
 export const ResultantDfa = (props: ResultantDfaProps) => {
-  const [duration, setDuration] = useState(AnimationDurationOptions[5]);
+  console.log("re-rendered ResultantDfa, props", props);
+  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -194,29 +195,15 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
             },
           ]);
 
-          // // add transitions to resultantDfaTransitions
-          // const transitionsForState = transitions.filter(
-          //   (transition) => transition.from === stateToProcess
-          // );
-          // console.log("transitionsForState: ", transitionsForState);
-          // setResultantDfaTransitions((resultantDfaTransitions) => [
-          //   ...resultantDfaTransitions,
-          //   ...transitionsForState,
-          // ]);
-
-          // // add new states to availableStates
-          // transitionsForState.forEach((transition) => {
-          //   if (
-          //     !availableStates.some(
-          //       (state) => state.name === transition.to && state.isAvailable
-          //     )
-          //   ) {
-          //     setAvailableStates((availableStates) => [
-          //       ...availableStates,
-          //       { name: transition.to, isAvailable: true },
-          //     ]);
-          //   }
-          // });
+          // add new state to resultantDfaStates
+          setResultantDfaStates((resultantDfaStates) => [
+            ...resultantDfaStates,
+            {
+              id: stateToProcess,
+              x: Math.floor(Math.random() * props.editorPlaygroundSize.width),
+              y: Math.floor(Math.random() * props.editorPlaygroundSize.height),
+            },
+          ]);
         }
       }
 
@@ -224,121 +211,115 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
       else {
         // copy all null transitions for each row and paste them in the null column alongwith state name
         console.log("before setResultantDfaRows");
-        setResultantDfaRows(
-          (rows) => {
-            console.log("inside setResultantDfaRows, rows: ", rows);
+        setResultantDfaRows((rows) => {
+          console.log("inside setResultantDfaRows, rows: ", rows);
 
-            let a: string, b: string;
-            const updatedRows = rows.map((row, mapIndex) => {
-              console.log(
-                "ResultantDfa index, rowIndex, mapIndex: ",
-                index,
-                rowIndex,
-                mapIndex
-              );
+          let a: string, b: string;
+          const updatedRows = rows.map((row, mapIndex) => {
+            console.log(
+              "ResultantDfa index, rowIndex, mapIndex: ",
+              index,
+              rowIndex,
+              mapIndex
+            );
 
-              a =
-                rowIndex - 1 === mapIndex // is last row?
-                  ? ((index - 1) % rowIndex === 0 &&
-                      index !== 3 &&
-                      index !== 6) ||
-                    // b condition
-                    index === 5 ||
-                    ((index - 1) % rowIndex === 1 &&
-                      index !== 3 &&
-                      index !== 4 &&
-                      index !== 6)
-                    ? Array.from(
-                        new Set(
-                          row.state // replace each state name with its corresponding nul closure
-                            ?.split(", ")
-                            ?.filter((tv) => tv !== "")
-                            ?.map((tv) =>
-                              tv?.replace(
-                                tv,
-                                props.rows.find((r) => r.state === tv)?.a ?? tv
-                              )
+            a =
+              rowIndex - 1 === mapIndex // is last row?
+                ? ((index - 1) % rowIndex === 0 &&
+                    index !== 3 &&
+                    index !== 6) ||
+                  // b condition
+                  index === 5 ||
+                  ((index - 1) % rowIndex === 1 &&
+                    index !== 3 &&
+                    index !== 4 &&
+                    index !== 6)
+                  ? Array.from(
+                      new Set(
+                        row.state // replace each state name with its corresponding nul closure
+                          ?.split(", ")
+                          ?.filter((tv) => tv !== "")
+                          ?.map((tv) =>
+                            tv?.replace(
+                              tv,
+                              props.rows.find((r) => r.state === tv)?.a ?? tv
                             )
-                            ?.filter((tv) => tv !== "")
-                            ?.join(", ")
-                            ?.split(", ")
-                        ) // remove duplicates
-                      )
-                        ?.sort()
-                        ?.join(", ") ?? ""
-                    : ""
-                  : row.a;
-              console.log("a: ", a);
-              // insert a value in availableStates object if it is not already present and set isAvailable to true
-              if (a !== "" && !availableStates.find((as) => as.name === a)) {
+                          )
+                          ?.filter((tv) => tv !== "")
+                          ?.join(", ")
+                          ?.split(", ")
+                      ) // remove duplicates
+                    )
+                      ?.sort()
+                      ?.join(", ") ?? ""
+                  : ""
+                : row.a;
+            console.log("a: ", a);
+            // insert a value in availableStates object if it is not already present and set isAvailable to true
+            if (a !== "" && !availableStates.find((as) => as.name === a)) {
+              console.log("inside setAvailableStates a: ", a, availableStates);
+              setAvailableStates((availableStates) => {
+                const newAvailableStates = [...availableStates];
+                newAvailableStates.push({ name: a, isAvailable: true });
+                return newAvailableStates;
+              });
+            }
+
+            b =
+              rowIndex - 1 === mapIndex // is last row?
+                ? index === 5 ||
+                  ((index - 1) % rowIndex === 1 &&
+                    index !== 3 &&
+                    index !== 4 &&
+                    index !== 6)
+                  ? Array.from(
+                      new Set(
+                        row.state // replace each state name with its corresponding nul closure
+                          ?.split(", ")
+                          ?.filter((tv) => tv !== "")
+                          ?.map((tv) =>
+                            tv?.replace(
+                              tv,
+                              props.rows.find((r) => r.state === tv)?.b ?? tv
+                            )
+                          )
+                          ?.filter((tv) => tv !== "")
+                          ?.join(", ")
+                          ?.split(", ")
+                      ) // remove duplicates
+                    )
+                      ?.sort()
+                      ?.join(", ") ?? ""
+                  : ""
+                : row.b;
+            console.log("b: ", b);
+            // insert b value in availableStates object if it is not already present and set isAvailable to true
+            if (b !== "" && !availableStates.find((as) => as.name === b)) {
+              setAvailableStates((availableStates) => {
                 console.log(
-                  "inside setAvailableStates a: ",
-                  a,
+                  "inside setAvailableStates b: ",
+                  b,
                   availableStates
                 );
-                setAvailableStates((availableStates) => {
-                  const newAvailableStates = [...availableStates];
-                  newAvailableStates.push({ name: a, isAvailable: true });
-                  return newAvailableStates;
-                });
-              }
+                const newAvailableStates = [...availableStates];
+                newAvailableStates.push({ name: b, isAvailable: true });
+                return newAvailableStates;
+              });
+            }
 
-              b =
-                rowIndex - 1 === mapIndex // is last row?
-                  ? index === 5 ||
-                    ((index - 1) % rowIndex === 1 &&
-                      index !== 3 &&
-                      index !== 4 &&
-                      index !== 6)
-                    ? Array.from(
-                        new Set(
-                          row.state // replace each state name with its corresponding nul closure
-                            ?.split(", ")
-                            ?.filter((tv) => tv !== "")
-                            ?.map((tv) =>
-                              tv?.replace(
-                                tv,
-                                props.rows.find((r) => r.state === tv)?.b ?? tv
-                              )
-                            )
-                            ?.filter((tv) => tv !== "")
-                            ?.join(", ")
-                            ?.split(", ")
-                        ) // remove duplicates
-                      )
-                        ?.sort()
-                        ?.join(", ") ?? ""
-                    : ""
-                  : row.b;
-              console.log("b: ", b);
-              // insert b value in availableStates object if it is not already present and set isAvailable to true
-              if (b !== "" && !availableStates.find((as) => as.name === b)) {
-                setAvailableStates((availableStates) => {
-                  console.log(
-                    "inside setAvailableStates b: ",
-                    b,
-                    availableStates
-                  );
-                  const newAvailableStates = [...availableStates];
-                  newAvailableStates.push({ name: b, isAvailable: true });
-                  return newAvailableStates;
-                });
-              }
+            return {
+              ...row,
+              a: a,
+              b: b,
+            };
+          });
 
-              return {
-                ...row,
-                a: a,
-                b: b,
-              };
-            });
-            
-            return updatedRows;
-          }
-        );
+          return updatedRows;
+        });
         console.log("after setResultantDfaRows");
       }
 
-      setResultantDfaStates(states);
+      // setResultantDfaStates(states);
       setResultantDfaTransitions(
         transitions.filter(
           (transition) =>
