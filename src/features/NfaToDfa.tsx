@@ -6,11 +6,13 @@ import { NullClosureProps } from "./components/nfaToDfa/props/NullClosureProps";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { ModifiedTable } from "./components/nfaToDfa/ModifiedTable";
 import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTableProps";
+import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
+import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
 
 export const NfaToDfa = (props: NfaToDfaProps) => {
   const [isNullClosureTableComplete, setIsNullClosureTableComplete] =
     useState(false);
-  const [nullClosureRowId, setNullClosureRowId] = useState(0);
+  // const [nullClosureRowId, setNullClosureRowId] = useState(0);
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const [nullClosureStates, setNullClosureStates] = useState<
     DraggableStateModel[]
@@ -18,20 +20,19 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
   const [nullClosureTransitions, setNullClosureTransitions] = useState<
     TransitionModel[]
   >([]);
-  const [modifiedRowId, setModifiedRowId] = useState(0);
+
+  // const [modifiedRowId, setModifiedRowId] = useState(0);
   const [
     isModifiedTransitionTableComplete,
     setIsModifiedTransitionTableComplete,
   ] = useState(false);
   const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]);
-  const [dfaRowId, setDfaRowId] = useState(0);
+
+  const [isResultantDfaComplete, setIsResultantDfaComplete] = useState(false);
+  // const [dfaRowId, setDfaRowId] = useState(0);
   const [dfaRows, setDfaRows] = useState<RowModel[]>([]);
   const [dfaStates, setDfaStates] = useState<DraggableStateModel[]>([]);
   const [dfaTransitions, setDfaTransitions] = useState<TransitionModel[]>([]);
-
-  // let isNullClosureTableComplete = false;
-  // let isModifiedTransitionTableComplete = false;
-  let isDfaTableComplete = false;
 
   useEffect(() => {
     // change state name in each property of rows, states, transitions arrays to make it unique for Xarrow to work
@@ -109,10 +110,40 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
   };
 
+  let resultantDfaProps: ResultantDfaProps = {
+    rows: modifiedRows.map((row) => {
+      return {
+        ...row,
+        ...Object.fromEntries(
+          PossibleTransitionValues.concat("state").map((key) => [
+            key === "^" ? "nul" : key,
+            row[key === "^" ? "nul" : key]
+              .toString()
+              .split(" ")
+              .filter((key) => key !== "")
+              .map((tv) => tv.replace("mt", ""))
+              .join(" ") ?? row[key === "^" ? "nul" : key],
+          ])
+        ),
+      };
+    }),
+    states: props.states,
+    transitions: props.transitions,
+    setIsResultantDfaComplete: setIsResultantDfaComplete,
+  };
+
+  // useEffect(() => {
+  //   if (isModifiedTransitionTableComplete)
+  //     constructResultantDfaTable(resultantDfaProps);
+  // }, [isModifiedTransitionTableComplete]);
+
   return (
     <>
       <NullClosure {...nullClosureProps} />
       {isNullClosureTableComplete && <ModifiedTable {...modifiedTableProps} />}
+      {isModifiedTransitionTableComplete && (
+        <ResultantDfa {...resultantDfaProps} />
+      )}
     </>
   );
 };

@@ -27,7 +27,7 @@ let index = numberOfColumns;
 
 export const ModifiedTable = (props: ModifiedTableProps) => {
   console.log("re-rendering modified table, props: ", props);
-  const [duration, setDuration] = useState(AnimationDurationOptions[1]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -71,73 +71,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
         console.log("inside set timeout, index", index);
         const rowIndex = Math.floor(index / numberOfColumns);
 
-        setModifiedTableRowId(rowIndex);
-        setModifiedTableRows(
-          props.rows.slice(0, rowIndex).map((row, mapIndex) => {
-            console.log(
-              "rowIndex, index, mapIndex: ",
-              rowIndex,
-              index,
-              mapIndex
-            );
-            return {
-              ...row,
-              // ...Object.fromEntries(
-              //   PossibleTransitionValues.filter(
-              //     (transition) => transition !== "^"
-              //   ).map((key, tvIndex) => [
-              //     key,
-              //     row[key] // for each Possible Transition Value except ^, replace each value with its corresponding nul closure
-              //       .toString()
-              //       .split(", ")
-              //       .map((tv) => tv.replace(tv, row.nul))
-              //       .join(", "),
-              //   ])
-              // ),
-              a:
-                rowIndex - 1 === mapIndex
-                  ? ((index - 1) % rowIndex === 0 &&
-                      index !== 3 &&
-                      index !== 6) ||
-                    index === 5 ||
-                    ((index - 1) % rowIndex === 1 &&
-                      index !== 3 &&
-                      index !== 4 &&
-                      index !== 6)
-                    ? row.a // replace each state name with its corresponding nul closure
-                        ?.split(", ")
-                        ?.filter((tv) => tv !== "")
-                        ?.map((tv) =>
-                          tv?.replace(
-                            tv,
-                            props.rows.find((r) => r.state === tv)?.nul ?? tv
-                          )
-                        )
-                        ?.join(", ") ?? ""
-                    : ""
-                  : row.a,
-              b:
-                rowIndex - 1 === mapIndex
-                  ? index === 5 ||
-                    ((index - 1) % rowIndex === 1 &&
-                      index !== 3 &&
-                      index !== 4 &&
-                      index !== 6)
-                    ? row.b // replace each state name with its corresponding nul closure
-                        ?.split(", ")
-                        ?.filter((tv) => tv !== "")
-                        ?.map((tv) =>
-                          tv?.replace(
-                            tv,
-                            props.rows.find((r) => r.state === tv)?.nul ?? tv
-                          )
-                        )
-                        ?.join(", ") ?? ""
-                    : ""
-                  : row.b,
-            };
-          })
-        );
+        handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
 
         // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
         if (
@@ -151,6 +85,78 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       return () => clearTimeout(timer);
     }
   }, [props, modifiedTableRows, isPlaying]);
+
+  const handleUpdateData = (rowIndex: number, rows: RowModel[]) => {
+    console.log(
+      "handleUpdateData, rowIndex, index, rows: ",
+      rowIndex,
+      index,
+      rows
+    );
+    setModifiedTableRowId(rowIndex);
+    setModifiedTableRows(
+      rows.map((row, mapIndex) => {
+        console.log("rowIndex, index, mapIndex: ", rowIndex, index, mapIndex);
+        return {
+          ...row,
+          // ...Object.fromEntries(
+          //   PossibleTransitionValues.filter(
+          //     (transition) => transition !== "^"
+          //   ).map((key, tvIndex) => [
+          //     key,
+          //     row[key] // for each Possible Transition Value except ^, replace each value with its corresponding nul closure
+          //       .toString()
+          //       .split(", ")
+          //       .map((tv) => tv.replace(tv, row.nul))
+          //       .join(", "),
+          //   ])
+          // ),
+          a:
+            rowIndex - 1 === mapIndex
+              ? ((index - 1) % rowIndex === 0 && index !== 3 && index !== 6) ||
+                // b condition
+                index === 5 ||
+                ((index - 1) % rowIndex === 1 &&
+                  index !== 3 &&
+                  index !== 4 &&
+                  index !== 6)
+                ? row.a // replace each state name with its corresponding nul closure
+                    ?.split(", ")
+                    ?.filter((tv) => tv !== "")
+                    ?.map((tv) =>
+                      tv?.replace(
+                        tv,
+                        props.rows.find((r) => r.state === tv)?.nul ?? tv
+                      )
+                    )
+                    ?.filter((tv) => tv !== "")
+                    ?.join(", ") ?? ""
+                : ""
+              : row.a,
+          b:
+            rowIndex - 1 === mapIndex
+              ? index === 5 ||
+                ((index - 1) % rowIndex === 1 &&
+                  index !== 3 &&
+                  index !== 4 &&
+                  index !== 6)
+                ? row.b // replace each state name with its corresponding nul closure
+                    ?.split(", ")
+                    ?.filter((tv) => tv !== "")
+                    ?.map((tv) =>
+                      tv?.replace(
+                        tv,
+                        props.rows.find((r) => r.state === tv)?.nul ?? tv
+                      )
+                    )
+                    ?.filter((tv) => tv !== "")
+                    ?.join(", ") ?? ""
+                : ""
+              : row.b,
+        };
+      })
+    );
+  };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
     console.log(
@@ -183,55 +189,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       props.setIsModifiedTransitionTableComplete(true);
     }
 
-    setModifiedTableRowId(rowIndex);
-    setModifiedTableRows(
-      props.rows.slice(0, rowIndex).map((row, mapIndex) => {
-        console.log("rowIndex, index, mapIndex: ", rowIndex, index, mapIndex);
-        return {
-          ...row,
-          a:
-            rowIndex - 1 === mapIndex // if last row
-              ? ((index - 1) % rowIndex === 0 && index !== 3 && index !== 6) ||
-                // b condition
-                index === 5 ||
-                ((index - 1) % rowIndex === 1 &&
-                  index !== 3 &&
-                  index !== 4 &&
-                  index !== 6)
-                ? row.a // replace each state name with its corresponding nul closure
-                    ?.split(", ")
-                    ?.filter((tv) => tv !== "")
-                    ?.map((tv) =>
-                      tv?.replace(
-                        tv,
-                        props.rows.find((r) => r.state === tv)?.nul ?? tv
-                      )
-                    )
-                    ?.join(", ") ?? ""
-                : ""
-              : row.a, // if not last row, return original value
-          b:
-            rowIndex - 1 === mapIndex
-              ? index === 5 || // handling exceptional case
-                ((index - 1) % rowIndex === 1 &&
-                  index !== 3 && // handling exceptional case
-                  index !== 4 && // handling exceptional case
-                  index !== 6) // handling exceptional case
-                ? row.b // replace each state name with its corresponding nul closure
-                    ?.split(", ")
-                    ?.filter((tv) => tv !== "")
-                    ?.map((tv) =>
-                      tv?.replace(
-                        tv,
-                        props.rows.find((r) => r.state === tv)?.nul ?? tv
-                      )
-                    )
-                    ?.join(", ") ?? ""
-                : ""
-              : row.b,
-        };
-      })
-    );
+    handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
 
     // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
     if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {

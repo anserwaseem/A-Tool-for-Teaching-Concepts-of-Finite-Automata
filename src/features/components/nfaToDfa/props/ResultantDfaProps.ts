@@ -6,6 +6,7 @@ import {
 
 export type ResultantDfaProps = {
   rows: RowModel[];
-  // states: DraggableStateModel[];
-  // transitions: TransitionModel[];
+  states: DraggableStateModel[];
+  transitions: TransitionModel[];
+  setIsResultantDfaComplete: React.Dispatch<React.SetStateAction<boolean>>;
 };

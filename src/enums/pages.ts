@@ -1,9 +1,10 @@
 export enum Pages {
   Editor = "Editor",
-  // NFA_TO_DFA = "NFA to DFA",
-  // MIN_DFA = "Minimize DFA",
-  // TEST_STRING = "Test a String",
-  // Is_DFA = "Is DFA",
+  // Tasks = "Tasks",
+  // Challenges = "Challenges",
+  // Compare_Automata = "Compare Automata",
+  // Request_A_Feature = "Request A Feature",
+  // Report_A_Problem = "Report A Problem",
   Help = "Help",
   About = "About",
 }

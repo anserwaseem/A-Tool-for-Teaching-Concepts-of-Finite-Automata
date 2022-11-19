@@ -91,6 +91,7 @@ export const NullClosure = (props: NullClosureProps) => {
         );
 
         // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
+        // index === props.rows.length * numberOfColumns + props.states.length - 1;
         if (
           rowIndex === props.rows.length &&
           index % numberOfColumns === numberOfColumns - 1
@@ -122,6 +123,8 @@ export const NullClosure = (props: NullClosureProps) => {
         console.log("index, rowIndex, mapIndex: ", index, rowIndex, mapIndex);
         return {
           ...row,
+          a: row.a.replaceAll(" ", ", "),
+          b: row.b.replaceAll(" ", ", "),
           nul:
             // display null transitions for every row except the last row
             rowIndex - 1 === mapIndex && index % 2 === 0
