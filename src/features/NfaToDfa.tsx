@@ -10,6 +10,7 @@ import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
 
 export const NfaToDfa = (props: NfaToDfaProps) => {
+  console.log("re rendering NfaToDfa, props", props);
   const [isNullClosureTableComplete, setIsNullClosureTableComplete] =
     useState(false);
   // const [nullClosureRowId, setNullClosureRowId] = useState(0);
@@ -121,13 +122,18 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mt", ""))
+              .map((tv) => tv.replace("mt", "rd"))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
-    states: props.states,
+    states: props.states.map((state) => {
+      return {
+        ...state,
+        id: `${state.id}rd`,
+      };
+    }),
     transitions: props.transitions,
     setIsResultantDfaComplete: setIsResultantDfaComplete,
     editorPlaygroundSize: props.editorPlaygroundSize,

@@ -32,7 +32,7 @@ const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
 
 export const NullClosure = (props: NullClosureProps) => {
-  console.log("re-rendering null closure, props: ", props);
+  console.log("re rendering NullClosure, props: ", props);
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -158,7 +158,7 @@ export const NullClosure = (props: NullClosureProps) => {
   const handleAnimation = () => {
     console.log("NullClosure handleAnimation");
     if (isComplete) {
-      // when replay button is clicked, null clossure component is re-rendered
+      // when replay button is clicked, null clossure component is re rendered
       // so, modified transition table AND resultant dfa are made hidden until animation is completed
       // because modified transition table and resultant dfa are dependent on null closure table
       setIsReady(false);

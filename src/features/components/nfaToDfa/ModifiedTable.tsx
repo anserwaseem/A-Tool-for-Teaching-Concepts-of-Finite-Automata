@@ -26,7 +26,7 @@ const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
 
 export const ModifiedTable = (props: ModifiedTableProps) => {
-  console.log("re-rendering modified table, props: ", props);
+  console.log("re rendering modified table, props: ", props);
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -170,7 +170,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   const handleAnimation = () => {
     console.log("ModifiedTable handleAnimation");
     if (isComplete) {
-      // when replay button is clicked, null clossure component is re-rendered
+      // when replay button is clicked, null clossure component is re rendered
       // so, modified transition table AND resultant dfa are made hidden until animation is completed
       // because modified transition table and resultant dfa are dependent on null closure table
       setIsReady(false);

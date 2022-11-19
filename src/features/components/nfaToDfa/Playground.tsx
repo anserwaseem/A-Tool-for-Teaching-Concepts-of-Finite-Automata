@@ -21,7 +21,7 @@ export const NfaToDfaPlayground = (props: NfaToDfaPlaygroundProps) => {
                 }}
                 id={state.id}
               >
-                {state.id.replace("nc", "")}
+                {state.id.replaceAll("nc", "").replaceAll("rd", "")}
               </div>
             ))}
           </div>

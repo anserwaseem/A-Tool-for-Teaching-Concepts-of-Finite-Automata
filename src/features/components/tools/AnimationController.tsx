@@ -12,7 +12,7 @@ import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptio
 import { AnimationControllerProps } from "./props/AnimationControllerProps";
 
 export const AnimationController = (props: AnimationControllerProps) => {
-  console.log("re-rendering AnimationController, props: ", props);
+  console.log("re rendering AnimationController, props: ", props);
   return (
     <ButtonGroup disableElevation fullWidth variant="outlined" size="large">
       <FormControl fullWidth>
