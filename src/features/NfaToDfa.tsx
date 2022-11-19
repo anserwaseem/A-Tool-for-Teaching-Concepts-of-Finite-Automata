@@ -128,21 +128,9 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
         ),
       };
     }),
-    states: props.states.map((state) => {
-      return {
-        ...state,
-        id: `${state.id}rd`,
-      };
-    }),
-    transitions: props.transitions,
     setIsResultantDfaComplete: setIsResultantDfaComplete,
     editorPlaygroundSize: props.editorPlaygroundSize,
   };
-
-  // useEffect(() => {
-  //   if (isModifiedTransitionTableComplete)
-  //     constructResultantDfaTable(resultantDfaProps);
-  // }, [isModifiedTransitionTableComplete]);
 
   return (
     <>

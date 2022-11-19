@@ -38,7 +38,7 @@ let noNewStateFound = 0;
 
 export const ResultantDfa = (props: ResultantDfaProps) => {
   console.log("re rendering ResultantDfa, props", props);
-  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -107,17 +107,15 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           rowIndex
         );
 
-        handleUpdateData(
-          rowIndex,
-          // props.rows.slice(0, rowIndex),
-          props.states.slice(0, rowIndex),
-          props.transitions
-        );
+        handleUpdateData(rowIndex);
+        console.log("pendingTransitions", pendingTransitions);
 
         console.log(
           "after handleUpdateData complete, noNewStateFound: ",
           noNewStateFound
         );
+
+        // stop if all rows have been displayed i.e., if no new state has to be added in resultantDfaRows for consecutive numberOfColumns times
         if (noNewStateFound === numberOfColumns) {
           setIsComplete(true);
           setIsPlaying(false);
@@ -127,18 +125,14 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     }
   }, [props, resultantDfaRows, isPlaying]);
 
-  const handleUpdateData = (
-    rowIndex: number,
-    // rows: RowModel[],
-    states: DraggableStateModel[],
-    transitions: TransitionModel[]
-  ) => {
+  const handleUpdateData = (rowIndex: number) => {
     console.log(
       "ResultantDfa handleUpdateData, index, rowIndex, props.rows: ",
       index,
       rowIndex,
       props.rows
     );
+    setResultantDfaRowId(rowIndex);
 
     if (availableStates.every((state) => !state.isAvailable))
       noNewStateFound += 1;
@@ -153,8 +147,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     );
 
     if (noNewStateFound !== numberOfColumns) {
-      setResultantDfaRowId(rowIndex);
-
       // add new row to resultantDfaRows
       if (index / rowIndex === numberOfColumns) {
         // find available state to process
@@ -212,33 +204,37 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               rowsHavingPendingTransitions
             );
 
+            const newTransitions: TransitionModel[] = [];
+
             rowsHavingPendingTransitions.forEach((row) => {
               PossibleTransitionValues.filter((k) => k !== "^").forEach((k) => {
                 if (row[k].toString() === stateToProcess) {
                   console.log("row[k]: ", row[k]);
                   const isSelfTransition = row.state === stateToProcess;
-                  setResultantDfaTransitions((transitions) => [
-                    ...transitions,
-                    {
-                      props: {
-                        labels: <StyledTransitionLabel label={k} />,
-                        value: k,
-                        start: row.state,
-                        end: stateToProcess,
-                        // dashness: { animation: 10 },
-                        animateDrawing: true,
-                        _extendSVGcanvas: isSelfTransition ? 25 : 0,
-                        _cpx1Offset: isSelfTransition ? -50 : 0,
-                        _cpy1Offset: isSelfTransition ? -50 : 0,
-                        _cpx2Offset: isSelfTransition ? 50 : 0,
-                        _cpy2Offset: isSelfTransition ? -50 : 0,
-                      },
+                  newTransitions.push({
+                    props: {
+                      labels: <StyledTransitionLabel label={k} />,
+                      value: k,
+                      start: row.state,
+                      end: stateToProcess,
+                      // dashness: { animation: 10 },
+                      animateDrawing: true,
+                      _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                      _cpx1Offset: isSelfTransition ? -50 : 0,
+                      _cpy1Offset: isSelfTransition ? -50 : 0,
+                      _cpx2Offset: isSelfTransition ? 50 : 0,
+                      _cpy2Offset: isSelfTransition ? -50 : 0,
                     },
-                  ]);
+                  });
                 }
               });
             });
-            
+
+            setResultantDfaTransitions((transitions) => [
+              ...transitions,
+              ...newTransitions,
+            ]);
+
             setPendingTransitions(
               pendingTransitions.filter(
                 (transition) => transition !== stateToProcess
@@ -355,35 +351,39 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
         );
 
         // update resultantDfaTransitions
-        const transitionColumn = a !== "" && b === "" ? "a" : "b"; // check which column has just been updated
-        const transitionValue = a !== "" && b === "" ? a : b; // check either a or b is added in rows, and use that value to update transitions
+        const updatedColumn =
+          (index - 1) / numberOfColumns === rowIndex ? "a" : "b"; // check which column has just been updated
+        const updatedValue = (index - 1) / numberOfColumns === rowIndex ? a : b; // check either a or b is added in rows, and use that value to update transitions
+
         if (
           resultantDfaRows
-            ?.map((row) => row?.state) // check if transitionValue is present as a state in any row
-            ?.includes(transitionValue)
+            ?.map((row) => row?.state) // check if updatedValue is present as a state in any row
+            ?.includes(updatedValue)
         ) {
           // if transition already exits, append its value
           if (
-            transitions.find(
-              (t) => t.props.start === state && t.props.end === transitionValue
+            resultantDfaTransitions.find(
+              (t) => t.props.start === state && t.props.end === updatedValue
             )
           ) {
-            return transitions.map((t) => {
-              if (t.props.start === state && t.props.end === transitionValue) {
-                return {
-                  ...t,
-                  props: {
-                    ...t.props,
-                    labels: (
-                      <StyledTransitionLabel
-                        label={t.props.value + transitionColumn}
-                      />
-                    ),
-                    value: t.props.value + transitionColumn,
-                  },
-                };
-              } else return t;
-            });
+            setResultantDfaTransitions((transitions) =>
+              transitions.map((t) => {
+                if (t.props.start === state && t.props.end === updatedValue) {
+                  return {
+                    ...t,
+                    props: {
+                      ...t.props,
+                      labels: (
+                        <StyledTransitionLabel
+                          label={t.props.value + updatedColumn}
+                        />
+                      ),
+                      value: t.props.value + updatedColumn,
+                    },
+                  };
+                } else return t;
+              })
+            );
           }
           // else, add new transition
           else {
@@ -393,10 +393,10 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               ...transitions,
               {
                 props: {
-                  labels: <StyledTransitionLabel label={transitionColumn} />,
-                  value: transitionColumn,
+                  labels: <StyledTransitionLabel label={updatedColumn} />,
+                  value: updatedColumn,
                   start: state,
-                  end: transitionValue,
+                  end: updatedValue,
                   // dashness: { animation: 10 },
                   animateDrawing: true,
                   _extendSVGcanvas: isSelfTransition ? 25 : 0,
@@ -408,7 +408,14 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               },
             ]);
           }
-        } else setPendingTransitions([...pendingTransitions, transitionValue]);
+        } else {
+          // check if updatedValue is already present in dfaResultantRows states, if not, add it to pendingTransitions
+          if (
+            !resultantDfaRows.map((row) => row?.state).includes(updatedValue)
+          ) {
+            setPendingTransitions([...pendingTransitions, updatedValue]);
+          }
+        }
       }
     }
   };
@@ -425,13 +432,25 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   const handleAnimation = () => {
     console.log("ResultantDfa handleAnimation");
     if (isComplete) {
-      // when replay button is clicked, null clossure component is re rendered
-      // so, modified transition table AND resultant dfa are made hidden until animation is completed
-      // because modified transition table and resultant dfa are dependent on null closure table
+      console.log("ResultantDfa handleAnimation isComplete");
+      // if animation is complete, reset everything i.e., replay
       setIsReady(false);
       setIsComplete(false);
-      index = 1;
+      index = numberOfColumns;
       setIsPlaying(true);
+      setResultantDfaRows([]);
+      setResultantDfaStates([]);
+      setResultantDfaTransitions([]);
+      setPendingTransitions([]);
+      setAvailableStates([
+        {
+          name:
+            props?.rows?.find((row) => row.isInitial)?.nul ?? // in case of no null closure, use state name itself
+            props?.rows?.find((row) => row.isInitial)?.state ??
+            "",
+          isAvailable: true,
+        },
+      ]);
     } else setIsPlaying((v) => !v);
   };
 
@@ -443,14 +462,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
       props.setIsResultantDfaComplete(true);
     }
 
-    handleUpdateData(
-      rowIndex,
-      // props.rows.slice(0, rowIndex),
-      props.states.slice(0, rowIndex),
-      props.transitions
-    );
+    handleUpdateData(rowIndex);
 
-    // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
+    // stop if all rows have been displayed i.e., if no new state has to be added in resultantDfaRows for consecutive numberOfColumns times
     if (noNewStateFound === numberOfColumns) {
       setIsComplete(true);
       setIsPlaying(false);
