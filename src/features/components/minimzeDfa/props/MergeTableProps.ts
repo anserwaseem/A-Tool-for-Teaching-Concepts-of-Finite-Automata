@@ -3,8 +3,8 @@ import { RowModel } from "../../../../models";
 import { MergeTableRowModel } from "../../../../models/minimizeDfa/MergeTableRowModel";
 
 export type MergeTableProps = {
-  rows: RowModel[];
-  columns: GridColumns;
+  // rows: RowModel[];
+  // columns: GridColumns;
   setCompletedMergeTableRows: React.Dispatch<
     React.SetStateAction<MergeTableRowModel[]>
   >;

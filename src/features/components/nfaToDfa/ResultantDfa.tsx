@@ -493,15 +493,11 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
   const playgroundProps: ToolsPlaygroundProps = {
     states: resultantDfaStates,
-    setStates: setResultantDfaStates,
     transitions: resultantDfaTransitions,
-    setTransitions: setResultantDfaTransitions,
-    rows: resultantDfaRows,
-    setRows: setResultantDfaRows,
   };
 
   return (
-    <Box sx={{ flexGrow: 1, m: 1, mtt: 5 }}>
+    <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
       <Typography
         variant="h5"
         component="div"

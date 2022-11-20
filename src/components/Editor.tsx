@@ -565,10 +565,10 @@ export const Editor = () => {
   };
 
   const toolsProps: ToolsProps = {
-    rows,
-    states,
-    transitions,
-    columns,
+    // rows,
+    // states,
+    // transitions,
+    // columns,
     setToolSelected,
   };
 
@@ -598,6 +598,8 @@ export const Editor = () => {
         setStates,
         transitions,
         setTransitions,
+        columns,
+        editorPlaygroundSize: size,
       }}
     >
       <>
@@ -648,12 +650,8 @@ export const Editor = () => {
             </Grid>
           </Grid>
         </Box>
-        {toolSelected && toolSelected === NFA_TO_DFA && (
-          <NfaToDfa {...nfaToDfaProps} />
-        )}
-        {toolSelected && toolSelected === MINIMIZE_DFA && (
-          <MinimizeDfa {...minimizeDfaProps} />
-        )}
+        {toolSelected && toolSelected === NFA_TO_DFA && <NfaToDfa />}
+        {toolSelected && toolSelected === MINIMIZE_DFA && <MinimizeDfa />}
       </>
     </DataContext.Provider>
   );

@@ -1,4 +1,6 @@
+import { GridColumns } from "@mui/x-data-grid";
 import { RowModel, DraggableStateModel, TransitionModel } from "../../models";
+import { PlaygroundSize } from "./PlaygroundSize";
 
 export type AutomataData = {
   rowId: number;
@@ -9,4 +11,6 @@ export type AutomataData = {
   setStates: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
   transitions: TransitionModel[];
   setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
+  columns: GridColumns;
+  editorPlaygroundSize: PlaygroundSize;
 };

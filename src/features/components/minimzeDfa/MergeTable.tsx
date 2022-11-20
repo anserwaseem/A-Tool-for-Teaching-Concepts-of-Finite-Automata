@@ -9,11 +9,6 @@ import {
   Grid,
   IconButton,
   InputLabel,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -23,7 +18,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { RowModel } from "../../../models";
@@ -40,6 +35,9 @@ import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { ToolsTransitionTable } from "../tools/TransitionTable";
+import { ToolsPlayground } from "../tools/Playground";
+import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
+import { DataContext } from "../../../components/Editor";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -59,7 +57,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     }),
   }),
   marginLeft: `-${drawerWidth}px`,
-  marginRight: `-${drawerWidth}px`,
+  marginRight: `-${drawerWidth * 2}px`,
 
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeOut,
@@ -114,7 +112,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export const MergeTable = (props: MergeTableProps) => {
-  console.log("re rendering modified table, props: ", props);
+  console.log("re rendering MergeTable, props: ", props);
+
+  const dataContext = useContext(DataContext);
+
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -146,8 +147,9 @@ export const MergeTable = (props: MergeTableProps) => {
 
   // make DataGrid of props.rows.length by props.rows.length size as soon as props.rows is updated
   useEffect(() => {
-    if (props.rows?.length > 0) {
+    if (dataContext.rows?.length > 0) {
       const columns: GridColDef[] = [
+        { field: "id", hide: true, hideable: false },
         {
           field: "state",
           headerName: "",
@@ -158,10 +160,10 @@ export const MergeTable = (props: MergeTableProps) => {
       ];
 
       const rows: MergeTableRowModel[] = [];
-      for (let i = 0; i < props.rows.length; i++) {
+      for (let i = 0; i < dataContext.rows.length; i++) {
         columns.push({
-          field: props.rows[i].state,
-          headerName: props.rows[i].state,
+          field: dataContext.rows[i].state,
+          headerName: dataContext.rows[i].state,
           disableColumnMenu: true,
           sortable: false,
           flex: 1,
@@ -170,14 +172,14 @@ export const MergeTable = (props: MergeTableProps) => {
         // put each state in the first column
         rows.push({
           id: i,
-          state: props.rows[i].state,
+          state: dataContext.rows[i].state,
         });
       }
 
       SetMergeTableColumns(columns);
       setMergeTableRows(rows);
     }
-  }, [props.rows]);
+  }, [dataContext.rows]);
 
   useEffect(() => {
     console.log(
@@ -194,7 +196,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
         // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
         if (
-          rowIndex === props.rows.length &&
+          rowIndex === dataContext.rows.length &&
           index % numberOfColumns === numberOfColumns - 1
         ) {
           setIsComplete(true);
@@ -248,14 +250,14 @@ export const MergeTable = (props: MergeTableProps) => {
     // handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
 
     // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
-    if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
+    if (rowIndex === dataContext.rows.length && index % numberOfColumns !== 0) {
       setIsComplete(true);
       setIsPlaying(false);
     } else index++;
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
-    rows: props.rows.map((row) => {
+    rows: dataContext.rows.map((row) => {
       return {
         ...row,
         ...Object.fromEntries(
@@ -272,7 +274,7 @@ export const MergeTable = (props: MergeTableProps) => {
       };
     }),
 
-    columns: props.columns
+    columns: dataContext.columns
       .filter((col) => col.field !== "action" && col.field !== "nul")
       .map((col) => {
         return {
@@ -280,6 +282,26 @@ export const MergeTable = (props: MergeTableProps) => {
           editable: false,
         };
       }),
+  };
+
+  const playgroundProps: ToolsPlaygroundProps = {
+    states: dataContext.states.map((state) => {
+      return {
+        ...state,
+        id: `${state.id}mt`,
+      };
+    }),
+
+    transitions: dataContext.transitions.map((transition) => {
+      return {
+        ...transition,
+        props: {
+          ...transition.props,
+          start: `${transition.props.start}mt`,
+          end: `${transition.props.end}mt`,
+        },
+      };
+    }),
   };
 
   return (
@@ -313,7 +335,11 @@ export const MergeTable = (props: MergeTableProps) => {
               aria-label="open drawer"
               edge="end"
               onClick={handleDfaOpen}
-              sx={{ ...(open === 2 && { display: "none" }) }}
+              sx={{
+                display: { xs: "none", md: "none", lg: "block" },
+                marginTop: { lg: "8px" },
+                ...(open === 2 && { display: "none" }),
+              }}
             >
               <AccountTreeOutlinedIcon />
             </IconButton>
@@ -436,11 +462,11 @@ export const MergeTable = (props: MergeTableProps) => {
 
         <Drawer
           sx={{
-            width: drawerWidth,
+            width: drawerWidth * 2,
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               position: "relative",
-              width: drawerWidth,
+              width: drawerWidth * 2,
               boxSizing: "border-box",
               backgroundColor: "#f5f5f5",
             },
@@ -474,13 +500,13 @@ export const MergeTable = (props: MergeTableProps) => {
             </Typography>
           </DrawerHeader>
           <Divider />
-          <Box
+          {/* <Box
             sx={{
               marginTop: "40%",
             }}
-          >
-            <ToolsTransitionTable {...transitionTableProps} />
-          </Box>
+          > */}
+          <ToolsPlayground {...playgroundProps} />
+          {/* </Box> */}
         </Drawer>
       </Box>
     </>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DraggableStateModel, RowModel, TransitionModel } from "../models";
 import { NfaToDfaProps } from "./props/NfaToDfaProps";
 import { NullClosure } from "./components/nfaToDfa/NullClosure";
@@ -8,9 +8,13 @@ import { ModifiedTable } from "./components/nfaToDfa/ModifiedTable";
 import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTableProps";
 import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
+import { DataContext } from "../components/Editor";
 
-export const NfaToDfa = (props: NfaToDfaProps) => {
-  console.log("re rendering NfaToDfa, props", props);
+export const NfaToDfa = () => {
+  console.log("re rendering NfaToDfa");
+
+  const dataContext = useContext(DataContext);
+
   const [isNullClosureTableComplete, setIsNullClosureTableComplete] =
     useState(false);
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
@@ -31,7 +35,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
 
   useEffect(() => {
     // change state name in each property of rows, states, transitions arrays to make it unique for Xarrow to work
-    const nullClosureRowsUnique = props.rows.map((row) => {
+    const nullClosureRowsUnique = dataContext.rows.map((row) => {
       return {
         ...row,
         ...Object.fromEntries(
@@ -49,7 +53,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     });
     console.log("nullClosureRowsUnique", nullClosureRowsUnique);
 
-    const nullClosureStatesUnique = props.states.map((state) => {
+    const nullClosureStatesUnique = dataContext.states.map((state) => {
       return {
         ...state,
         id: `${state.id}nc`,
@@ -57,7 +61,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     });
     console.log("nullClosureStatesUnique", nullClosureStatesUnique);
 
-    const nullClosureTransitionsUnique = props.transitions.map((transition) => {
+    const nullClosureTransitionsUnique = dataContext.transitions.map((transition) => {
       return {
         ...transition,
         props: {
@@ -72,7 +76,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     setNullClosureRows(nullClosureRowsUnique);
     setNullClosureStates(nullClosureStatesUnique);
     setNullClosureTransitions(nullClosureTransitionsUnique);
-  }, [props]);
+  }, [dataContext]);
 
   const nullClosureProps: NullClosureProps = {
     rows: nullClosureRows,
@@ -123,7 +127,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
       };
     }),
     setIsResultantDfaComplete: setIsResultantDfaComplete,
-    editorPlaygroundSize: props.editorPlaygroundSize,
+    editorPlaygroundSize: dataContext.editorPlaygroundSize,
   };
 
   return (

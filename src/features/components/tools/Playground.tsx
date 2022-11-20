@@ -4,7 +4,19 @@ import Xarrow from "../playground/Xarrow";
 import { ToolsPlaygroundProps } from "./props/PlaygroundProps";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
-  console.log("re rendering NfaToDfaPlayground: props", props);
+  console.log("re rendering ToolsPlayground: props", props);
+
+  const stateToInquire = props.states?.at(0)?.id;
+  const uniqueWord = // to ensure that the xarrow is unique
+    stateToInquire?.includes("nc")
+      ? "nc"
+      : stateToInquire?.includes("ntd")
+      ? "ntd"
+      : stateToInquire?.includes("mt")
+      ? "mt"
+      : stateToInquire?.includes("md")
+      ? "md"
+      : "";
 
   return (
     <div>
@@ -13,7 +25,6 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
           <div id="statesContainer" className="statesContainer">
             {props.states.map((state) => (
               <div
-                // ref={props.state.reference}
                 className={`state absolute hoverMarker`}
                 style={{
                   left: state.x,
@@ -21,7 +32,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
                 }}
                 id={state.id}
               >
-                {state.id.replaceAll("nc", "").replaceAll("ntd", "")}
+                {state.id.replaceAll(uniqueWord, "")}
               </div>
             ))}
           </div>
@@ -29,7 +40,11 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
           {props.transitions.map((transition, i) => (
             <Xarrow
               key={
-                transition.props.start + "-" + transition.props.end + i + "nc"
+                transition.props.start +
+                "-" +
+                transition.props.end +
+                i +
+                uniqueWord
               }
               transition={transition}
               selected={null}

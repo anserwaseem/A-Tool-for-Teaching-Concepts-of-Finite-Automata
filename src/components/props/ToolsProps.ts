@@ -7,10 +7,10 @@ import {
 } from "../types/AvailableTools";
 
 export type ToolsProps = {
-  rows: RowModel[];
-  states: DraggableStateModel[];
-  transitions: TransitionModel[];
-  columns: GridColumns;
+  // rows: RowModel[];
+  // states: DraggableStateModel[];
+  // transitions: TransitionModel[];
+  // columns: GridColumns;
   setToolSelected: React.Dispatch<
     React.SetStateAction<
       typeof NFA_TO_DFA | typeof MINIMIZE_DFA | typeof TEST_A_STRING | null

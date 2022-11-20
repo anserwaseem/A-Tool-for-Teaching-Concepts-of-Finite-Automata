@@ -15,7 +15,7 @@ import {
   Toolbar,
   MenuItem,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Download } from "../features/Download";
 import { Upload } from "../features/Upload";
@@ -24,9 +24,12 @@ import MailIcon from "@mui/icons-material/Mail";
 import { ToolsProps } from "./props/ToolsProps";
 import { IsDFA } from "../utils/IsDFA";
 import { MINIMIZE_DFA, NFA_TO_DFA } from "./types/AvailableTools";
+import { DataContext } from "./Editor";
 
 export const Tools = (props: ToolsProps) => {
   console.log("re rendering Tools: props");
+
+  const dataContext = useContext(DataContext);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -70,7 +73,7 @@ export const Tools = (props: ToolsProps) => {
         <MenuItem
           onClick={() => {
             handleCloseToolsMenu();
-            IsDFA(props.rows);
+            IsDFA(dataContext.rows);
           }}
         >
           Is DFA

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DraggableStateModel, RowModel, TransitionModel } from "../models";
 import { NfaToDfaProps } from "./props/NfaToDfaProps";
 import { NullClosure } from "./components/nfaToDfa/NullClosure";
@@ -12,9 +12,13 @@ import { MergeTable } from "./components/minimzeDfa/MergeTable";
 import { MergeTableProps } from "./components/minimzeDfa/props/MergeTableProps";
 import { MinimizeDfaProps } from "./props/MinimizeDfaProps";
 import { MergeTableRowModel } from "../models/minimizeDfa/MergeTableRowModel";
+import { DataContext } from "../components/Editor";
 
-export const MinimizeDfa = (props: MinimizeDfaProps) => {
-  console.log("re rendering MinimizeDfa, props", props);
+export const MinimizeDfa = () => {
+  console.log("re rendering MinimizeDfa");
+
+  const dataContext = useContext(DataContext);
+
   const [isMergeTableComplete, setIsMergeTableComplete] = useState(false);
   const [mergeTableRows, setMergeTableRows] = useState<MergeTableRowModel[]>(
     []
@@ -34,56 +38,9 @@ export const MinimizeDfa = (props: MinimizeDfaProps) => {
   ] = useState(false); //no need
   const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]); // no need
 
-  //   useEffect(() => {
-  //     // change state name in each property of rows, states, transitions arrays to make it unique for Xarrow to work
-  //     const mergeTableRowsUnique = props.rows.map((row) => {
-  //       return {
-  //         ...row,
-  //         ...Object.fromEntries(
-  //           PossibleTransitionValues.concat("state").map((key) => [
-  //             key === "^" ? "nul" : key,
-  //             row[key === "^" ? "nul" : key]
-  //               .toString()
-  //               .split(" ")
-  //               .filter((key) => key !== "")
-  //               .map((tv) => tv.replace(tv, tv + "mtt"))
-  //               .join(" ") ?? row[key === "^" ? "nul" : key],
-  //           ])
-  //         ),
-  //       };
-  //     });
-  //     console.log("mergeTableRowsUnique", mergeTableRowsUnique);
-
-  //     const resultantDfaStatesUnique = props.states.map((state) => {
-  //       return {
-  //         ...state,
-  //         id: `${state.id}nc`,
-  //       };
-  //     });
-  //     console.log("resultantDfaStatesUnique", resultantDfaStatesUnique);
-
-  //     const resultantDfaTransitionsUnique = props.transitions.map(
-  //       (transition) => {
-  //         return {
-  //           ...transition,
-  //           props: {
-  //             ...transition.props,
-  //             start: `${transition.props.start}nc`,
-  //             end: `${transition.props.end}nc`,
-  //           },
-  //         };
-  //       }
-  //     );
-  //     console.log("resultantDfaTransitionsUnique", resultantDfaTransitionsUnique);
-
-  //     // setMergeTableRows(mergeTableRowsUnique);
-  //     setResultantDfaStates(resultantDfaStatesUnique);
-  //     setResultantDfaTransitions(resultantDfaTransitionsUnique);
-  //   }, [props]);
-
   let mergeTableProps: MergeTableProps = {
-    rows: props.rows,
-    columns: props.columns,
+    // rows: dataContext.rows,
+    // columns: dataContext.columns,
     setCompletedMergeTableRows: setMergeTableRows,
     setIsMergeTableComplete: setIsMergeTableComplete,
   };
@@ -99,14 +56,14 @@ export const MinimizeDfa = (props: MinimizeDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mtt", "ntd"))
+              .map((tv) => tv.replace("mt", "md"))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
     setIsResultantDfaComplete: setIsResultantDfaComplete,
-    editorPlaygroundSize: props.editorPlaygroundSize,
+    editorPlaygroundSize: dataContext.editorPlaygroundSize,
   };
 
   return (

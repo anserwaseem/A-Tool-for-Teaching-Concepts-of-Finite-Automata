@@ -8,7 +8,7 @@ const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
 export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
-  console.log("re rendering NfaToDfaTransitionTable: props", props);
+  console.log("re rendering ToolsTransitionTable: props", props);
 
   return (
     <Box

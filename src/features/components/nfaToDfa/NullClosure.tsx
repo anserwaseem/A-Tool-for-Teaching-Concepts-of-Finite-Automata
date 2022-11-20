@@ -213,16 +213,12 @@ export const NullClosure = (props: NullClosureProps) => {
 
   const playgroundProps: ToolsPlaygroundProps = {
     states: nullClosureStates,
-    setStates: setNullClosureStates,
     transitions: nullClosureTransitions,
-    setTransitions: setNullClosureTransitions,
-    rows: nullClosureRows,
-    setRows: setNullClosureRows,
   };
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, m: 1, mtt: 5 }}>
+      <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
         <Typography
           variant="h5"
           component="div"
