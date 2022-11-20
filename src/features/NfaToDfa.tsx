@@ -13,7 +13,6 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
   console.log("re rendering NfaToDfa, props", props);
   const [isNullClosureTableComplete, setIsNullClosureTableComplete] =
     useState(false);
-  // const [nullClosureRowId, setNullClosureRowId] = useState(0);
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const [nullClosureStates, setNullClosureStates] = useState<
     DraggableStateModel[]
@@ -22,7 +21,6 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
     TransitionModel[]
   >([]);
 
-  // const [modifiedRowId, setModifiedRowId] = useState(0);
   const [
     isModifiedTransitionTableComplete,
     setIsModifiedTransitionTableComplete,
@@ -30,10 +28,6 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
   const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]);
 
   const [isResultantDfaComplete, setIsResultantDfaComplete] = useState(false);
-  // const [dfaRowId, setDfaRowId] = useState(0);
-  const [dfaRows, setDfaRows] = useState<RowModel[]>([]);
-  const [dfaStates, setDfaStates] = useState<DraggableStateModel[]>([]);
-  const [dfaTransitions, setDfaTransitions] = useState<TransitionModel[]>([]);
 
   useEffect(() => {
     // change state name in each property of rows, states, transitions arrays to make it unique for Xarrow to work
@@ -101,7 +95,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("nc", "mt"))
+              .map((tv) => tv.replace("nc", "mtt"))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -122,7 +116,7 @@ export const NfaToDfa = (props: NfaToDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mt", "rd"))
+              .map((tv) => tv.replace("mtt", "ntd"))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

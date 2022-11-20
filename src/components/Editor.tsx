@@ -22,10 +22,12 @@ import { ToolsProps } from "./props/ToolsProps";
 import { NfaToDfa } from "../features/NfaToDfa";
 import { NfaToDfaProps } from "../features/props/NfaToDfaProps";
 import {
-  DFA_TO_MINIMIZED_DFA,
+  MINIMIZE_DFA,
   NFA_TO_DFA,
   TEST_A_STRING,
 } from "./types/AvailableTools";
+import { MinimizeDfa } from "../features/MinimizeDfa";
+import { MinimizeDfaProps } from "../features/props/MinimizeDfaProps";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -114,10 +116,7 @@ export const Editor = () => {
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
   const [toolSelected, setToolSelected] = useState<
-    | typeof NFA_TO_DFA
-    | typeof DFA_TO_MINIMIZED_DFA
-    | typeof TEST_A_STRING
-    | null
+    typeof NFA_TO_DFA | typeof MINIMIZE_DFA | typeof TEST_A_STRING | null
   >(null);
 
   const handleAddRow = (row: RowModel) => {
@@ -569,6 +568,7 @@ export const Editor = () => {
     rows,
     states,
     transitions,
+    columns,
     setToolSelected,
   };
 
@@ -576,6 +576,14 @@ export const Editor = () => {
     rows,
     states,
     transitions,
+    editorPlaygroundSize: size,
+  };
+
+  const minimizeDfaProps: MinimizeDfaProps = {
+    rows,
+    states,
+    transitions,
+    columns,
     editorPlaygroundSize: size,
   };
 
@@ -642,6 +650,9 @@ export const Editor = () => {
         </Box>
         {toolSelected && toolSelected === NFA_TO_DFA && (
           <NfaToDfa {...nfaToDfaProps} />
+        )}
+        {toolSelected && toolSelected === MINIMIZE_DFA && (
+          <MinimizeDfa {...minimizeDfaProps} />
         )}
       </>
     </DataContext.Provider>

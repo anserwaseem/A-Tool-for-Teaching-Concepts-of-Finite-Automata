@@ -2,12 +2,12 @@ import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { darken, lighten } from "@mui/material/styles";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
-import { TransitionTableProps } from "../../props/TransitionTableProps";
+import { ToolsTransitionTableProps } from "./props/TransitionTableProps";
 
 const getBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
-export const NfaToDfaTransitionTable = (props: TransitionTableProps) => {
+export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
   console.log("re rendering NfaToDfaTransitionTable: props", props);
 
   return (

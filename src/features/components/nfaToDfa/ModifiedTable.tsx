@@ -16,8 +16,8 @@ import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptio
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { RowModel } from "../../../models";
 import { ModifiedTableProps } from "./props/ModifiedTableProps";
-import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
-import { NfaToDfaTransitionTable } from "./TransitionTable";
+import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
+import { ToolsTransitionTable } from "../tools/TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
@@ -198,7 +198,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     } else index++;
   };
 
-  const transitionTableProps: NfaToDfaTransitionTableProps = {
+  const transitionTableProps: ToolsTransitionTableProps = {
     rows: modifiedTableRows.map((row) => {
       return {
         ...row,
@@ -209,21 +209,18 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mt", ""))
+              .map((tv) => tv.replace("mtt", ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
-    setRows: setModifiedTableRows,
     columns: columns,
-    rowId: modifiedTableRowId,
-    setRowId: setModifiedTableRowId,
   };
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
+      <Box sx={{ flexGrow: 1, m: 1, mtt: 5 }}>
         <Typography
           variant="h5"
           component="div"
@@ -295,12 +292,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                 </ButtonGroup>
               </Grid>
             </Grid>
-            <NfaToDfaTransitionTable
-              handleAddRow={function (row: RowModel): void {
-                throw new Error("Function not implemented.");
-              }}
-              {...transitionTableProps}
-            />
+            <ToolsTransitionTable {...transitionTableProps} />
           </Grid>
           {/* Playground grid */}
           <Grid item xs={12} md={8}>

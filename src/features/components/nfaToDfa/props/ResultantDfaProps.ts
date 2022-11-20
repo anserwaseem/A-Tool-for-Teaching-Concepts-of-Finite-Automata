@@ -1,9 +1,5 @@
 import { PlaygroundSize } from "../../../../components/types/PlaygroundSize";
-import {
-  DraggableStateModel,
-  RowModel,
-  TransitionModel,
-} from "../../../../models";
+import { RowModel } from "../../../../models";
 
 export type ResultantDfaProps = {
   rows: RowModel[];

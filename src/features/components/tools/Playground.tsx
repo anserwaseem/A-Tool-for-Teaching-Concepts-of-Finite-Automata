@@ -1,9 +1,9 @@
 import "../../css/Playground.css";
 import { Xwrapper } from "react-xarrows";
 import Xarrow from "../playground/Xarrow";
-import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
+import { ToolsPlaygroundProps } from "./props/PlaygroundProps";
 
-export const NfaToDfaPlayground = (props: NfaToDfaPlaygroundProps) => {
+export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   console.log("re rendering NfaToDfaPlayground: props", props);
 
   return (
@@ -21,7 +21,7 @@ export const NfaToDfaPlayground = (props: NfaToDfaPlaygroundProps) => {
                 }}
                 id={state.id}
               >
-                {state.id.replaceAll("nc", "").replaceAll("rd", "")}
+                {state.id.replaceAll("nc", "").replaceAll("ntd", "")}
               </div>
             ))}
           </div>

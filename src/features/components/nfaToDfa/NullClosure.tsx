@@ -18,11 +18,11 @@ import {
   DraggableStateModel,
   TransitionModel,
 } from "../../../models";
-import { NfaToDfaPlayground } from "./Playground";
+import { ToolsPlayground } from "../tools/Playground";
 import { NullClosureProps } from "./props/NullClosureProps";
-import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
-import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
-import { NfaToDfaTransitionTable } from "./TransitionTable";
+import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
+import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
+import { ToolsTransitionTable } from "../tools/TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
@@ -191,7 +191,7 @@ export const NullClosure = (props: NullClosureProps) => {
     } else index++;
   };
 
-  const transitionTableProps: NfaToDfaTransitionTableProps = {
+  const transitionTableProps: ToolsTransitionTableProps = {
     rows: nullClosureRows.map((row) => {
       return {
         ...row,
@@ -208,13 +208,10 @@ export const NullClosure = (props: NullClosureProps) => {
         ),
       };
     }),
-    setRows: setNullClosureRows,
     columns: columns,
-    rowId: nullClosureRowId,
-    setRowId: setNullClosureRowId,
   };
 
-  const playgroundProps: NfaToDfaPlaygroundProps = {
+  const playgroundProps: ToolsPlaygroundProps = {
     states: nullClosureStates,
     setStates: setNullClosureStates,
     transitions: nullClosureTransitions,
@@ -225,7 +222,7 @@ export const NullClosure = (props: NullClosureProps) => {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
+      <Box sx={{ flexGrow: 1, m: 1, mtt: 5 }}>
         <Typography
           variant="h5"
           component="div"
@@ -296,16 +293,13 @@ export const NullClosure = (props: NullClosureProps) => {
               </ButtonGroup>
               {/* <AnimationController {...animationControllerProps} /> */}
             </Grid>
-            <NfaToDfaTransitionTable
-              handleAddRow={function (row: RowModel): void {
-                throw new Error("Function not implemented.");
-              }}
+            <ToolsTransitionTable
               {...transitionTableProps}
             />
           </Grid>
           {/* Playground grid */}
           <Grid item xs={12} md={8}>
-            <NfaToDfaPlayground {...playgroundProps} />
+            <ToolsPlayground {...playgroundProps} />
           </Grid>
         </Grid>
       </Box>

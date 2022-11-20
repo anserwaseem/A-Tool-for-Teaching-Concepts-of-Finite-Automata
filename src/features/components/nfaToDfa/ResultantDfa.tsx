@@ -18,11 +18,11 @@ import {
   DraggableStateModel,
   TransitionModel,
 } from "../../../models";
-import { NfaToDfaPlayground } from "./Playground";
-import { NfaToDfaPlaygroundProps } from "./props/PlaygroundProps";
+import { ToolsPlayground } from "../tools/Playground";
+import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { ResultantDfaProps } from "./props/ResultantDfaProps";
-import { NfaToDfaTransitionTableProps } from "./props/NfaToDfaTransitionTableProps";
-import { NfaToDfaTransitionTable } from "./TransitionTable";
+import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
+import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
@@ -471,7 +471,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     } else index++;
   };
 
-  const transitionTableProps: NfaToDfaTransitionTableProps = {
+  const transitionTableProps: ToolsTransitionTableProps = {
     rows: resultantDfaRows.map((row) => {
       return {
         ...row,
@@ -482,19 +482,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("rd", ""))
+              .map((tv) => tv.replace("ntd", ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
-    setRows: setResultantDfaRows,
     columns: columns,
-    rowId: resultantDfaRowId,
-    setRowId: setResultantDfaRowId,
   };
 
-  const playgroundProps: NfaToDfaPlaygroundProps = {
+  const playgroundProps: ToolsPlaygroundProps = {
     states: resultantDfaStates,
     setStates: setResultantDfaStates,
     transitions: resultantDfaTransitions,
@@ -504,7 +501,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
+    <Box sx={{ flexGrow: 1, m: 1, mtt: 5 }}>
       <Typography
         variant="h5"
         component="div"
@@ -577,16 +574,11 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               {/* <AnimationController {...animationControllerProps} /> */}
             </Grid>
           </Grid>
-          <NfaToDfaTransitionTable
-            handleAddRow={function (row: RowModel): void {
-              throw new Error("Function not implemented.");
-            }}
-            {...transitionTableProps}
-          />
+          <ToolsTransitionTable {...transitionTableProps} />
         </Grid>
         {/* Playground grid */}
         <Grid item xs={12} md={8}>
-          <NfaToDfaPlayground {...playgroundProps} />
+          <ToolsPlayground {...playgroundProps} />
         </Grid>
       </Grid>
     </Box>

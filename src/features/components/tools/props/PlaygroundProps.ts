@@ -1,8 +1,10 @@
-import { PlaygroundSize } from "../../../../components/types/PlaygroundSize";
-import { DraggableStateModel, TransitionModel, RowModel } from "../../../../models";
-import { SelectedElementType } from "../../../props/SelectedElementType";
+import {
+  DraggableStateModel,
+  TransitionModel,
+  RowModel,
+} from "../../../../models";
 
-export type NfaToDfaPlaygroundProps = {
+export type ToolsPlaygroundProps = {
   states: DraggableStateModel[];
   setStates: React.Dispatch<React.SetStateAction<DraggableStateModel[]>>;
   transitions: TransitionModel[];
