@@ -17,7 +17,14 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowsProp,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
@@ -38,9 +45,9 @@ import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { ToolsPlayground } from "../tools/Playground";
 import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { DataContext } from "../../../components/Editor";
-
-const numberOfColumns = 3; // one for state, one for a and one for b
-let index = numberOfColumns;
+import CheckIcon from "@mui/icons-material/Check";
+import MinimizeRoundedIcon from "@mui/icons-material/MinimizeOutlined";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const drawerWidth = 200;
 
@@ -116,16 +123,15 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
   const [isReady, setIsReady] = useState(false); // set to true when animation is completed and user clicks on "Complete" button i.e., when user is ready to move on to next step
 
-  const [mergeTableRows, setMergeTableRows] = useState<MergeTableRowModel[]>(
-    []
-  );
+  const [mergeTableRows, setMergeTableRows] = useState<any[]>([]);
   const [mergeTableColumns, SetMergeTableColumns] = useState<GridColDef[]>([]);
+  const [stepNumber, setStepNumber] = useState<boolean>(null); // null for step 0, false for step 1 and true for step 2
 
   const theme = useTheme();
   const [open, setOpen] = useState(0); // 1 for table open, 2 for dfa open, 0 for both close
@@ -149,7 +155,6 @@ export const MergeTable = (props: MergeTableProps) => {
   useEffect(() => {
     if (dataContext.rows?.length > 0) {
       const columns: GridColDef[] = [
-        { field: "id", hide: true, hideable: false },
         {
           field: "state",
           headerName: "",
@@ -159,10 +164,10 @@ export const MergeTable = (props: MergeTableProps) => {
         },
       ];
 
-      const rows: MergeTableRowModel[] = [];
+      const rows = [];
       for (let i = 0; i < dataContext.rows.length; i++) {
         columns.push({
-          field: dataContext.rows[i].state,
+          field: `cell-${dataContext.rows[i].state}`,
           headerName: dataContext.rows[i].state,
           disableColumnMenu: true,
           sortable: false,
@@ -173,6 +178,8 @@ export const MergeTable = (props: MergeTableProps) => {
         rows.push({
           id: i,
           state: dataContext.rows[i].state,
+          // [`cell-${dataContext.rows[i].state}`]:
+          //   dataContext.rows[i].state + "w",
         });
       }
 
@@ -189,31 +196,123 @@ export const MergeTable = (props: MergeTableProps) => {
     );
     if (isPlaying) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout, index", index);
-        const rowIndex = Math.floor(index / numberOfColumns);
+        console.log("inside set timeout");
 
-        // handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
+        handleUpdateData();
 
-        // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
-        if (
-          rowIndex === dataContext.rows.length &&
-          index % numberOfColumns === numberOfColumns - 1
-        ) {
+        // stop if all rows are filled
+        if (false) {
           setIsComplete(true);
           setIsPlaying(false);
-        } else index++;
+        }
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [props, mergeTableRows, isPlaying]);
+  }, [dataContext.rows, mergeTableRows, isPlaying, stepNumber]);
 
-  const handleUpdateData = (rowIndex: number, rows: RowModel[]) => {
-    console.log(
-      "MergeTable handleUpdateData, rowIndex, index, rows: ",
-      rowIndex,
-      index,
-      rows
-    );
+  const handleUpdateData = () => {
+    console.log("MergeTable handleUpdateData: stepNumber: ", stepNumber);
+    if (stepNumber === null) {
+      setMergeTableRows(markDiagonalCells());
+      setStepNumber(false);
+    } else if (stepNumber === false) {
+      setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
+      setStepNumber(true);
+    } else alert("markNonDiagonalEntries");
+
+    // const columns = mergeTableColumns.map((column) => {
+    //   if (column.field?.startsWith("cell-")) {
+    //     return {
+    //       ...column,
+    //       renderCell: renderCell,
+    //     };
+    //   } else {
+    //     return column;
+    //   }
+    // });
+
+    // if (stepNumber) {
+    //   // markUpperTriangularEntries();
+    //   alert("markNonDiagonalEntries");
+    // }
+
+    // SetMergeTableColumns(columns);
+    // setStepNumber(
+    //   stepNumber === null ? false : stepNumber === false ? true : null
+    // );
+  };
+
+  const markDiagonalCells = () => {
+    console.log("markDiagonalCells");
+    return mergeTableRows.map((row) => {
+      return {
+        ...row,
+        [`cell-${row.state}`]: "✓",
+      };
+    });
+    // console.log("markDiagonalCells rows: ", rows);
+
+    // setMergeTableRows(rows);
+  };
+
+  const markUpperTriangularCells = (rows: any[]) => {
+    console.log("markUpperTriangularCells");
+    const stateNames = dataContext.rows.map((row) => row.state);
+    return rows.map((row, i) => {
+      const stateIndex = stateNames.indexOf(row.state);
+      const cells = stateNames.map((state, index) => {
+        if (stateIndex > index) {
+          return "-"; // TODO Cross ✕
+        } else {
+          return "";
+        }
+      });
+      console.log("cells at i: ", i, cells);
+      console.log({
+        ...row,
+        // mark Dash to only those cells which are not empty
+        ...cells.reduce((acc, cell, index) => {
+          if (cell !== "") {
+            acc[`cell-${stateNames[index]}`] = cell;
+          }
+          return acc;
+        }, {}),
+      });
+      return {
+        ...row,
+        // paste value of only those cells which are not empty
+        ...cells.reduce((acc, cell, index) => {
+          if (cell !== "") {
+            acc[`cell-${stateNames[index]}`] = cell;
+          }
+          return acc;
+        }, {}),
+      };
+    });
+    // console.log("markUpperTriangularCells rows: ", rows);
+
+    // setMergeTableRows(rows);
+  };
+
+  const renderCell = (params: GridRenderCellParams<string>) => {
+    console.log("MergeTable renderCell, params: ", params);
+    const { id, field, value } = params;
+
+    // mark diagonal entries as Tick
+    if (field?.replace("cell-", "") === params.row.state) {
+      return <CheckIcon />;
+    }
+    // mark uppeer triangular entries as Cross
+    if (
+      (stepNumber as any) !== null &&
+      field?.replace("cell-", "") < params.row.state
+    ) {
+      return <MinimizeRoundedIcon fontSize="small" />;
+    }
+    // mark lower triangular entries
+    if (stepNumber) {
+      return "ok";
+    } else return "";
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
@@ -233,27 +332,24 @@ export const MergeTable = (props: MergeTableProps) => {
       // because modified transition table and resultant dfa are dependent on null closure table
       setIsReady(false);
       setIsComplete(false);
-      index = 1;
       setIsPlaying(true);
     } else setIsPlaying((v) => !v);
   };
 
   const showNextRow = () => {
-    console.log("MergeTable show next row, index: ", index);
-    const rowIndex = Math.floor(index / numberOfColumns);
+    console.log("MergeTable show next row");
     if (isComplete) {
       setIsReady(true);
-      props.setCompletedMergeTableRows(mergeTableRows);
+      // props.setCompletedMergeTableRows(mergeTableRows);
       props.setIsMergeTableComplete(true);
     }
 
-    // handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
+    handleUpdateData();
 
-    // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
-    if (rowIndex === dataContext.rows.length && index % numberOfColumns !== 0) {
+    if (mergeTableRows.every((row) => row.state !== "")) {
       setIsComplete(true);
       setIsPlaying(false);
-    } else index++;
+    }
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
@@ -397,66 +493,66 @@ export const MergeTable = (props: MergeTableProps) => {
 
         <Main open={open}>
           <DrawerHeader />
-          <Grid container xs={12}>
+          <Grid container>
             {/* Grid for Add a Row button and Tools */}
-            <Grid container alignItems={"center"}>
-              <Grid item xs={12}>
-                <ButtonGroup
-                  disableElevation
-                  fullWidth
-                  variant="outlined"
-                  size="large"
+            <Grid item alignItems={"center"} xs={12}>
+              <ButtonGroup
+                disableElevation
+                fullWidth
+                variant="outlined"
+                size="large"
+              >
+                <FormControl fullWidth>
+                  <InputLabel id="delay-select-label">Delay</InputLabel>
+                  <Select
+                    labelId="delay-select-label"
+                    id="delay-select"
+                    value={duration.toString()}
+                    label="Delay"
+                    onChange={handleDurationChange}
+                  >
+                    {AnimationDurationOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Button
+                  onClick={handleAnimation}
+                  startIcon={
+                    isPlaying ? (
+                      <PauseRoundedIcon />
+                    ) : isComplete ? (
+                      <ReplayRoundedIcon />
+                    ) : (
+                      <PlayArrowRoundedIcon />
+                    )
+                  }
                 >
-                  <FormControl fullWidth>
-                    <InputLabel id="delay-select-label">Delay</InputLabel>
-                    <Select
-                      labelId="delay-select-label"
-                      id="delay-select"
-                      value={duration.toString()}
-                      label="Delay"
-                      onChange={handleDurationChange}
-                    >
-                      {AnimationDurationOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
-                  <Button
-                    onClick={handleAnimation}
-                    startIcon={
-                      isPlaying ? (
-                        <PauseRoundedIcon />
-                      ) : isComplete ? (
-                        <ReplayRoundedIcon />
-                      ) : (
-                        <PlayArrowRoundedIcon />
-                      )
-                    }
-                  >
-                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                  </Button>
-                  <Button
-                    variant={isComplete ? "contained" : "outlined"}
-                    onClick={showNextRow}
-                    disabled={isReady}
-                  >
-                    {isComplete ? "Complete" : "Next"}
-                  </Button>
-                </ButtonGroup>
-              </Grid>
+                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+                </Button>
+                <Button
+                  variant={isComplete ? "contained" : "outlined"}
+                  onClick={showNextRow}
+                  disabled={isReady}
+                >
+                  {isComplete ? "Complete" : "Next"}
+                </Button>
+              </ButtonGroup>
             </Grid>
-            <DataGrid
-              rows={mergeTableRows}
-              columns={mergeTableColumns}
-              autoHeight
-              hideFooter
-              pageSize={MaxNumberOfStates}
-              // disableSelectionOnClick
-              // experimentalFeatures={{ newEditingApi: true }}
-            />
+            <Grid item xs={12}>
+              <DataGrid
+                rows={mergeTableRows}
+                columns={mergeTableColumns}
+                autoHeight
+                hideFooter
+                pageSize={MaxNumberOfStates}
+                // density="compact"
+                // disableSelectionOnClick
+                // experimentalFeatures={{ newEditingApi: true }}
+              />
+            </Grid>
           </Grid>
         </Main>
 
