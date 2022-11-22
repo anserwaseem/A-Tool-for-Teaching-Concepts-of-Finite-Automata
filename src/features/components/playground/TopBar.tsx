@@ -282,7 +282,7 @@ export const TopBar = (props: TopBarProps) => {
         props.handleSelect(null);
         break;
 
-      case "Edit Value":
+      case "Edit label":
         const newValue = promptNewTransitionValue(
           props.transitions,
           (props.selected?.id as SelectedElementTypeId).value
@@ -313,7 +313,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
         console.log(
-          "transitions after Edit Value",
+          "transitions after Edit label",
           props.transitions.map((transition) =>
             props.selected &&
             props.selected?.id &&
@@ -343,7 +343,7 @@ export const TopBar = (props: TopBarProps) => {
         );
         console.log("transitionValues", transitionValues);
 
-        // console.log("setRows edit value")
+        // console.log("setRows edit label")
         props.setRows((rows) => {
           console.log("starting setRows");
           let newRows = [...rows];
@@ -458,7 +458,7 @@ export const TopBar = (props: TopBarProps) => {
       case "Add Transition":
         return (
           <div className="actionBubbles">
-            <p>To where connect new transition?</p>
+            <p>Select destination state</p>
             <div
               className="actionBubble"
               onClick={() => props.setActionState("Normal")}

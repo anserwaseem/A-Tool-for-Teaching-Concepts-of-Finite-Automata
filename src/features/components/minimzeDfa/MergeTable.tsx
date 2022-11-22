@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -12,6 +13,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Snackbar,
   styled,
   Toolbar,
   Typography,
@@ -50,6 +52,10 @@ import MinimizeRoundedIcon from "@mui/icons-material/MinimizeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 
 const drawerWidth = 200;
+const columnNames = PossibleTransitionValues.map(
+  (value) => value !== "^" && value.toString()
+);
+let columnIndex = 0;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: number;
@@ -131,10 +137,17 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const [mergeTableRows, setMergeTableRows] = useState<any[]>([]);
   const [mergeTableColumns, SetMergeTableColumns] = useState<GridColDef[]>([]);
-  const [stepNumber, setStepNumber] = useState<boolean>(null); // null for step 0, false for step 1 and true for step 2
+  const [displayStep, setDisplayStep] = useState<boolean>(null); // null for filling diagonal cells only, false for filling diagonal and upper triangular cells and true for filling diagonal, upper triangular, and lower triangular cells; lower triangular cells are filled using stepNumber2
+  const [animationStep, setAnimationStep] = useState<boolean>(null); // null for highlighting rows in original transition table, false for showing explanation and true for placing Tick/Cross in Merge Table
+  const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
+  const [columnName, setColumnName] = useState<string>(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const theme = useTheme();
   const [open, setOpen] = useState(0); // 1 for table open, 2 for dfa open, 0 for both close
+
+  let row1ToHighlight: RowModel, row2ToHighlight: RowModel;
+  // let statesToHighlight: string[] = [];
 
   const handleTableOpen = () => {
     setOpen(1);
@@ -151,6 +164,16 @@ export const MergeTable = (props: MergeTableProps) => {
     setOpen(0);
   };
 
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   // make DataGrid of props.rows.length by props.rows.length size as soon as props.rows is updated
   useEffect(() => {
     if (dataContext.rows?.length > 0) {
@@ -165,6 +188,7 @@ export const MergeTable = (props: MergeTableProps) => {
       ];
 
       const rows = [];
+      const stateNames = dataContext.rows.map((row) => row.state);
       for (let i = 0; i < dataContext.rows.length; i++) {
         columns.push({
           field: `cell-${dataContext.rows[i].state}`,
@@ -174,13 +198,16 @@ export const MergeTable = (props: MergeTableProps) => {
           flex: 1,
         });
 
-        // put each state in the first column
+        // put each state in the first column of each row
         rows.push({
           id: i,
           state: dataContext.rows[i].state,
-          // [`cell-${dataContext.rows[i].state}`]:
-          //   dataContext.rows[i].state + "w",
+          ...Object.fromEntries(
+            stateNames.map((stateName) => [`cell-${stateName}`, ""])
+          ),
         });
+
+        console.log("rows.push: ", rows);
       }
 
       SetMergeTableColumns(columns);
@@ -200,25 +227,38 @@ export const MergeTable = (props: MergeTableProps) => {
 
         handleUpdateData();
 
-        // stop if all rows are filled
-        if (false) {
+        // stop if every cell is either marked Tick or Cross or Dash
+
+        if (
+          mergeTableRows.every((row) =>
+            Object.values(row).every(
+              (cell) => cell === "✓" || cell === "✕" || cell === "-"
+            )
+          )
+        ) {
           setIsComplete(true);
           setIsPlaying(false);
         }
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [dataContext.rows, mergeTableRows, isPlaying, stepNumber]);
+  }, [dataContext.rows, mergeTableRows, isPlaying, displayStep]);
 
   const handleUpdateData = () => {
-    console.log("MergeTable handleUpdateData: stepNumber: ", stepNumber);
-    if (stepNumber === null) {
+    console.log("MergeTable handleUpdateData: stepNumber: ", displayStep);
+    if (displayStep === null) {
+      console.log("mergeTable handleUpdateData displayStep is null");
       setMergeTableRows(markDiagonalCells());
-      setStepNumber(false);
-    } else if (stepNumber === false) {
+      setDisplayStep(false);
+    } else if (displayStep === false) {
+      console.log("mergeTable handleUpdateData displayStep is false");
       setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
-      setStepNumber(true);
-    } else alert("markNonDiagonalEntries");
+      setDisplayStep(true);
+    } else {
+      console.log("mergeTable handleUpdateData displayStep is true");
+      markLowerTriangularCells(markUpperTriangularCells(markDiagonalCells()));
+      // setDisplayStep(null);
+    }
 
     // const columns = mergeTableColumns.map((column) => {
     //   if (column.field?.startsWith("cell-")) {
@@ -250,9 +290,6 @@ export const MergeTable = (props: MergeTableProps) => {
         [`cell-${row.state}`]: "✓",
       };
     });
-    // console.log("markDiagonalCells rows: ", rows);
-
-    // setMergeTableRows(rows);
   };
 
   const markUpperTriangularCells = (rows: any[]) => {
@@ -262,15 +299,15 @@ export const MergeTable = (props: MergeTableProps) => {
       const stateIndex = stateNames.indexOf(row.state);
       const cells = stateNames.map((state, index) => {
         if (stateIndex > index) {
-          return "-"; // TODO Cross ✕
+          return "-";
         } else {
           return "";
         }
       });
-      console.log("cells at i: ", i, cells);
+      console.log("markUpperTriangularCells cells at i: ", i, cells);
       console.log({
         ...row,
-        // mark Dash to only those cells which are not empty
+        // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
         ...cells.reduce((acc, cell, index) => {
           if (cell !== "") {
             acc[`cell-${stateNames[index]}`] = cell;
@@ -280,7 +317,7 @@ export const MergeTable = (props: MergeTableProps) => {
       });
       return {
         ...row,
-        // paste value of only those cells which are not empty
+        // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
         ...cells.reduce((acc, cell, index) => {
           if (cell !== "") {
             acc[`cell-${stateNames[index]}`] = cell;
@@ -289,9 +326,121 @@ export const MergeTable = (props: MergeTableProps) => {
         }, {}),
       };
     });
-    // console.log("markUpperTriangularCells rows: ", rows);
+  };
 
-    // setMergeTableRows(rows);
+  const getStatesToBeHighlighted = (rows: any[]) => {
+    console.log("getStatesToBeHighlighted");
+    const stateNames = dataContext.rows.map((row) => row.state);
+
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = 0; j < stateNames.length; j++) {
+        if (i < j && rows[i][`cell-${stateNames[j]}`] === "") {
+          return [stateNames[i], stateNames[j]];
+        }
+      }
+    }
+  };
+
+  const getExplanation = () => {
+    if (statesToHighlight.length > 0) {
+      const [state1, state2] = statesToHighlight;
+      const row1 = dataContext.rows.find((row) => row.state === state1);
+      const row2 = dataContext.rows.find((row) => row.state === state2);
+      const state1Status = row1.isFinal ? "final" : "";
+      const state2Status = row2.isFinal ? "final" : "";
+      const result =
+        state1Status === "final" && state2Status === "final"
+          ? "✓"
+          : (state1Status === "final" && state2Status === "") ||
+            (state1Status === "" && state2Status === "final")
+          ? "✕"
+          : "Empty";
+
+      return (
+        "As " +
+        state1 +
+        " is " +
+        state1Status +
+        " and " +
+        state2 +
+        " is " +
+        state2Status +
+        ".So,  " +
+        result
+      );
+    }
+    return "";
+  };
+
+  const markLowerTriangularCells = (rows: any[]) => {
+    console.log("markLowerTriangularCells");
+
+    if (animationStep === null) {
+      // highlight states in original transition table in sidebar
+      console.log("mergeTable handleUpdateData animationStep is null");
+      console.log("setStatesToHighlight", getStatesToBeHighlighted(rows));
+      setStatesToHighlight(getStatesToBeHighlighted(rows));
+      setColumnName(columnNames[columnIndex]);
+      // setDisplayStep(true);
+      setAnimationStep(false);
+    } else if (animationStep === false) {
+      // show explanation of highlighted cells
+      console.log("mergeTable handleUpdateData animationStep is false");
+      console.log("animationStep === false: columnIndex", columnIndex);
+      if (columnIndex === columnNames.length - 1) setAnimationStep(true);
+      else {
+        setOpenSnackbar(true);
+        columnIndex += 1;
+        setAnimationStep(null);
+      }
+      setStatesToHighlight([]); // reset for next iteration
+      // setDisplayStep(true);
+    } else if (animationStep === true) {
+      // markLowerTriangularCells
+      console.log("mergeTable handleUpdateData animationStep is true");
+      // setDisplayStep(true);
+      setAnimationStep(null);
+    }
+
+    // const stateNames = dataContext.rows.map((row) => row.state);
+    // return rows.map((row, i) => {
+    //   const stateIndex = stateNames.indexOf(row.state);
+    //   const cells = stateNames.map((state, index) => {
+    //     if (stateIndex < index) {
+    //       row1ToHighlight = dataContext.rows.find(
+    //         (r) => r.state === stateNames[stateIndex]
+    //       );
+    //       row2ToHighlight = dataContext.rows.find(
+    //         (r) => r.state === stateNames[index]
+    //       );
+    //       statesToHighlight = [stateNames[stateIndex], stateNames[index]];
+    //       return "✕";
+    //     } else {
+    //       return "";
+    //     }
+    //   });
+    //   console.log("markLowerTriangularCells cells at i: ", i, cells);
+    //   console.log({
+    //     ...row,
+    //     // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
+    //     ...cells.reduce((acc, cell, index) => {
+    //       if (cell !== "") {
+    //         acc[`cell-${stateNames[index]}`] = cell;
+    //       }
+    //       return acc;
+    //     }, {}),
+    //   });
+    //   return {
+    //     ...row,
+    //     // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
+    //     ...cells.reduce((acc, cell, index) => {
+    //       if (cell !== "") {
+    //         acc[`cell-${stateNames[index]}`] = cell;
+    //       }
+    //       return acc;
+    //     }, {}),
+    //   };
+    // });
   };
 
   const renderCell = (params: GridRenderCellParams<string>) => {
@@ -304,13 +453,13 @@ export const MergeTable = (props: MergeTableProps) => {
     }
     // mark uppeer triangular entries as Cross
     if (
-      (stepNumber as any) !== null &&
+      (displayStep as any) !== null &&
       field?.replace("cell-", "") < params.row.state
     ) {
       return <MinimizeRoundedIcon fontSize="small" />;
     }
     // mark lower triangular entries
-    if (stepNumber) {
+    if (displayStep) {
       return "ok";
     } else return "";
   };
@@ -378,6 +527,9 @@ export const MergeTable = (props: MergeTableProps) => {
           editable: false,
         };
       }),
+
+    statesToHighlight: statesToHighlight,
+    columnName: columnName,
   };
 
   const playgroundProps: ToolsPlaygroundProps = {
@@ -404,6 +556,24 @@ export const MergeTable = (props: MergeTableProps) => {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={duration * 1000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="info"
+            sx={{ width: "100%" }}
+          >
+            {getExplanation()}
+          </Alert>
+        </Snackbar>
+
         <AppBar open={open}>
           <Toolbar>
             <IconButton

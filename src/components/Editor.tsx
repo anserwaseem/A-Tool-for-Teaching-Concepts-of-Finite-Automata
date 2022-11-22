@@ -572,21 +572,6 @@ export const Editor = () => {
     setToolSelected,
   };
 
-  const nfaToDfaProps: NfaToDfaProps = {
-    rows,
-    states,
-    transitions,
-    editorPlaygroundSize: size,
-  };
-
-  const minimizeDfaProps: MinimizeDfaProps = {
-    rows,
-    states,
-    transitions,
-    columns,
-    editorPlaygroundSize: size,
-  };
-
   return (
     <DataContext.Provider
       value={{

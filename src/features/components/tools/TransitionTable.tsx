@@ -36,6 +36,14 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
               theme.palette.mode
             )} !important`,
         },
+
+        "& .super-app-theme--Highlight": {
+          bgcolor: (theme) =>
+            `${getBackgroundColor(
+              theme.palette.primary.light,
+              theme.palette.mode
+            )} !important`,
+        },
       }}
     >
       <DataGrid
@@ -44,15 +52,22 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
         autoHeight
         hideFooter
         pageSize={MaxNumberOfStates}
-        // getRowClassName={(params) =>
-        //   `super-app-theme--${
-        //     params?.row?.isInitial && params?.row?.isFinal
-        //       ? "Both"
-        //       : params?.row?.isInitial
-        //       ? "Initial"
-        //       : params?.row?.isFinal && "Final"
-        //   }`
-        // }
+        disableSelectionOnClick
+        getCellClassName={(params) =>
+          `super-app-theme--${
+            params.field !== "state"
+              ? params.field === props?.columnName &&
+                props?.statesToHighlight?.some(
+                  (v) => v === params?.row?.state
+                ) &&
+                "Highlight"
+              : params?.row?.isInitial && params?.row?.isFinal
+              ? "Both"
+              : params?.row?.isInitial
+              ? "Initial"
+              : params?.row?.isFinal && "Final"
+          }`
+        }
       ></DataGrid>
     </Box>
   );

@@ -7,5 +7,5 @@ export const TopBarActions = {
     "Toggle Initial State",
     "Toggle Final State",
   ],
-  transition: ["Edit Properties", "Remove Transition", "Edit Value"],
+  transition: ["Edit Properties", "Remove Transition", "Edit label"],
 };

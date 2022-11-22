@@ -45,9 +45,20 @@ const TransitionTable = (props: TransitionTableProps) => {
         hideFooter
         experimentalFeatures={{ newEditingApi: true }}
         pageSize={MaxNumberOfStates}
-        getRowClassName={(params) =>
+        // getRowClassName={(params) =>
+        //   `super-app-theme--${
+        //     params?.row?.isInitial && params?.row?.isFinal
+        //       ? "Both"
+        //       : params?.row?.isInitial
+        //       ? "Initial"
+        //       : params?.row?.isFinal && "Final"
+        //   }`
+        // }
+        getCellClassName={(params) =>
           `super-app-theme--${
-            params?.row?.isInitial && params?.row?.isFinal
+            params.field !== "state"
+              ? ""
+              : params?.row?.isInitial && params?.row?.isFinal
               ? "Both"
               : params?.row?.isInitial
               ? "Initial"
