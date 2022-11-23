@@ -56,8 +56,9 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
         getCellClassName={(params) =>
           `super-app-theme--${
             params.field !== "state"
-              ? params.field === props?.columnName &&
+              ? params.field === props?.columnName && // restrict to only given column name
                 props?.statesToHighlight?.some(
+                  // restrict to only the states to highlight
                   (v) => v === params?.row?.state
                 ) &&
                 "Highlight"

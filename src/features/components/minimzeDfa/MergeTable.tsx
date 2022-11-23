@@ -129,7 +129,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[4]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -137,17 +137,15 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const [mergeTableRows, setMergeTableRows] = useState<any[]>([]);
   const [mergeTableColumns, SetMergeTableColumns] = useState<GridColDef[]>([]);
-  const [displayStep, setDisplayStep] = useState<boolean>(null); // null for filling diagonal cells only, false for filling diagonal and upper triangular cells and true for filling diagonal, upper triangular, and lower triangular cells; lower triangular cells are filled using stepNumber2
+  const [displayStep, setDisplayStep] = useState<boolean>(null); // null for filling diagonal cells only, false for filling diagonal and upper triangular cells, and true for filling diagonal, upper triangular, and lower triangular cells; lower triangular cells are filled using stepNumber2
   const [animationStep, setAnimationStep] = useState<boolean>(null); // null for highlighting rows in original transition table, false for showing explanation and true for placing Tick/Cross in Merge Table
   const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
   const [columnName, setColumnName] = useState<string>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const theme = useTheme();
   const [open, setOpen] = useState(0); // 1 for table open, 2 for dfa open, 0 for both close
-
-  let row1ToHighlight: RowModel, row2ToHighlight: RowModel;
-  // let statesToHighlight: string[] = [];
 
   const handleTableOpen = () => {
     setOpen(1);
@@ -228,7 +226,6 @@ export const MergeTable = (props: MergeTableProps) => {
         handleUpdateData();
 
         // stop if every cell is either marked Tick or Cross or Dash
-
         if (
           mergeTableRows.every((row) =>
             Object.values(row).every(
@@ -242,7 +239,7 @@ export const MergeTable = (props: MergeTableProps) => {
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [dataContext.rows, mergeTableRows, isPlaying, displayStep]);
+  }, [dataContext.rows, mergeTableRows, isPlaying, displayStep, animationStep]);
 
   const handleUpdateData = () => {
     console.log("MergeTable handleUpdateData: stepNumber: ", displayStep);
@@ -259,27 +256,6 @@ export const MergeTable = (props: MergeTableProps) => {
       markLowerTriangularCells(markUpperTriangularCells(markDiagonalCells()));
       // setDisplayStep(null);
     }
-
-    // const columns = mergeTableColumns.map((column) => {
-    //   if (column.field?.startsWith("cell-")) {
-    //     return {
-    //       ...column,
-    //       renderCell: renderCell,
-    //     };
-    //   } else {
-    //     return column;
-    //   }
-    // });
-
-    // if (stepNumber) {
-    //   // markUpperTriangularEntries();
-    //   alert("markNonDiagonalEntries");
-    // }
-
-    // SetMergeTableColumns(columns);
-    // setStepNumber(
-    //   stepNumber === null ? false : stepNumber === false ? true : null
-    // );
   };
 
   const markDiagonalCells = () => {
@@ -341,36 +317,65 @@ export const MergeTable = (props: MergeTableProps) => {
     }
   };
 
-  const getExplanation = () => {
-    if (statesToHighlight.length > 0) {
+  function getExplanation() {
+    if (
+      statesToHighlight.length > 0 &&
+      animationStep === false &&
+      columnName !== null
+    ) {
+      console.log("getExplanation statesToHighlight: ", statesToHighlight);
       const [state1, state2] = statesToHighlight;
-      const row1 = dataContext.rows.find((row) => row.state === state1);
-      const row2 = dataContext.rows.find((row) => row.state === state2);
-      const state1Status = row1.isFinal ? "final" : "";
-      const state2Status = row2.isFinal ? "final" : "";
+      const state1ToCheck = dataContext.rows.find(
+        (row) => row.state === state1
+      )[columnName];
+      const state2ToCheck = dataContext.rows.find(
+        (row) => row.state === state2
+      )[columnName];
+      console.log("getExplanation state1ToCheck: ", state1ToCheck);
+      console.log("getExplanation state2ToCheck: ", state2ToCheck);
+      const row1 = dataContext.rows.find((row) => row.state === state1ToCheck);
+      const row2 = dataContext.rows.find((row) => row.state === state2ToCheck);
+      console.log("getExplanation row1: ", row1);
+      console.log("getExplanation row2: ", row2);
+      const state1Status = row1?.isFinal ? "final" : "non final";
+      const state2Status = row2?.isFinal ? "final" : "non final";
+      console.log("getExplanation state1Status: ", state1Status);
+      console.log("getExplanation state2Status: ", state2Status);
       const result =
         state1Status === "final" && state2Status === "final"
           ? "✓"
-          : (state1Status === "final" && state2Status === "") ||
-            (state1Status === "" && state2Status === "final")
+          : (state1Status === "final" && state2Status === "non final") ||
+            (state1Status === "non final" && state2Status === "final")
           ? "✕"
           : "Empty";
-
+      console.log(
+        "getExplanation: ",
+        "As " +
+          state1ToCheck +
+          " is " +
+          state1Status +
+          " and " +
+          state2ToCheck +
+          " is " +
+          state2Status +
+          ". So,  " +
+          result
+      );
       return (
         "As " +
-        state1 +
+        state1ToCheck +
         " is " +
         state1Status +
         " and " +
-        state2 +
+        state2ToCheck +
         " is " +
         state2Status +
-        ".So,  " +
+        ". So,  " +
         result
       );
     }
     return "";
-  };
+  }
 
   const markLowerTriangularCells = (rows: any[]) => {
     console.log("markLowerTriangularCells");
@@ -387,8 +392,11 @@ export const MergeTable = (props: MergeTableProps) => {
       // show explanation of highlighted cells
       console.log("mergeTable handleUpdateData animationStep is false");
       console.log("animationStep === false: columnIndex", columnIndex);
-      if (columnIndex === columnNames.length - 1) setAnimationStep(true);
-      else {
+      if (columnIndex === columnNames.length - 1) {
+        columnIndex = 0; // reset for next animation
+        setAnimationStep(true);
+      } else {
+        setSnackbarMessage(getExplanation());
         setOpenSnackbar(true);
         columnIndex += 1;
         setAnimationStep(null);
@@ -564,13 +572,14 @@ export const MergeTable = (props: MergeTableProps) => {
             vertical: "top",
             horizontal: "left",
           }}
+          message={snackbarMessage}
         >
           <Alert
             onClose={handleSnackbarClose}
             severity="info"
             sx={{ width: "100%" }}
           >
-            {getExplanation()}
+            {snackbarMessage}
           </Alert>
         </Snackbar>
 
