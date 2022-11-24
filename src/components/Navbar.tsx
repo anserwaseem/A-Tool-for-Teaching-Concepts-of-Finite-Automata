@@ -19,9 +19,7 @@ const pages = Object.values(Pages);
 export function NavBar() {
   console.log("re rendering Navbar");
 
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -42,16 +40,18 @@ export function NavBar() {
             component={RouterLink}
             to={process.env.PUBLIC_URL}
             sx={{
-              mr: 2,
+              m: 1,
+              mr: 7,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
+              fontWeight: 500,
+              fontSize: "1.5rem",
+              letterSpacing: ".1rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            A3S
+            Automadeasy
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -109,17 +109,19 @@ export function NavBar() {
             component={RouterLink}
             to={process.env.PUBLIC_URL}
             sx={{
-              mr: 2,
+              m: 1,
+              mr: 7,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
               fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
+              fontWeight: 500,
+              fontSize: "1.5rem",
+              letterSpacing: ".1rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            A3S
+            Automadeasy
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
