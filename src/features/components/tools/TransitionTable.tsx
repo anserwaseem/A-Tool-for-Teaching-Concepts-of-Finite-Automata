@@ -1,11 +1,8 @@
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { darken, lighten } from "@mui/material/styles";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
+import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import { ToolsTransitionTableProps } from "./props/TransitionTableProps";
-
-const getBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0) : lighten(color, 0);
 
 export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
   console.log("re rendering ToolsTransitionTable: props", props);
@@ -15,7 +12,7 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
       sx={{
         "& .super-app-theme--Both": {
           bgcolor: (theme) =>
-            `${getBackgroundColor(
+            `${GetBackgroundColor(
               theme.palette.info.light,
               theme.palette.mode
             )} !important`,
@@ -23,7 +20,7 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
 
         "& .super-app-theme--Initial": {
           bgcolor: (theme) =>
-            `${getBackgroundColor(
+            `${GetBackgroundColor(
               theme.palette.warning.light,
               theme.palette.mode
             )} !important`,
@@ -31,7 +28,7 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
 
         "& .super-app-theme--Final": {
           bgcolor: (theme) =>
-            `${getBackgroundColor(
+            `${GetBackgroundColor(
               theme.palette.success.light,
               theme.palette.mode
             )} !important`,
@@ -39,7 +36,7 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
 
         "& .super-app-theme--Highlight": {
           bgcolor: (theme) =>
-            `${getBackgroundColor(
+            `${GetBackgroundColor(
               theme.palette.primary.light,
               theme.palette.mode
             )} !important`,

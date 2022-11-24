@@ -50,6 +50,9 @@ import { DataContext } from "../../../components/Editor";
 import CheckIcon from "@mui/icons-material/Check";
 import MinimizeRoundedIcon from "@mui/icons-material/MinimizeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
+import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
+import DataArrayIcon from "@mui/icons-material/DataArray";
+import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.map(
@@ -137,15 +140,27 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const [mergeTableRows, setMergeTableRows] = useState<any[]>([]);
   const [mergeTableColumns, SetMergeTableColumns] = useState<GridColDef[]>([]);
-  const [displayStep, setDisplayStep] = useState<boolean>(null); // null for filling diagonal cells only, false for filling diagonal and upper triangular cells, and true for filling diagonal, upper triangular, and lower triangular cells; lower triangular cells are filled using stepNumber2
-  const [animationStep, setAnimationStep] = useState<boolean>(null); // null for highlighting rows in original transition table, false for showing explanation and true for placing Tick/Cross in Merge Table
+
+  // 0 for filling diagonal cells only,
+  // 1 for showing its explanation,
+  // 2 for filling diagonal and upper triangular cells,
+  // 3 for showing its explanation,
+  // 4 for filling diagonal, upper triangular, and initial crosses in cells,
+  // 5 for showing its explanation,
+  // 6 for filling diagonal, upper triangular, initial crosses and lower triangular cells; lower triangular cells are filled using lowerTriangularStep variable
+  const [displayStep, setDisplayStep] = useState<number>(0);
+
+  // null for highlighting rows in original transition table,
+  // false for showing explanation,
+  // true for placing Tick/Cross in Merge Table
+  const [lowerTriangularStep, setLowerTriangularStep] = useState<boolean>(null);
   const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
   const [columnName, setColumnName] = useState<string>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const theme = useTheme();
-  const [open, setOpen] = useState(0); // 1 for table open, 2 for dfa open, 0 for both close
+  const [open, setOpen] = useState(1); // 1 for table open, 2 for dfa open, 0 for both close
 
   const handleTableOpen = () => {
     setOpen(1);
@@ -229,7 +244,7 @@ export const MergeTable = (props: MergeTableProps) => {
         if (
           mergeTableRows.every((row) =>
             Object.values(row).every(
-              (cell) => cell === "✓" || cell === "✕" || cell === "-"
+              (cell) => cell === "✓" || cell === "✕" || cell === "—"
             )
           )
         ) {
@@ -239,21 +254,56 @@ export const MergeTable = (props: MergeTableProps) => {
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [dataContext.rows, mergeTableRows, isPlaying, displayStep, animationStep]);
+  }, [
+    dataContext.rows,
+    mergeTableRows,
+    isPlaying,
+    displayStep,
+    lowerTriangularStep,
+  ]);
 
   const handleUpdateData = () => {
     console.log("MergeTable handleUpdateData: stepNumber: ", displayStep);
-    if (displayStep === null) {
-      console.log("mergeTable handleUpdateData displayStep is null");
+    if (displayStep === 0) {
+      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
       setMergeTableRows(markDiagonalCells());
-      setDisplayStep(false);
-    } else if (displayStep === false) {
-      console.log("mergeTable handleUpdateData displayStep is false");
+      setDisplayStep(1);
+    } else if (displayStep === 1) {
+      setMergeTableRows(markDiagonalCells());
+      setSnackbarMessage("Diagonal cells are marked with Tick.✓");
+      setOpenSnackbar(true);
+      setDisplayStep(2);
+    } else if (displayStep === 2) {
+      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
       setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
-      setDisplayStep(true);
+      setDisplayStep(3);
+    } else if (displayStep === 3) {
+      setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
+      setSnackbarMessage("Upper triangular cells are marked with Dash.—");
+      setOpenSnackbar(true);
+      setDisplayStep(4);
+    } else if (displayStep === 4) {
+      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
+      setMergeTableRows(
+        markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
+      );
+      setDisplayStep(5);
+    } else if (displayStep === 5) {
+      setMergeTableRows(
+        markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
+      );
+      setSnackbarMessage(
+        "All cells having one Final and one Non Final state are marked with Cross.✕"
+      );
+      setOpenSnackbar(true);
+      setDisplayStep(6);
     } else {
-      console.log("mergeTable handleUpdateData displayStep is true");
-      markLowerTriangularCells(markUpperTriangularCells(markDiagonalCells()));
+      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
+      markLowerTriangularCells(
+        markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
+      );
+      //
+
       // setDisplayStep(null);
     }
   };
@@ -275,7 +325,7 @@ export const MergeTable = (props: MergeTableProps) => {
       const stateIndex = stateNames.indexOf(row.state);
       const cells = stateNames.map((state, index) => {
         if (stateIndex > index) {
-          return "-";
+          return "—";
         } else {
           return "";
         }
@@ -304,6 +354,39 @@ export const MergeTable = (props: MergeTableProps) => {
     });
   };
 
+  const markInitialCrosses = (rows: any[]) => {
+    console.log("markInitialCrosses");
+    // mark cross in the cells of each row for which one state is final and other is not
+    return rows.map((row, i) => {
+      const stateIndex = dataContext.rows.findIndex(
+        (s) => s.state === row.state
+      );
+      const cells = dataContext.rows.map((r, index) => {
+        if (stateIndex < index) {
+          if (r.isFinal && !row.isFinal) {
+            return "✕";
+          } else if (!r.isFinal && row.isFinal) {
+            return "✕";
+          } else {
+            return "";
+          }
+        } else {
+          return "";
+        }
+      });
+      console.log("markInitialCrosses cells at i: ", i, cells);
+      return {
+        ...row,
+        ...cells.reduce((acc, cell, index) => {
+          if (cell !== "") {
+            acc[`cell-${dataContext.rows[index].state}`] = cell;
+          }
+          return acc;
+        }, {}),
+      };
+    });
+  };
+
   const getStatesToBeHighlighted = (rows: any[]) => {
     console.log("getStatesToBeHighlighted");
     const stateNames = dataContext.rows.map((row) => row.state);
@@ -317,10 +400,10 @@ export const MergeTable = (props: MergeTableProps) => {
     }
   };
 
-  function getExplanation() {
+  function getExplanation(result: string) {
     if (
       statesToHighlight.length > 0 &&
-      animationStep === false &&
+      lowerTriangularStep === false &&
       columnName !== null
     ) {
       console.log("getExplanation statesToHighlight: ", statesToHighlight);
@@ -331,46 +414,21 @@ export const MergeTable = (props: MergeTableProps) => {
       const state2ToCheck = dataContext.rows.find(
         (row) => row.state === state2
       )[columnName];
-      console.log("getExplanation state1ToCheck: ", state1ToCheck);
-      console.log("getExplanation state2ToCheck: ", state2ToCheck);
-      const row1 = dataContext.rows.find((row) => row.state === state1ToCheck);
-      const row2 = dataContext.rows.find((row) => row.state === state2ToCheck);
-      console.log("getExplanation row1: ", row1);
-      console.log("getExplanation row2: ", row2);
-      const state1Status = row1?.isFinal ? "final" : "non final";
-      const state2Status = row2?.isFinal ? "final" : "non final";
-      console.log("getExplanation state1Status: ", state1Status);
-      console.log("getExplanation state2Status: ", state2Status);
-      const result =
-        state1Status === "final" && state2Status === "final"
-          ? "✓"
-          : (state1Status === "final" && state2Status === "non final") ||
-            (state1Status === "non final" && state2Status === "final")
-          ? "✕"
-          : "Empty";
-      console.log(
-        "getExplanation: ",
-        "As " +
-          state1ToCheck +
-          " is " +
-          state1Status +
-          " and " +
-          state2ToCheck +
-          " is " +
-          state2Status +
-          ". So,  " +
-          result
-      );
+
       return (
         "As " +
         state1ToCheck +
-        " is " +
-        state1Status +
-        " and " +
+        " " +
         state2ToCheck +
-        " is " +
-        state2Status +
-        ". So,  " +
+        " cell is " +
+        (result === ""
+          ? "Empty"
+          : result === "✓"
+          ? "Tick"
+          : result === "✕"
+          ? "Cross"
+          : result) +
+        "." +
         result
       );
     }
@@ -380,34 +438,64 @@ export const MergeTable = (props: MergeTableProps) => {
   const markLowerTriangularCells = (rows: any[]) => {
     console.log("markLowerTriangularCells");
 
-    if (animationStep === null) {
+    if (lowerTriangularStep === null) {
       // highlight states in original transition table in sidebar
-      console.log("mergeTable handleUpdateData animationStep is null");
+      console.log("mergeTable handleUpdateData lowerTriangularStep is null");
       console.log("setStatesToHighlight", getStatesToBeHighlighted(rows));
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
       // setDisplayStep(true);
-      setAnimationStep(false);
-    } else if (animationStep === false) {
+      setLowerTriangularStep(false);
+    } else if (lowerTriangularStep === false) {
       // show explanation of highlighted cells
-      console.log("mergeTable handleUpdateData animationStep is false");
-      console.log("animationStep === false: columnIndex", columnIndex);
-      if (columnIndex === columnNames.length - 1) {
-        columnIndex = 0; // reset for next animation
-        setAnimationStep(true);
-      } else {
-        setSnackbarMessage(getExplanation());
-        setOpenSnackbar(true);
-        columnIndex += 1;
-        setAnimationStep(null);
+      console.log("mergeTable handleUpdateData lowerTriangularStep is false");
+      console.log("lowerTriangularStep === false: columnIndex", columnIndex);
+
+      const colValue = dataContext?.rows?.find(
+        (row) => row.state === statesToHighlight[1]
+      )[columnName];
+      const rowValue = dataContext?.rows?.find(
+        (row) => row.state === statesToHighlight[0]
+      )[columnName];
+
+      let row = rows.find((row) => row.state === rowValue);
+      let cellValue = row[`cell-${colValue}`];
+      if (cellValue === "—") {
+        row = rows.find((row) => row.state === colValue);
+        cellValue = row[`cell-${rowValue}`];
       }
-      setStatesToHighlight([]); // reset for next iteration
+
+      if (cellValue !== "") {
+        setMergeTableRows(
+          rows.map((row) => {
+            if (row.state === statesToHighlight[0]) {
+              return {
+                ...row,
+                [`cell-${statesToHighlight[1]}`]: cellValue,
+              };
+            }
+            return row;
+          })
+        );
+      }
+
+      setStatesToHighlight(getStatesToBeHighlighted(rows));
+      setColumnName(columnNames[columnIndex]);
+      setSnackbarMessage(getExplanation(cellValue));
+      setOpenSnackbar(true);
+
+      if (columnIndex === columnNames.length - 1 || cellValue !== "") {
+        columnIndex = 0;
+      } else columnIndex += 1;
+      setLowerTriangularStep(null);
+
+      // setStatesToHighlight([]); // reset for next iteration
       // setDisplayStep(true);
-    } else if (animationStep === true) {
+    } else if (lowerTriangularStep === true) {
       // markLowerTriangularCells
-      console.log("mergeTable handleUpdateData animationStep is true");
+      console.log("mergeTable handleUpdateData lowerTriangularStep is true");
       // setDisplayStep(true);
-      setAnimationStep(null);
+      setLowerTriangularStep(null);
     }
 
     // const stateNames = dataContext.rows.map((row) => row.state);
@@ -566,20 +654,32 @@ export const MergeTable = (props: MergeTableProps) => {
         <CssBaseline />
         <Snackbar
           open={openSnackbar}
-          autoHideDuration={duration * 1000}
+          autoHideDuration={
+            isPlaying ? duration * 1000 : duration * 1000 * 1000
+          }
           onClose={handleSnackbarClose}
           anchorOrigin={{
             vertical: "top",
             horizontal: "left",
           }}
-          message={snackbarMessage}
         >
           <Alert
             onClose={handleSnackbarClose}
             severity="info"
             sx={{ width: "100%" }}
+            icon={
+              snackbarMessage?.at(-1) === "✓" ? (
+                <CheckIcon fontSize="medium" />
+              ) : snackbarMessage?.at(-1) === "✕" ? (
+                <ClearIcon fontSize="medium" />
+              ) : snackbarMessage?.at(-1) === "—" ? (
+                <HorizontalRuleIcon fontSize="medium" />
+              ) : (
+                <DataArrayIcon fontSize="medium" />
+              )
+            }
           >
-            {snackbarMessage}
+            {snackbarMessage.slice(0, -1)}
           </Alert>
         </Snackbar>
 
@@ -721,16 +821,73 @@ export const MergeTable = (props: MergeTableProps) => {
               </ButtonGroup>
             </Grid>
             <Grid item xs={12}>
-              <DataGrid
-                rows={mergeTableRows}
-                columns={mergeTableColumns}
-                autoHeight
-                hideFooter
-                pageSize={MaxNumberOfStates}
-                // density="compact"
-                // disableSelectionOnClick
-                // experimentalFeatures={{ newEditingApi: true }}
-              />
+              <Box
+                sx={{
+                  "& .super-app-theme--HighlightPair": {
+                    bgcolor: (theme) =>
+                      `${GetBackgroundColor(
+                        theme.palette.primary.light,
+                        theme.palette.mode
+                      )} !important`,
+                  },
+                  "& .super-app-theme--HighlightCurrentCell": {
+                    bgcolor: (theme) =>
+                      `${GetBackgroundColor(
+                        theme.palette.error.light,
+                        theme.palette.mode
+                      )} !important`,
+                  },
+                }}
+              >
+                <DataGrid
+                  rows={mergeTableRows}
+                  columns={mergeTableColumns}
+                  autoHeight
+                  hideFooter
+                  pageSize={MaxNumberOfStates}
+                  // density="compact"
+                  disableSelectionOnClick
+                  getCellClassName={(params) => {
+                    console.log("HighlightCurrentCell params: ", params);
+                    return `super-app-theme--${
+                      params
+                        ? params?.field === "cell-" + statesToHighlight[1] &&
+                          params?.row?.state === statesToHighlight[0]
+                          ? "HighlightCurrentCell"
+                          : dataContext &&
+                            dataContext?.rows &&
+                            dataContext?.rows?.length > 0 &&
+                            statesToHighlight?.length > 0
+                          ? // if a cell is found in upper triangular region (i., it's value is Dash), then highlight the corresponding cell in lower triangular region
+                            params?.field ===
+                              "cell-" +
+                                dataContext?.rows?.find(
+                                  (r) => r.state === statesToHighlight[1]
+                                )[columnName] &&
+                            params?.row?.state ===
+                              dataContext?.rows?.find(
+                                (r) => r.state === statesToHighlight[0]
+                              )[columnName] &&
+                            params?.value !== "—"
+                            ? "HighlightPair"
+                            : params?.field ===
+                                "cell-" +
+                                  dataContext?.rows?.find(
+                                    (r) => r.state === statesToHighlight[0]
+                                  )[columnName] &&
+                              params?.row?.state ===
+                                dataContext?.rows?.find(
+                                  (r) => r.state === statesToHighlight[1]
+                                )[columnName] &&
+                              params?.value !== "—"
+                            ? "HighlightPair"
+                            : ""
+                          : ""
+                        : ""
+                    }`;
+                  }}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Main>
