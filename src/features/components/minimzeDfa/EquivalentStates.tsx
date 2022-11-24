@@ -19,23 +19,14 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridRenderCellParams,
-  GridRowsProp,
-  useGridApiRef,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
-import { RowModel } from "../../../models";
-import { MergeTableProps } from "./props/MergeTableProps";
+import { EquivalentStatesProps } from "./props/EquivalentStatesProps";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
-import { MergeTableRowModel } from "../../../models/minimizeDfa/MergeTableRowModel";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -127,8 +118,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-export const MergeTable = (props: MergeTableProps) => {
-  console.log("re rendering MergeTable, props: ", props);
+export const EquivalentStates = (props: EquivalentStatesProps) => {
+  console.log("re rendering EquivalentStates, props: ", props);
 
   const dataContext = useContext(DataContext);
 
@@ -138,8 +129,8 @@ export const MergeTable = (props: MergeTableProps) => {
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
   const [isReady, setIsReady] = useState(false); // set to true when animation is completed and user clicks on "Complete" button i.e., when user is ready to move on to next step
 
-  const [mergeTableRows, setMergeTableRows] = useState<any[]>([]);
-  const [mergeTableColumns, SetMergeTableColumns] = useState<GridColDef[]>([]);
+  const [equivalentStatesRows, setEquivalentStatesRows] = useState<any[]>([]);
+  const [equivalentStatesColumns, SetEquivalentStatesColumns] = useState<GridColDef[]>([]);
 
   // 0 for filling diagonal cells only,
   // 1 for showing its explanation,
@@ -223,14 +214,14 @@ export const MergeTable = (props: MergeTableProps) => {
         console.log("rows.push: ", rows);
       }
 
-      SetMergeTableColumns(columns);
-      setMergeTableRows(rows);
+      SetEquivalentStatesColumns(columns);
+      setEquivalentStatesRows(rows);
     }
   }, [dataContext.rows]);
 
   useEffect(() => {
     console.log(
-      "MergeTable useEffect, isPlaying, duration: ",
+      "EquivalentStates useEffect, isPlaying, duration: ",
       isPlaying,
       duration
     );
@@ -242,7 +233,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
         // stop if every cell is either marked Tick or Cross or Dash
         if (
-          mergeTableRows.every((row) =>
+          equivalentStatesRows.every((row) =>
             Object.values(row).every(
               (cell) => cell === "✓" || cell === "✕" || cell === "—"
             )
@@ -256,40 +247,40 @@ export const MergeTable = (props: MergeTableProps) => {
     }
   }, [
     dataContext.rows,
-    mergeTableRows,
+    equivalentStatesRows,
     isPlaying,
     displayStep,
     lowerTriangularStep,
   ]);
 
   const handleUpdateData = () => {
-    console.log("MergeTable handleUpdateData: stepNumber: ", displayStep);
+    console.log("EquivalentStates handleUpdateData: stepNumber: ", displayStep);
     if (displayStep === 0) {
-      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
-      setMergeTableRows(markDiagonalCells());
+      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      setEquivalentStatesRows(markDiagonalCells());
       setDisplayStep(1);
     } else if (displayStep === 1) {
-      setMergeTableRows(markDiagonalCells());
+      setEquivalentStatesRows(markDiagonalCells());
       setSnackbarMessage("Diagonal cells are marked with Tick.✓");
       setOpenSnackbar(true);
       setDisplayStep(2);
     } else if (displayStep === 2) {
-      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
-      setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
+      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      setEquivalentStatesRows(markUpperTriangularCells(markDiagonalCells()));
       setDisplayStep(3);
     } else if (displayStep === 3) {
-      setMergeTableRows(markUpperTriangularCells(markDiagonalCells()));
+      setEquivalentStatesRows(markUpperTriangularCells(markDiagonalCells()));
       setSnackbarMessage("Upper triangular cells are marked with Dash.—");
       setOpenSnackbar(true);
       setDisplayStep(4);
     } else if (displayStep === 4) {
-      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
-      setMergeTableRows(
+      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      setEquivalentStatesRows(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
       setDisplayStep(5);
     } else if (displayStep === 5) {
-      setMergeTableRows(
+      setEquivalentStatesRows(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
       setSnackbarMessage(
@@ -298,7 +289,7 @@ export const MergeTable = (props: MergeTableProps) => {
       setOpenSnackbar(true);
       setDisplayStep(6);
     } else {
-      console.log("mergeTable handleUpdateData displayStep is: ", displayStep);
+      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
       markLowerTriangularCells(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
@@ -310,7 +301,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const markDiagonalCells = () => {
     console.log("markDiagonalCells");
-    return mergeTableRows.map((row) => {
+    return equivalentStatesRows.map((row) => {
       return {
         ...row,
         [`cell-${row.state}`]: "✓",
@@ -440,7 +431,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
     if (lowerTriangularStep === null) {
       // highlight states in original transition table in sidebar
-      console.log("mergeTable handleUpdateData lowerTriangularStep is null");
+      console.log("equivalentStates handleUpdateData lowerTriangularStep is null");
       console.log("setStatesToHighlight", getStatesToBeHighlighted(rows));
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
@@ -448,7 +439,7 @@ export const MergeTable = (props: MergeTableProps) => {
       setLowerTriangularStep(false);
     } else if (lowerTriangularStep === false) {
       // show explanation of highlighted cells
-      console.log("mergeTable handleUpdateData lowerTriangularStep is false");
+      console.log("equivalentStates handleUpdateData lowerTriangularStep is false");
       console.log("lowerTriangularStep === false: columnIndex", columnIndex);
 
       const colValue = dataContext?.rows?.find(
@@ -466,7 +457,7 @@ export const MergeTable = (props: MergeTableProps) => {
       }
 
       if (cellValue !== "") {
-        setMergeTableRows(
+        setEquivalentStatesRows(
           rows.map((row) => {
             if (row.state === statesToHighlight[0]) {
               return {
@@ -493,7 +484,7 @@ export const MergeTable = (props: MergeTableProps) => {
       // setDisplayStep(true);
     } else if (lowerTriangularStep === true) {
       // markLowerTriangularCells
-      console.log("mergeTable handleUpdateData lowerTriangularStep is true");
+      console.log("equivalentStates handleUpdateData lowerTriangularStep is true");
       // setDisplayStep(true);
       setLowerTriangularStep(null);
     }
@@ -540,7 +531,7 @@ export const MergeTable = (props: MergeTableProps) => {
   };
 
   const renderCell = (params: GridRenderCellParams<string>) => {
-    console.log("MergeTable renderCell, params: ", params);
+    console.log("EquivalentStates renderCell, params: ", params);
     const { id, field, value } = params;
 
     // mark diagonal entries as Tick
@@ -562,7 +553,7 @@ export const MergeTable = (props: MergeTableProps) => {
 
   const handleDurationChange = (event: SelectChangeEvent) => {
     console.log(
-      "MergeTable handleDurationChange, event.target.value, duration: ",
+      "EquivalentStates handleDurationChange, event.target.value, duration: ",
       event.target.value,
       duration
     );
@@ -570,7 +561,7 @@ export const MergeTable = (props: MergeTableProps) => {
   };
 
   const handleAnimation = () => {
-    console.log("MergeTable handleAnimation");
+    console.log("EquivalentStates handleAnimation");
     if (isComplete) {
       // when replay button is clicked, null clossure component is re rendered
       // so, modified transition table AND resultant dfa are made hidden until animation is completed
@@ -582,16 +573,16 @@ export const MergeTable = (props: MergeTableProps) => {
   };
 
   const showNextRow = () => {
-    console.log("MergeTable show next row");
+    console.log("EquivalentStates show next row");
     if (isComplete) {
       setIsReady(true);
-      // props.setCompletedMergeTableRows(mergeTableRows);
-      props.setIsMergeTableComplete(true);
+      // props.setCompletedEquivalentStatesRows(equivalentStatesRows);
+      props.setIsEquivalentStatesComplete(true);
     }
 
     handleUpdateData();
 
-    if (mergeTableRows.every((row) => row.state !== "")) {
+    if (equivalentStatesRows.every((row) => row.state !== "")) {
       setIsComplete(true);
       setIsPlaying(false);
     }
@@ -840,8 +831,8 @@ export const MergeTable = (props: MergeTableProps) => {
                 }}
               >
                 <DataGrid
-                  rows={mergeTableRows}
-                  columns={mergeTableColumns}
+                  rows={equivalentStatesRows}
+                  columns={equivalentStatesColumns}
                   autoHeight
                   hideFooter
                   pageSize={MaxNumberOfStates}

@@ -1,26 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { DraggableStateModel, RowModel, TransitionModel } from "../models";
-import { NfaToDfaProps } from "./props/NfaToDfaProps";
-import { NullClosure } from "./components/nfaToDfa/NullClosure";
-import { NullClosureProps } from "./components/nfaToDfa/props/NullClosureProps";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
-import { ModifiedTable } from "./components/nfaToDfa/ModifiedTable";
-import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTableProps";
 import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
-import { MergeTable } from "./components/minimzeDfa/MergeTable";
-import { MergeTableProps } from "./components/minimzeDfa/props/MergeTableProps";
-import { MinimizeDfaProps } from "./props/MinimizeDfaProps";
-import { MergeTableRowModel } from "../models/minimizeDfa/MergeTableRowModel";
+import { EquivalentStates } from "./components/minimzeDfa/EquivalentStates";
+import { EquivalentStatesProps } from "./components/minimzeDfa/props/EquivalentStatesProps";
 import { DataContext } from "../components/Editor";
+import { EquivalentStatesRowModel } from "../models/minimizeDfa/EquivalentStatesRowModel";
 
 export const MinimizeDfa = () => {
   console.log("re rendering MinimizeDfa");
 
   const dataContext = useContext(DataContext);
 
-  const [isMergeTableComplete, setIsMergeTableComplete] = useState(false);
-  const [mergeTableRows, setMergeTableRows] = useState<MergeTableRowModel[]>(
+  const [isEquivalentStatesComplete, setIsEquivalentStatesComplete] =
+    useState(false);
+  const [equivalentStatesRows, setEquivalentStatesRows] = useState<EquivalentStatesRowModel[]>(
     []
   );
 
@@ -38,11 +33,11 @@ export const MinimizeDfa = () => {
   ] = useState(false); //no need
   const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]); // no need
 
-  let mergeTableProps: MergeTableProps = {
+  let equivalentStatesProps: EquivalentStatesProps = {
     // rows: dataContext.rows,
     // columns: dataContext.columns,
-    setCompletedMergeTableRows: setMergeTableRows,
-    setIsMergeTableComplete: setIsMergeTableComplete,
+    setCompletedEquivalentStatesRows: setEquivalentStatesRows,
+    setIsEquivalentStatesComplete: setIsEquivalentStatesComplete,
   };
 
   let resultantDfaProps: ResultantDfaProps = {
@@ -68,8 +63,8 @@ export const MinimizeDfa = () => {
 
   return (
     <>
-      <MergeTable {...mergeTableProps} />
-      {isMergeTableComplete && <ResultantDfa {...resultantDfaProps} />}
+      <EquivalentStates {...equivalentStatesProps} />
+      {isEquivalentStatesComplete && <ResultantDfa {...resultantDfaProps} />}
     </>
   );
 };
