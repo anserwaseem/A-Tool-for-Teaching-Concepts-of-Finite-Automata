@@ -239,12 +239,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
         handleUpdateData();
 
-        // stop if every cell is either marked Tick or Cross or Dash
+        // stop if every cell is filled
         if (
           equivalentStatesRows.every((row) =>
-            Object.values(row).every(
-              (cell) => cell === "✓" || cell === "✕" || cell === "—"
-            )
+            Object.values(row).every((cell) => cell !== "")
           )
         ) {
           setIsComplete(true);
@@ -510,6 +508,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           })
         );
       }
+
       if (columnIndex === columnNames.length - 1 && cellValue === "") {
         console.log("lowerTriangularStep === false: cellValue is empty");
         setWillThereBeNextIteration(true);
@@ -519,11 +518,11 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             : [...cells, [...statesToHighlight]]
         );
       }
+
       // if there is no further empty cell in rows, then reset emptyCells and set willThereBeNextIteration to false
       const searchIndex = rows.findIndex(
         (row) => row.state === statesToHighlight[0]
       );
-
       const rowsToCheck = rows.slice(searchIndex + 1);
       const isThereAnyEmptyCell = rowsToCheck.some((row) =>
         Object.keys(row).some((key) => row[key] === "")
