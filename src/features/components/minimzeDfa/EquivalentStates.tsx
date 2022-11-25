@@ -150,10 +150,8 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const [willThereBeNextIteration, setWillThereBeNextIteration] =
-    useState<boolean>(false);
   // cells which would remain empty for current iteration
-  const [emptyCells, setEmptyCells] = useState<string[][]>();
+  const [emptyCells, setEmptyCells] = useState<string[][]>([]);
   const [iteration, setIteration] = useState<number>(0);
   const [isIterationComplete, setIsIterationComplete] =
     useState<boolean>(false);
@@ -188,44 +186,8 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
   // make DataGrid of props.rows.length by props.rows.length size as soon as props.rows is updated
   useEffect(() => {
-    if (dataContext.rows?.length > 0) {
-      const columns: GridColDef[] = [
-        {
-          field: "state",
-          headerName: "",
-          disableColumnMenu: true,
-          sortable: false,
-          flex: 1,
-        },
-      ];
-
-      const rows = [];
-      const stateNames = dataContext.rows.map((row) => row.state);
-      for (let i = 0; i < dataContext.rows.length; i++) {
-        columns.push({
-          field: `cell-${dataContext.rows[i].state}`,
-          headerName: dataContext.rows[i].state,
-          disableColumnMenu: true,
-          sortable: false,
-          flex: 1,
-        });
-
-        // put each state in the first column of each row
-        rows.push({
-          id: i,
-          state: dataContext.rows[i].state,
-          ...Object.fromEntries(
-            stateNames.map((stateName) => [`cell-${stateName}`, ""])
-          ),
-        });
-
-        console.log("rows.push: ", rows);
-      }
-
-      SetEquivalentStatesColumns(columns);
-      setEquivalentStatesRows(rows);
-    }
-  }, [dataContext.rows]);
+    initializeRows();
+  }, []);
 
   useEffect(() => {
     console.log(
@@ -251,13 +213,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [
-    dataContext.rows,
-    equivalentStatesRows,
-    isPlaying,
-    displayStep,
-    lowerTriangularStep,
-  ]);
+  }, [equivalentStatesRows, isPlaying, displayStep, lowerTriangularStep]);
 
   const handleUpdateData = () => {
     console.log("EquivalentStates handleUpdateData: stepNumber: ", displayStep);
@@ -314,6 +270,46 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       //
 
       // setDisplayStep(null);
+    }
+  };
+
+  const initializeRows = () => {
+    if (dataContext.rows?.length > 0) {
+      const columns: GridColDef[] = [
+        {
+          field: "state",
+          headerName: "",
+          disableColumnMenu: true,
+          sortable: false,
+          flex: 1,
+        },
+      ];
+
+      const rows = [];
+      const stateNames = dataContext.rows.map((row) => row.state);
+      for (let i = 0; i < dataContext.rows.length; i++) {
+        columns.push({
+          field: `cell-${dataContext.rows[i].state}`,
+          headerName: dataContext.rows[i].state,
+          disableColumnMenu: true,
+          sortable: false,
+          flex: 1,
+        });
+
+        // put each state in the first column of each row
+        rows.push({
+          id: i,
+          state: dataContext.rows[i].state,
+          ...Object.fromEntries(
+            stateNames.map((stateName) => [`cell-${stateName}`, ""])
+          ),
+        });
+
+        console.log("rows.push: ", rows);
+      }
+
+      SetEquivalentStatesColumns(columns);
+      setEquivalentStatesRows(rows);
     }
   };
 
@@ -511,7 +507,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
       if (columnIndex === columnNames.length - 1 && cellValue === "") {
         console.log("lowerTriangularStep === false: cellValue is empty");
-        setWillThereBeNextIteration(true);
         setEmptyCells((cells) =>
           cells === undefined
             ? [[...statesToHighlight]]
@@ -544,8 +539,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       } else columnIndex += 1;
 
       if (!isThereAnyEmptyCell) {
-        setWillThereBeNextIteration(false);
-        setEmptyCells(null);
+        setEmptyCells([]);
         setIteration((it) => it + 1);
         setIsIterationComplete(true);
       }
@@ -602,27 +596,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     // });
   };
 
-  const renderCell = (params: GridRenderCellParams<string>) => {
-    console.log("EquivalentStates renderCell, params: ", params);
-    const { id, field, value } = params;
-
-    // mark diagonal entries as Tick
-    if (field?.replace("cell-", "") === params.row.state) {
-      return <CheckIcon />;
-    }
-    // mark uppeer triangular entries as Cross
-    if (
-      (displayStep as any) !== null &&
-      field?.replace("cell-", "") < params.row.state
-    ) {
-      return <MinimizeRoundedIcon fontSize="small" />;
-    }
-    // mark lower triangular entries
-    if (displayStep) {
-      return "ok";
-    } else return "";
-  };
-
   const handleDurationChange = (event: SelectChangeEvent) => {
     console.log(
       "EquivalentStates handleDurationChange, event.target.value, duration: ",
@@ -635,17 +608,21 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const handleAnimation = () => {
     console.log("EquivalentStates handleAnimation");
     if (isComplete) {
-      // when replay button is clicked, null clossure component is re rendered
-      // so, modified transition table AND resultant dfa are made hidden until animation is completed
-      // because modified transition table and resultant dfa are dependent on null closure table
       setIsReady(false);
       setIsComplete(false);
       setIsPlaying(true);
+
+      initializeRows();
+      setDisplayStep(0);
+      setLowerTriangularStep(null);
+      setStatesToHighlight([]);
+      setIteration(0);
+      setIsIterationComplete(false);
     } else setIsPlaying((v) => !v);
   };
 
-  const showNextRow = () => {
-    console.log("EquivalentStates show next row");
+  const showNextStep = () => {
+    console.log("EquivalentStates showNextStep");
     if (isComplete) {
       setIsReady(true);
       // props.setCompletedEquivalentStatesRows(equivalentStatesRows);
@@ -654,7 +631,12 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
     handleUpdateData();
 
-    if (equivalentStatesRows.every((row) => row.state !== "")) {
+    // stop if every cell is filled
+    if (
+      equivalentStatesRows.every((row) =>
+        Object.values(row).every((cell) => cell !== "")
+      )
+    ) {
       setIsComplete(true);
       setIsPlaying(false);
     }
@@ -893,7 +875,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
                 </Button>
                 <Button
                   variant={isComplete ? "contained" : "outlined"}
-                  onClick={showNextRow}
+                  onClick={showNextStep}
                   disabled={isReady}
                 >
                   {isComplete ? "Complete" : "Next"}

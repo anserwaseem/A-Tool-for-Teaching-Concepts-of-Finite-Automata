@@ -170,9 +170,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   const handleAnimation = () => {
     console.log("ModifiedTable handleAnimation");
     if (isComplete) {
-      // when replay button is clicked, null clossure component is re rendered
-      // so, modified transition table AND resultant dfa are made hidden until animation is completed
-      // because modified transition table and resultant dfa are dependent on null closure table
       setIsReady(false);
       setIsComplete(false);
       index = 1;
