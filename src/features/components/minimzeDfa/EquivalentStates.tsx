@@ -38,12 +38,12 @@ import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { ToolsPlayground } from "../tools/Playground";
 import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { DataContext } from "../../../components/Editor";
+import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import CheckIcon from "@mui/icons-material/Check";
 import MinimizeRoundedIcon from "@mui/icons-material/MinimizeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
-import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
@@ -154,6 +154,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     useState<boolean>(false);
   // cells which would remain empty for current iteration
   const [emptyCells, setEmptyCells] = useState<string[][]>();
+  const [iteration, setIteration] = useState<number>(0);
+  const [isIterationComplete, setIsIterationComplete] =
+    useState<boolean>(false);
 
   const theme = useTheme();
   const [open, setOpen] = useState(1); // 1 for table open, 2 for dfa open, 0 for both close
@@ -510,35 +513,43 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       if (columnIndex === columnNames.length - 1 && cellValue === "") {
         console.log("lowerTriangularStep === false: cellValue is empty");
         setWillThereBeNextIteration(true);
-        setEmptyCells((cells) => {
-          return [...cells, [statesToHighlight[0], statesToHighlight[1]]];
-        });
+        setEmptyCells((cells) =>
+          cells === undefined
+            ? [[...statesToHighlight]]
+            : [...cells, [...statesToHighlight]]
+        );
       }
-      // if there is no further empty cell in rows from statesToHighlight[0], cell-statesToHighlight[1] till end, then set emptyCells to null
+      // if there is no further empty cell in rows, then reset emptyCells and set willThereBeNextIteration to false
       const searchIndex = rows.findIndex(
         (row) => row.state === statesToHighlight[0]
       );
-      const emptyCell = rows
-        .slice(searchIndex)
-        .find((row) => row[`cell-${statesToHighlight[1]}`] === "");
-      console.log(
-        "lowerTriangularStep === false: emptyCell: ",
-        emptyCell,
-        searchIndex
+
+      const rowsToCheck = rows.slice(searchIndex + 1);
+      const isThereAnyEmptyCell = rowsToCheck.some((row) =>
+        Object.keys(row).some((key) => row[key] === "")
       );
-      if (!emptyCell) {
-        setEmptyCells(null);
-      }
-      
+      console.log(
+        "lowerTriangularStep === false: isThereAnyEmptyCell: ",
+        isThereAnyEmptyCell
+      );
+
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
       setSnackbarMessage(getExplanation(cellValue));
       setOpenSnackbar(true);
+      setIsIterationComplete(false);
+      setLowerTriangularStep(null);
 
       if (columnIndex === columnNames.length - 1 || cellValue !== "") {
         columnIndex = 0;
       } else columnIndex += 1;
-      setLowerTriangularStep(null);
+
+      if (!isThereAnyEmptyCell) {
+        setWillThereBeNextIteration(false);
+        setEmptyCells(null);
+        setIteration((it) => it + 1);
+        setIsIterationComplete(true);
+      }
 
       // setStatesToHighlight([]); // reset for next iteration
       // setDisplayStep(true);
@@ -735,6 +746,23 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             {snackbarMessage.slice(0, -1)}
           </Alert>
         </Snackbar>
+        {isIterationComplete && (
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={
+              isPlaying ? duration * 1000 : duration * 1000 * 1000
+            }
+            onClose={handleSnackbarClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <Alert onClose={handleSnackbarClose} sx={{ width: "100%" }}>
+              {`Iteration ${iteration} completed.`}
+            </Alert>
+          </Snackbar>
+        )}
 
         <AppBar open={open}>
           <Toolbar>

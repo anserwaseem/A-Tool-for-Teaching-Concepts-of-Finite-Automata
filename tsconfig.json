@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noImplicitUseStrict": true
+    "noImplicitUseStrict": true,
+    "sourceMap": true
   },
   "include": ["src"]
 }
