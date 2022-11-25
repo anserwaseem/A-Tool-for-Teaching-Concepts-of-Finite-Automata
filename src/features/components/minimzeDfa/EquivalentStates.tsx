@@ -46,9 +46,7 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 
 const drawerWidth = 200;
-const columnNames = PossibleTransitionValues.map(
-  (value) => value !== "^" && value.toString()
-);
+const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
@@ -130,7 +128,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [isReady, setIsReady] = useState(false); // set to true when animation is completed and user clicks on "Complete" button i.e., when user is ready to move on to next step
 
   const [equivalentStatesRows, setEquivalentStatesRows] = useState<any[]>([]);
-  const [equivalentStatesColumns, SetEquivalentStatesColumns] = useState<GridColDef[]>([]);
+  const [equivalentStatesColumns, SetEquivalentStatesColumns] = useState<
+    GridColDef[]
+  >([]);
 
   // 0 for filling diagonal cells only,
   // 1 for showing its explanation,
@@ -149,6 +149,11 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [columnName, setColumnName] = useState<string>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [willThereBeNextIteration, setWillThereBeNextIteration] =
+    useState<boolean>(false);
+  // cells which would remain empty for current iteration
+  const [emptyCells, setEmptyCells] = useState<string[][]>();
 
   const theme = useTheme();
   const [open, setOpen] = useState(1); // 1 for table open, 2 for dfa open, 0 for both close
@@ -256,7 +261,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const handleUpdateData = () => {
     console.log("EquivalentStates handleUpdateData: stepNumber: ", displayStep);
     if (displayStep === 0) {
-      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      console.log(
+        "equivalentStates handleUpdateData displayStep is: ",
+        displayStep
+      );
       setEquivalentStatesRows(markDiagonalCells());
       setDisplayStep(1);
     } else if (displayStep === 1) {
@@ -265,7 +273,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setOpenSnackbar(true);
       setDisplayStep(2);
     } else if (displayStep === 2) {
-      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      console.log(
+        "equivalentStates handleUpdateData displayStep is: ",
+        displayStep
+      );
       setEquivalentStatesRows(markUpperTriangularCells(markDiagonalCells()));
       setDisplayStep(3);
     } else if (displayStep === 3) {
@@ -274,7 +285,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setOpenSnackbar(true);
       setDisplayStep(4);
     } else if (displayStep === 4) {
-      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      console.log(
+        "equivalentStates handleUpdateData displayStep is: ",
+        displayStep
+      );
       setEquivalentStatesRows(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
@@ -289,7 +303,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setOpenSnackbar(true);
       setDisplayStep(6);
     } else {
-      console.log("equivalentStates handleUpdateData displayStep is: ", displayStep);
+      console.log(
+        "equivalentStates handleUpdateData displayStep is: ",
+        displayStep
+      );
       markLowerTriangularCells(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
@@ -354,9 +371,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       );
       const cells = dataContext.rows.map((r, index) => {
         if (stateIndex < index) {
-          if (r.isFinal && !row.isFinal) {
+          if (r.isFinal && !dataContext.rows[stateIndex].isFinal) {
             return "✕";
-          } else if (!r.isFinal && row.isFinal) {
+          } else if (!r.isFinal && dataContext.rows[stateIndex].isFinal) {
             return "✕";
           } else {
             return "";
@@ -384,7 +401,18 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
     for (let i = 0; i < rows.length; i++) {
       for (let j = 0; j < stateNames.length; j++) {
-        if (i < j && rows[i][`cell-${stateNames[j]}`] === "") {
+        console.log(
+          "getStatesToBeHighlighted rows[i][`cell-${stateNames[j]}`]: ",
+          emptyCells,
+          rows[i][`cell-${stateNames[j]}`]
+        );
+        if (
+          i < j &&
+          rows[i][`cell-${stateNames[j]}`] === "" &&
+          !emptyCells?.some((cell) =>
+            cell?.every((c) => c === stateNames[i] || c === stateNames[j])
+          )
+        ) {
           return [stateNames[i], stateNames[j]];
         }
       }
@@ -431,7 +459,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
     if (lowerTriangularStep === null) {
       // highlight states in original transition table in sidebar
-      console.log("equivalentStates handleUpdateData lowerTriangularStep is null");
+      console.log(
+        "equivalentStates handleUpdateData lowerTriangularStep is null"
+      );
       console.log("setStatesToHighlight", getStatesToBeHighlighted(rows));
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
@@ -439,7 +469,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setLowerTriangularStep(false);
     } else if (lowerTriangularStep === false) {
       // show explanation of highlighted cells
-      console.log("equivalentStates handleUpdateData lowerTriangularStep is false");
+      console.log(
+        "equivalentStates handleUpdateData lowerTriangularStep is false"
+      );
       console.log("lowerTriangularStep === false: columnIndex", columnIndex);
 
       const colValue = dataContext?.rows?.find(
@@ -455,6 +487,12 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
         row = rows.find((row) => row.state === colValue);
         cellValue = row[`cell-${rowValue}`];
       }
+      console.log(
+        "lowerTriangularStep === false: cellValue: ",
+        columnNames.length,
+        cellValue,
+        cellValue === ""
+      );
 
       if (cellValue !== "") {
         setEquivalentStatesRows(
@@ -469,7 +507,29 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           })
         );
       }
-
+      if (columnIndex === columnNames.length - 1 && cellValue === "") {
+        console.log("lowerTriangularStep === false: cellValue is empty");
+        setWillThereBeNextIteration(true);
+        setEmptyCells((cells) => {
+          return [...cells, [statesToHighlight[0], statesToHighlight[1]]];
+        });
+      }
+      // if there is no further empty cell in rows from statesToHighlight[0], cell-statesToHighlight[1] till end, then set emptyCells to null
+      const searchIndex = rows.findIndex(
+        (row) => row.state === statesToHighlight[0]
+      );
+      const emptyCell = rows
+        .slice(searchIndex)
+        .find((row) => row[`cell-${statesToHighlight[1]}`] === "");
+      console.log(
+        "lowerTriangularStep === false: emptyCell: ",
+        emptyCell,
+        searchIndex
+      );
+      if (!emptyCell) {
+        setEmptyCells(null);
+      }
+      
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
       setSnackbarMessage(getExplanation(cellValue));
@@ -484,7 +544,9 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       // setDisplayStep(true);
     } else if (lowerTriangularStep === true) {
       // markLowerTriangularCells
-      console.log("equivalentStates handleUpdateData lowerTriangularStep is true");
+      console.log(
+        "equivalentStates handleUpdateData lowerTriangularStep is true"
+      );
       // setDisplayStep(true);
       setLowerTriangularStep(null);
     }
@@ -694,7 +756,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
               fontWeight={"bold"}
               color={"black"}
             >
-              Merge Table
+              Equivalence States
             </Typography>
             <IconButton
               color="secondary"
@@ -841,14 +903,13 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
                   getCellClassName={(params) => {
                     console.log("HighlightCurrentCell params: ", params);
                     return `super-app-theme--${
-                      params
+                      params && statesToHighlight?.length > 0
                         ? params?.field === "cell-" + statesToHighlight[1] &&
                           params?.row?.state === statesToHighlight[0]
                           ? "HighlightCurrentCell"
                           : dataContext &&
                             dataContext?.rows &&
-                            dataContext?.rows?.length > 0 &&
-                            statesToHighlight?.length > 0
+                            dataContext?.rows?.length > 0
                           ? // if a cell is found in upper triangular region (i., it's value is Dash), then highlight the corresponding cell in lower triangular region
                             params?.field ===
                               "cell-" +
