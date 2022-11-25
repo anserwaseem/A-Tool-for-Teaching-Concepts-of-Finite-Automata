@@ -19,7 +19,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
@@ -32,11 +32,8 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
-import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { ToolsTransitionTable } from "../tools/TransitionTable";
-import { ToolsPlayground } from "../tools/Playground";
-import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { DataContext } from "../../../components/Editor";
 import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import CheckIcon from "@mui/icons-material/Check";
@@ -131,10 +128,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   // 6 for filling diagonal, upper triangular, initial crosses and lower triangular cells; lower triangular cells are filled using lowerTriangularStep variable
   const [displayStep, setDisplayStep] = useState<number>(0);
 
-  // null for highlighting rows in original transition table,
-  // false for showing explanation,
-  // true for placing Tick/Cross in Merge Table
-  const [lowerTriangularStep, setLowerTriangularStep] = useState<boolean>(null);
+  // false for highlighting rows in original transition table and in equivalent states table,
+  // true for showing its explanation
+  const [lowerTriangularStep, setLowerTriangularStep] =
+    useState<boolean>(false);
   const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
   const [columnName, setColumnName] = useState<string>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -402,7 +399,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   function getExplanation(result: string) {
     if (
       statesToHighlight.length > 0 &&
-      lowerTriangularStep === false &&
+      lowerTriangularStep &&
       columnName !== null
     ) {
       console.log("getExplanation statesToHighlight: ", statesToHighlight);
@@ -437,22 +434,23 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const markLowerTriangularCells = (rows: any[]) => {
     console.log("markLowerTriangularCells");
 
-    if (lowerTriangularStep === null) {
+    if (!lowerTriangularStep) {
       // highlight states in original transition table in sidebar
       console.log(
-        "equivalentStates handleUpdateData lowerTriangularStep is null"
+        "equivalentStates handleUpdateData lowerTriangularStep is: ",
+        lowerTriangularStep
       );
       console.log("setStatesToHighlight", getStatesToBeHighlighted(rows));
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
-      // setDisplayStep(true);
-      setLowerTriangularStep(false);
-    } else if (lowerTriangularStep === false) {
+      setLowerTriangularStep(true);
+    } else if (lowerTriangularStep) {
       // show explanation of highlighted cells
       console.log(
-        "equivalentStates handleUpdateData lowerTriangularStep is false"
+        "equivalentStates handleUpdateData lowerTriangularStep is: ",
+        lowerTriangularStep
       );
-      console.log("lowerTriangularStep === false: columnIndex", columnIndex);
+      console.log("columnIndex", columnIndex);
 
       const colValue = dataContext?.rows?.find(
         (row) => row.state === statesToHighlight[1]
@@ -468,7 +466,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
         cellValue = row[`cell-${rowValue}`];
       }
       console.log(
-        "lowerTriangularStep === false: cellValue: ",
+        "cellValue: ",
         columnNames.length,
         cellValue,
         cellValue === ""
@@ -489,7 +487,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       }
 
       if (columnIndex === columnNames.length - 1 && cellValue === "") {
-        console.log("lowerTriangularStep === false: cellValue is empty");
+        console.log("cellValue is empty");
         setEmptyCells((cells) =>
           cells === undefined
             ? [[...statesToHighlight]]
@@ -505,17 +503,14 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       const isThereAnyEmptyCell = rowsToCheck.some((row) =>
         Object.keys(row).some((key) => row[key] === "")
       );
-      console.log(
-        "lowerTriangularStep === false: isThereAnyEmptyCell: ",
-        isThereAnyEmptyCell
-      );
+      console.log("isThereAnyEmptyCell: ", isThereAnyEmptyCell);
 
       setStatesToHighlight(getStatesToBeHighlighted(rows));
       setColumnName(columnNames[columnIndex]);
       setSnackbarMessage(getExplanation(cellValue));
       setOpenSnackbar(true);
       setIsIterationComplete(false);
-      setLowerTriangularStep(null);
+      setLowerTriangularStep(false);
 
       if (columnIndex === columnNames.length - 1 || cellValue !== "") {
         columnIndex = 0;
@@ -526,57 +521,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
         setIteration((it) => it + 1);
         setIsIterationComplete(true);
       }
-
-      // setStatesToHighlight([]); // reset for next iteration
-      // setDisplayStep(true);
-    } else if (lowerTriangularStep === true) {
-      // markLowerTriangularCells
-      console.log(
-        "equivalentStates handleUpdateData lowerTriangularStep is true"
-      );
-      // setDisplayStep(true);
-      setLowerTriangularStep(null);
     }
-
-    // const stateNames = dataContext.rows.map((row) => row.state);
-    // return rows.map((row, i) => {
-    //   const stateIndex = stateNames.indexOf(row.state);
-    //   const cells = stateNames.map((state, index) => {
-    //     if (stateIndex < index) {
-    //       row1ToHighlight = dataContext.rows.find(
-    //         (r) => r.state === stateNames[stateIndex]
-    //       );
-    //       row2ToHighlight = dataContext.rows.find(
-    //         (r) => r.state === stateNames[index]
-    //       );
-    //       statesToHighlight = [stateNames[stateIndex], stateNames[index]];
-    //       return "✕";
-    //     } else {
-    //       return "";
-    //     }
-    //   });
-    //   console.log("markLowerTriangularCells cells at i: ", i, cells);
-    //   console.log({
-    //     ...row,
-    //     // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
-    //     ...cells.reduce((acc, cell, index) => {
-    //       if (cell !== "") {
-    //         acc[`cell-${stateNames[index]}`] = cell;
-    //       }
-    //       return acc;
-    //     }, {}),
-    //   });
-    //   return {
-    //     ...row,
-    //     // mark Dash to only those cells of each row for whom cell value is not empty i.e., marked Dash
-    //     ...cells.reduce((acc, cell, index) => {
-    //       if (cell !== "") {
-    //         acc[`cell-${stateNames[index]}`] = cell;
-    //       }
-    //       return acc;
-    //     }, {}),
-    //   };
-    // });
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
@@ -598,7 +543,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
       initializeRows();
       setDisplayStep(0);
-      setLowerTriangularStep(null);
+      setLowerTriangularStep(false);
       setStatesToHighlight([]);
       setIteration(0);
       setIsIterationComplete(false);
@@ -655,26 +600,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
     statesToHighlight: statesToHighlight,
     columnName: columnName,
-  };
-
-  const playgroundProps: ToolsPlaygroundProps = {
-    states: dataContext.states.map((state) => {
-      return {
-        ...state,
-        id: `${state.id}mt`,
-      };
-    }),
-
-    transitions: dataContext.transitions.map((transition) => {
-      return {
-        ...transition,
-        props: {
-          ...transition.props,
-          start: `${transition.props.start}mt`,
-          end: `${transition.props.end}mt`,
-        },
-      };
-    }),
   };
 
   return (
