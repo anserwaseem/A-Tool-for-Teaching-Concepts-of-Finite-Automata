@@ -40,7 +40,6 @@ import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { DataContext } from "../../../components/Editor";
 import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import CheckIcon from "@mui/icons-material/Check";
-import MinimizeRoundedIcon from "@mui/icons-material/MinimizeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
@@ -62,7 +61,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     }),
   }),
   marginLeft: `-${drawerWidth}px`,
-  marginRight: `-${drawerWidth * 2}px`,
 
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeOut,
@@ -70,9 +68,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   }),
   ...(open === 1 && {
     marginLeft: 0,
-  }),
-  ...(open === 2 && {
-    marginRight: 0,
   }),
 }));
 
@@ -90,7 +85,6 @@ const AppBar = styled(MuiAppBar, {
   top: "auto",
   backgroundColor: "rgb(200, 200, 200)",
   position: "absolute",
-  alignItems: "center",
 
   ...(open === 0 && {
     transition: theme.transitions.create(["margin", "width"], {
@@ -101,10 +95,6 @@ const AppBar = styled(MuiAppBar, {
   ...(open === 1 && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-  }),
-  ...(open === 2 && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginRight: drawerWidth,
   }),
 }));
 
@@ -157,20 +147,13 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     useState<boolean>(false);
 
   const theme = useTheme();
-  const [open, setOpen] = useState(1); // 1 for table open, 2 for dfa open, 0 for both close
+  const [open, setOpen] = useState(1);
 
   const handleTableOpen = () => {
     setOpen(1);
   };
 
   const handleTableClose = () => {
-    setOpen(0);
-  };
-  const handleDfaOpen = () => {
-    setOpen(2);
-  };
-
-  const handleDfaClose = () => {
     setOpen(0);
   };
 
@@ -608,6 +591,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const handleAnimation = () => {
     console.log("EquivalentStates handleAnimation");
     if (isComplete) {
+      // if animation is complete, reset everything i.e., replay
       setIsReady(false);
       setIsComplete(false);
       setIsPlaying(true);
@@ -747,39 +731,32 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
         <AppBar open={open}>
           <Toolbar>
-            <IconButton
-              color="secondary"
-              aria-label="open transition table"
-              onClick={handleTableOpen}
-              edge="start"
-              sx={{
-                ...(open === 1 && { mr: 2, display: "none" }),
-              }}
-            >
-              <TableChartOutlinedIcon />
-            </IconButton>
-            <Typography
-              noWrap
-              variant="h5"
-              component="div"
-              fontWeight={"bold"}
-              color={"black"}
-            >
-              Equivalence States
-            </Typography>
-            <IconButton
-              color="secondary"
-              aria-label="open drawer"
-              edge="end"
-              onClick={handleDfaOpen}
-              sx={{
-                display: { xs: "none", md: "none", lg: "block" },
-                marginTop: { lg: "8px" },
-                ...(open === 2 && { display: "none" }),
-              }}
-            >
-              <AccountTreeOutlinedIcon />
-            </IconButton>
+            <Grid container>
+              <Grid item xs={5}>
+                <IconButton
+                  color="secondary"
+                  aria-label="open transition table"
+                  onClick={handleTableOpen}
+                  // edge="start"
+                  sx={{ ml: -1, ...(open === 1 && { mr: 2, display: "none" }) }}
+                >
+                  <TableChartOutlinedIcon />
+                </IconButton>
+              </Grid>
+              <Grid item xs={7}>
+                <Typography
+                  noWrap
+                  variant="h5"
+                  fontWeight={"bold"}
+                  color={"black"}
+                  sx={{
+                    ...(open === 0 && { mt: 0.5 }),
+                  }}
+                >
+                  Equivalence States
+                </Typography>
+              </Grid>
+            </Grid>
           </Toolbar>
         </AppBar>
 
@@ -952,55 +929,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             </Grid>
           </Grid>
         </Main>
-
-        <Drawer
-          sx={{
-            width: drawerWidth * 2,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              position: "relative",
-              width: drawerWidth * 2,
-              boxSizing: "border-box",
-              backgroundColor: "#f5f5f5",
-            },
-          }}
-          variant="persistent"
-          anchor="right"
-          open={open === 2}
-        >
-          <DrawerHeader
-            sx={{
-              justifyContent: "flex-start",
-              backgroundColor: "rgb(200, 200, 200)",
-              boxShadow:
-                "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-            }}
-          >
-            <IconButton onClick={handleDfaClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
-            </IconButton>
-            <Typography
-              noWrap
-              variant="overline"
-              align="center"
-              fontWeight={"bold"}
-            >
-              Original DFA
-            </Typography>
-          </DrawerHeader>
-          <Divider />
-          {/* <Box
-            sx={{
-              marginTop: "40%",
-            }}
-          > */}
-          <ToolsPlayground {...playgroundProps} />
-          {/* </Box> */}
-        </Drawer>
       </Box>
     </>
   );
