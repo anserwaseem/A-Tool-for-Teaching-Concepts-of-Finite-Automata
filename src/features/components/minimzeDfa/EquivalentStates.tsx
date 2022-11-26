@@ -143,6 +143,8 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [iteration, setIteration] = useState<number>(0);
   const [isIterationComplete, setIsIterationComplete] =
     useState<boolean>(false);
+  const [emptyCellsOfPreviousIteration, setEmptyCellsOfPreviousIteration] =
+    useState<string[][]>([]);
 
   const theme = useTheme();
   const [open, setOpen] = useState(1);
@@ -512,6 +514,32 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setLowerTriangularStep(false);
 
       if (columnIndex === columnNames.length - 1 && !isThereAnyEmptyCell) {
+        if (
+          emptyCellsOfPreviousIteration?.length > 0 &&
+          JSON.stringify(emptyCellsOfPreviousIteration) ===
+            JSON.stringify(emptyCells)
+        ) {
+          setSnackbarMessage(
+            "Marking remaining empty cells as Tick as no new cell has been filled in this iteration."
+          );
+
+          // mark remaining empty cells as Tick
+          const stateNames = dataContext.rows.map((row) => row.state);
+          for (let i = 0; i < rows.length; i++) {
+            for (let j = 0; j < stateNames.length; j++) {
+              console.log(
+                "getStatesToBeHighlighted rows[i][`cell-${stateNames[j]}`]: ",
+                emptyCells,
+                rows[i][`cell-${stateNames[j]}`]
+              );
+              if (rows[i][`cell-${stateNames[j]}`] === "") {
+                rows[i][`cell-${stateNames[j]}`] = "✓";
+              }
+            }
+          }
+          setEquivalentStatesRows(rows);
+        } else setEmptyCellsOfPreviousIteration(emptyCells);
+
         setEmptyCells([]);
         setIteration((it) => it + 1);
         setIsIterationComplete(true);
