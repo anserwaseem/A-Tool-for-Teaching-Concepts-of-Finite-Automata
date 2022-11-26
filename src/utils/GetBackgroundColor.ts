@@ -1,4 +1,7 @@
 import { darken, lighten } from "@mui/material";
 
-export const GetBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0) : lighten(color, 0);
+export const GetBackgroundColor = (
+  color: string,
+  mode: string,
+  frequency: number
+) => (mode === "dark" ? darken(color, frequency) : lighten(color, frequency));

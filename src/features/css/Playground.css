@@ -5,9 +5,8 @@
 
 .statesContainer {
   position: relative;
-  height: 100%;
   width: 100%;
-  border: solid black 1px;
+  border: solid rgb(200, 200, 200) 1px;
 }
 
 .titleStyle {
@@ -26,8 +25,10 @@
 
 .toolboxMenu {
   width: 100px;
-  background: rgb(200, 200, 200);
+  background: rgba(148, 148, 148, 0.15);
   text-align: center;
+  border: solid rgb(200, 200, 200) 1px;
+  border-right: none;
 }
 
 .toolboxTitle {

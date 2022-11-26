@@ -13,8 +13,9 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
         "& .super-app-theme--Both": {
           bgcolor: (theme) =>
             `${GetBackgroundColor(
-              theme.palette.info.light,
-              theme.palette.mode
+              theme.palette.info.main,
+              theme.palette.mode,
+              0.25
             )} !important`,
         },
 
@@ -22,7 +23,8 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
           bgcolor: (theme) =>
             `${GetBackgroundColor(
               theme.palette.warning.light,
-              theme.palette.mode
+              theme.palette.mode,
+              0.25
             )} !important`,
         },
 
@@ -30,7 +32,8 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
           bgcolor: (theme) =>
             `${GetBackgroundColor(
               theme.palette.success.light,
-              theme.palette.mode
+              theme.palette.mode,
+              0.25
             )} !important`,
         },
 
@@ -38,7 +41,8 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
           bgcolor: (theme) =>
             `${GetBackgroundColor(
               theme.palette.primary.light,
-              theme.palette.mode
+              theme.palette.mode,
+              0.75
             )} !important`,
         },
       }}

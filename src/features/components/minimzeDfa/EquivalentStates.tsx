@@ -81,7 +81,7 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.enteringScreen,
   }),
   top: "auto",
-  backgroundColor: "rgb(200, 200, 200)",
+  backgroundColor: "rgba(148, 148, 148, 0.15)",
   position: "absolute",
 
   ...(open === 0 && {
@@ -655,8 +655,8 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           }
           onClose={handleSnackbarClose}
           anchorOrigin={{
-            vertical: "top",
-            horizontal: "left",
+            vertical: "bottom",
+            horizontal: "center",
           }}
         >
           <Alert
@@ -686,7 +686,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             }
             onClose={handleSnackbarClose}
             anchorOrigin={{
-              vertical: "top",
+              vertical: "bottom",
               horizontal: "right",
             }}
           >
@@ -745,7 +745,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           <DrawerHeader
             sx={{
               justifyContent: "flex-end",
-              backgroundColor: "rgb(200, 200, 200)",
+              backgroundColor: "rgba(148, 148, 148, 0.15)",
               boxShadow:
                 "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
             }}
@@ -776,7 +776,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           </Box>
         </Drawer>
 
-        <Main open={open}>
+        <Main open={open} sx={{ paddingBottom: 12 }}>
           <DrawerHeader />
           <Grid container>
             {/* Grid for Add a Row button and Tools */}
@@ -833,14 +833,16 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
                     bgcolor: (theme) =>
                       `${GetBackgroundColor(
                         theme.palette.primary.light,
-                        theme.palette.mode
+                        theme.palette.mode,
+                        0.75
                       )} !important`,
                   },
                   "& .super-app-theme--HighlightCurrentCell": {
                     bgcolor: (theme) =>
                       `${GetBackgroundColor(
-                        theme.palette.error.light,
-                        theme.palette.mode
+                        "#00cc00",
+                        theme.palette.mode,
+                        0
                       )} !important`,
                   },
                 }}
@@ -863,7 +865,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
                           : dataContext &&
                             dataContext?.rows &&
                             dataContext?.rows?.length > 0
-                          ? // if a cell is found in upper triangular region (i., it's value is Dash), then highlight the corresponding cell in lower triangular region
+                          ? // if a cell is found in upper triangular region (i.e., it's value is Dash), then highlight the corresponding cell in lower triangular region
                             params?.field ===
                               "cell-" +
                                 dataContext?.rows?.find(
