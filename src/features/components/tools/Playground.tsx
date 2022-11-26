@@ -12,8 +12,8 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
       ? "nc"
       : stateToInquire?.includes("ntd")
       ? "ntd"
-      : stateToInquire?.includes("mt")
-      ? "mt"
+      : stateToInquire?.includes("est")
+      ? "est"
       : stateToInquire?.includes("md")
       ? "md"
       : "";
@@ -21,7 +21,11 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   return (
     <div>
       <Xwrapper>
-        <div className="canvasStyle" id="canvas">
+        <div
+          className="canvasStyle"
+          id="canvas"
+          style={props?.canvasWidth ? { width: props?.canvasWidth } : {}}
+        >
           <div id="statesContainer" className="statesContainer">
             {props.states.map((state) => (
               <div

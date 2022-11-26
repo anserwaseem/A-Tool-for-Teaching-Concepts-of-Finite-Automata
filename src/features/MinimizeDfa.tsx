@@ -7,19 +7,21 @@ import { EquivalentStates } from "./components/minimzeDfa/EquivalentStates";
 import { EquivalentStatesProps } from "./components/minimzeDfa/props/EquivalentStatesProps";
 import { DataContext } from "../components/Editor";
 import { EquivalentStatesRowModel } from "../models/minimizeDfa/EquivalentStatesRowModel";
+import { MinimizedDfaProps } from "./components/minimzeDfa/props/MinimizedDfaProps";
+import { MinimizedDfa } from "./components/minimzeDfa/MinimizedDfa";
 
 export const MinimizeDfa = () => {
   console.log("re rendering MinimizeDfa");
 
   const dataContext = useContext(DataContext);
 
-  const [isEquivalentStatesComplete, setIsEquivalentStatesComplete] =
+  const [isEquivalentStatesFilled, setIsEquivalentStatesFilled] =
     useState(false);
-  const [equivalentStatesRows, setEquivalentStatesRows] = useState<EquivalentStatesRowModel[]>(
-    []
-  );
+  const [equivalentStatesRows, setEquivalentStatesRows] = useState<
+    EquivalentStatesRowModel[]
+  >([]);
 
-  const [isResultantDfaComplete, setIsResultantDfaComplete] = useState(false);
+  const [isMinimizedDfaComplete, setIsMinimizedDfaComplete] = useState(false);
   const [resultantDfaStates, setResultantDfaStates] = useState<
     DraggableStateModel[]
   >([]);
@@ -36,12 +38,12 @@ export const MinimizeDfa = () => {
   let equivalentStatesProps: EquivalentStatesProps = {
     // rows: dataContext.rows,
     // columns: dataContext.columns,
-    setCompletedEquivalentStatesRows: setEquivalentStatesRows,
-    setIsEquivalentStatesComplete: setIsEquivalentStatesComplete,
+    setFilledEquivalentStatesRows: setEquivalentStatesRows,
+    setIsEquivalentStatesFilled: setIsEquivalentStatesFilled,
   };
 
-  let resultantDfaProps: ResultantDfaProps = {
-    rows: modifiedRows.map((row) => {
+  let minimizedDfaProps: MinimizedDfaProps = {
+    rows: dataContext?.rows?.map((row) => {
       return {
         ...row,
         ...Object.fromEntries(
@@ -51,20 +53,36 @@ export const MinimizeDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mt", "md"))
+              .map((tv) => tv.replace(tv, tv + "md"))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
-    setIsResultantDfaComplete: setIsResultantDfaComplete,
-    editorPlaygroundSize: dataContext.editorPlaygroundSize,
+    states: dataContext.states.map((state) => {
+      return {
+        ...state,
+        id: `${state.id}md`,
+      };
+    }),
+    transitions: dataContext.transitions.map((transition) => {
+      return {
+        ...transition,
+        props: {
+          ...transition.props,
+          start: `${transition.props.start}md`,
+          end: `${transition.props.end}md`,
+        },
+      };
+    }),
+    equivalentStatesRows: equivalentStatesRows,
+    setIsMinimizedDfaComplete: setIsMinimizedDfaComplete,
   };
 
   return (
     <>
       <EquivalentStates {...equivalentStatesProps} />
-      {isEquivalentStatesComplete && <ResultantDfa {...resultantDfaProps} />}
+      {isEquivalentStatesFilled && <MinimizedDfa {...minimizedDfaProps} />}
     </>
   );
 };
