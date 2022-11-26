@@ -44,6 +44,7 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
+let numberOfTicks = 0;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: number;
@@ -472,21 +473,19 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
         cellValue === ""
       );
 
-      if (cellValue !== "") {
-        setEquivalentStatesRows(
-          rows.map((row) => {
-            if (row.state === statesToHighlight[0]) {
-              return {
-                ...row,
-                [`cell-${statesToHighlight[1]}`]: cellValue,
-              };
-            }
-            return row;
-          })
-        );
+      // paste Cross in the current cell whenever found (and move to the next cell)
+      if (cellValue === "✕") {
+        setCellValue(rows, cellValue);
+      } else if (cellValue === "✓") {
+        numberOfTicks++;
+        if (
+          columnIndex === columnNames.length - 1 &&
+          numberOfTicks === columnNames.length
+        ) {
+          setCellValue(rows, cellValue);
+        }
       }
-
-      if (columnIndex === columnNames.length - 1 && cellValue === "") {
+      if (columnIndex === columnNames.length - 1 && cellValue !== "✕") {
         console.log("cellValue is empty");
         setEmptyCells((cells) =>
           cells === undefined
@@ -512,16 +511,31 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       setIsIterationComplete(false);
       setLowerTriangularStep(false);
 
-      if (columnIndex === columnNames.length - 1 || cellValue !== "") {
-        columnIndex = 0;
-      } else columnIndex += 1;
-
-      if (!isThereAnyEmptyCell) {
+      if (columnIndex === columnNames.length - 1 && !isThereAnyEmptyCell) {
         setEmptyCells([]);
         setIteration((it) => it + 1);
         setIsIterationComplete(true);
       }
+
+      if (columnIndex === columnNames.length - 1 || cellValue === "✕") {
+        columnIndex = 0;
+        numberOfTicks = 0;
+      } else columnIndex += 1;
     }
+  };
+
+  const setCellValue = (rows: any[], cellValue: string) => {
+    setEquivalentStatesRows(
+      rows.map((row) => {
+        if (row.state === statesToHighlight[0]) {
+          return {
+            ...row,
+            [`cell-${statesToHighlight[1]}`]: cellValue,
+          };
+        }
+        return row;
+      })
+    );
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
