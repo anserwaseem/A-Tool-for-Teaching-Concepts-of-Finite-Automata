@@ -49,7 +49,7 @@ import {
   TransitionModel,
 } from "../../../models";
 
-const drawerWidth = 200;
+const drawerWidth = 300;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
 let numberOfTicks = 0;
@@ -118,7 +118,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[4]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[6]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -143,7 +143,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   // 1 for merging rows & states
   // 2 for showing its explanation
   const [mergeStep, setMergeStep] = useState<number>(0);
-  const [transitionStep, setTransitionStep] = useState<boolean>(false);
+  const [transitionStep, setTransitionStep] = useState<number>(0);
   const [stateNamesToMerge, setStateNamesToMerge] = useState<string[]>([]);
 
   // false for highlighting rows in original transition table and in equivalent states table,
@@ -185,24 +185,25 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   };
 
   useEffect(() => {
-    setMinimizedDfaRows(
-      dataContext.rows.map((row) => {
-        return {
-          ...row,
-          ...Object.fromEntries(
-            PossibleTransitionValues.concat("state").map((key) => [
-              key === "^" ? "nul" : key,
-              row[key === "^" ? "nul" : key]
-                .toString()
-                .split(" ")
-                .filter((key) => key !== "")
-                .map((tv) => tv.replace("md", ""))
-                .join(" ") ?? row[key === "^" ? "nul" : key],
-            ])
-          ),
-        };
-      })
-    );
+    // setMinimizedDfaRows(
+    //   dataContext.rows.map((row) => {
+    //     return {
+    //       ...row,
+    //       ...Object.fromEntries(
+    //         PossibleTransitionValues.concat("state").map((key) => [
+    //           key === "^" ? "nul" : key,
+    //           row[key === "^" ? "nul" : key]
+    //             .toString()
+    //             .split(" ")
+    //             .filter((key) => key !== "")
+    //             .map((tv) => tv.replace("md", ""))
+    //             .join(" ") ?? row[key === "^" ? "nul" : key],
+    //         ])
+    //       ),
+    //     };
+    //   })
+    // );
+    setMinimizedDfaRows(dataContext?.rows);
     setMinimizedDfaStates(props?.states);
     setMinimizedDfaTransitions(props?.transitions);
   }, []);
@@ -243,7 +244,11 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       var timer = setInterval(function () {
         var timePassed = Date.now() - started;
         if (timePassed >= duration * 1010) {
+          mergeStates();
+          mergeRows();
           clearInterval(timer);
+          setMergeStep(0);
+          setDisplayStep(4);
           return;
         }
         const newStates = minimizedDfaStates.map((state) => {
@@ -260,8 +265,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         setMinimizedDfaStates(newStates);
         i++;
 
-        //   handleStatesMerging();
-
         if (mergeStep && transitionStep) {
           setIsComplete(true);
           setIsPlaying(false);
@@ -269,41 +272,20 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         console.log("setInterval i: ", i);
       }, duration * 10);
       return () => clearTimeout(timer);
+    } else if (transitionStep === 1) {
+      let timer = setTimeout(() => {
+        console.log("inside set timeout transitionStep=1");
 
-      //   for (let i = 1; i <= 100; i++) {
-      //     let mergeTimer = setTimeout(() => {
-      //       console.log("inside mergeTimer");
+        // setMinimizedDfaTransitions((prev) => prev.map((transition) => {
 
-      //       const newStates = minimizedDfaStates.map((state) => {
-      //         if (
-      //           stateNamesToMerge
-      //             .filter(
-      //               (stateName) =>
-      //                 stateName?.replace("md", "") !== stateNamesToMerge[0]
-      //             )
-      //             .includes(state.id?.replace("md", ""))
-      //         ) {
-      //           return {
-      //             ...state,
-      //             x: state.x + (i * (stateToMergeInto.x - state.x)) / 100,
-      //             y: state.y + (i * (stateToMergeInto.y - state.y)) / 100,
-      //           };
-      //         } else {
-      //           return state;
-      //         }
-      //       });
-      //       setMinimizedDfaStates(newStates);
+        // }));
 
-      //     //   handleStatesMerging();
-
-      //       if (mergeStep && transitionStep) {
-      //         setIsComplete(true);
-      //         setIsPlaying(false);
-      //       }
-      //     }, duration * 10);
-      //     return () => clearTimeout(mergeTimer);
-      //   }
-      mergeRows();
+        if (mergeStep && transitionStep) {
+          setIsComplete(true);
+          setIsPlaying(false);
+        }
+      }, duration * 1000);
+      return () => clearTimeout(timer);
     }
   }, [isPlaying, displayStep, mergeStep, transitionStep]);
 
@@ -342,17 +324,23 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     } else if (displayStep === 2) {
       setSnackbarMessage("All transitions of the original DFA are removed.");
       setOpenSnackbar(true);
-      console.log(
-        "inside displayStep === 2; getStatesToBeMerged(): ",
-        getStatesToBeMerged()
-      );
-      setStateNamesToMerge(getStatesToBeMerged());
-      setMergeStep(1);
-      //   setDisplayStep(3);
+      setDisplayStep(3);
     } else if (displayStep === 3) {
-      //   handleMergeStep();
-    } else {
-      setTransitionStep(true);
+      const stateNames = getStateNamesToBeMerged();
+      if (stateNames?.length === 0) setTransitionStep(1);
+      else {
+        setStateNamesToMerge(stateNames);
+        setMergeStep(1);
+      }
+    } else if (displayStep === 4) {
+      setSnackbarMessage(
+        `
+        The state(s) ${stateNamesToMerge.slice(
+          1
+        )} are merged into one state ${stateNamesToMerge}.`
+      );
+      setOpenSnackbar(true);
+      setDisplayStep(3);
     }
   };
 
@@ -364,32 +352,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     }
   };
 
-  const mergeRows = () => {
-    // merge rows having states in statesToMerge array
-    for (let i = -1; i > -stateNamesToMerge.length; i--) {
-      // find statesToMerge[i] in props?.rows and merge it into statesToMerge[0] props?.rows
-      setMinimizedDfaRows((prev) => {
-        const rowToMerge = prev.find(
-          (row) => row.state === stateNamesToMerge[i]
-        );
-        const rowToMergeInto = prev.find(
-          (row) => row.state === stateNamesToMerge[0]
-        );
-        const mergedRow = getMergedRow(rowToMerge, rowToMergeInto);
-        return prev
-          .filter((row) => row.state !== stateNamesToMerge[i])
-          .map((row) => {
-            if (row.state === stateNamesToMerge[0]) {
-              return mergedRow;
-            }
-            return row;
-          });
-      });
-    }
-  };
-
-  const getStatesToBeMerged = () => {
-    let stateNames = [];
+  const getStateNamesToBeMerged = () => {
+    let stateNames: string[] = [];
     let statesFound = false;
     for (
       let i = sliceIndex;
@@ -406,7 +370,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           if (tickNumber === 1) previousKey = key;
           else if (tickNumber === 2) {
             stateNames.push(previousKey, key);
-            sliceIndex = i;
+            sliceIndex = i + 1;
             statesFound = true;
           }
         }
@@ -418,7 +382,68 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         );
       }
     }
+    console.log("getStatesToBeMerged: ", stateNames);
     return stateNames;
+  };
+
+  const mergeStates = () => {
+    setMinimizedDfaStates((prev) => {
+      return prev
+        .filter(
+          (state) =>
+            !stateNamesToMerge.slice(1).includes(state.id?.replace("md", ""))
+        )
+        .map((state) => {
+          if (state.id?.replace("md", "") === stateNamesToMerge[0]) {
+            return {
+              ...state,
+              id:
+                state.id?.replace("md", "") +
+                " " +
+                stateNamesToMerge.slice(1).join(" ") +
+                "md",
+            };
+          } else {
+            return state;
+          }
+        });
+    });
+    console.log("done mergeStates");
+  };
+
+  const mergeRows = () => {
+    // merge rows having states in statesToMerge array
+    for (let i = -1; i > -stateNamesToMerge.length; i--) {
+      // find statesToMerge[i] in props?.rows and merge it into statesToMerge[0] props?.rows
+      setMinimizedDfaRows((prev) => {
+        const rowToMerge = prev.find(
+          (row) => row.state === stateNamesToMerge.at(i)
+        );
+        const rowToMergeInto = prev.find(
+          (row) => row.state === stateNamesToMerge[0]
+        );
+        const mergedRow = getMergedRow(rowToMerge, rowToMergeInto);
+        const rowsAfterMerge = prev
+          .filter((row) => row.state !== stateNamesToMerge.at(i))
+          .map((row) => {
+            if (row.state === stateNamesToMerge[0]) {
+              return mergedRow;
+            }
+            return row;
+          });
+        // look in all PossibleTransitionValues in rowsAfterMerge for rowToMerge.state or rowToMergeInto.state and replace it with mergedRow.state
+        const rowsAfterMergeWithReplacedState = rowsAfterMerge.map((row) => {
+          const newRow = { ...row };
+          for (const [key, value] of Object.entries(row)) {
+            if (value === rowToMerge.state || value === rowToMergeInto.state) {
+              newRow[key] = mergedRow.state;
+            }
+          }
+          return newRow;
+        });
+        return rowsAfterMergeWithReplacedState;
+      });
+    }
   };
 
   const getMergedRow = (
@@ -430,9 +455,15 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       if (key === "isInitial" || key === "isFinal") {
         mergedRow[key] = mergedRow[key] || rowToMerge[key];
       } else if (key !== "id") {
-        mergedRow[key] = mergedRow[key]
-          .toString()
-          .concat(" ", rowToMerge[key].toString());
+        mergedRow[key] = Array.from(
+          new Set(
+            mergedRow[key]
+              ?.toString()
+              ?.concat(" ", rowToMerge[key]?.toString())
+              ?.trimEnd()
+              ?.split(" ")
+          )
+        )?.join(" ");
       }
     });
     return mergedRow;
@@ -544,10 +575,12 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     columns: dataContext.columns
       .filter((col) => col.field !== "action" && col.field !== "nul")
       .map((col) => {
-        return {
-          ...col,
-          editable: false,
-        };
+        if (col.field === "state") return { ...col, flex: 1 };
+        else
+          return {
+            ...col,
+            editable: false,
+          };
       }),
 
     statesToHighlight: statesToHighlight,
@@ -579,17 +612,17 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
             onClose={handleSnackbarClose}
             severity="info"
             sx={{ width: "100%" }}
-            icon={
-              snackbarMessage?.at(-1) === "✓" ? (
-                <CheckIcon fontSize="medium" />
-              ) : snackbarMessage?.at(-1) === "✕" ? (
-                <ClearIcon fontSize="medium" />
-              ) : snackbarMessage?.at(-1) === "—" ? (
-                <HorizontalRuleIcon fontSize="medium" />
-              ) : (
-                <DataArrayIcon fontSize="medium" />
-              )
-            }
+            // icon={
+            //   snackbarMessage?.at(-1) === "✓" ? (
+            //     <CheckIcon fontSize="medium" />
+            //   ) : snackbarMessage?.at(-1) === "✕" ? (
+            //     <ClearIcon fontSize="medium" />
+            //   ) : snackbarMessage?.at(-1) === "—" ? (
+            //     <HorizontalRuleIcon fontSize="medium" />
+            //   ) : (
+            //     <DataArrayIcon fontSize="medium" />
+            //   )
+            // }
           >
             {snackbarMessage.slice(0, -1)}
           </Alert>
@@ -660,7 +693,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         >
           <DrawerHeader
             sx={{
-              justifyContent: "flex-end",
+              justifyContent: "space-evenly",
               backgroundColor: "rgba(148, 148, 148, 0.15)",
               boxShadow:
                 "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
