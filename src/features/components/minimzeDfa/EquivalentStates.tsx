@@ -250,9 +250,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       markLowerTriangularCells(
         markInitialCrosses(markUpperTriangularCells(markDiagonalCells()))
       );
-      //
-
-      // setDisplayStep(null);
     }
   };
 
