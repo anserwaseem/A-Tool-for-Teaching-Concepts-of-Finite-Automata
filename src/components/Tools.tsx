@@ -23,7 +23,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { ToolsProps } from "./props/ToolsProps";
 import { IsDFA } from "../utils/IsDFA";
-import { MINIMIZE_DFA, NFA_TO_DFA } from "./types/AvailableTools";
+import { MINIMIZE_DFA, NFA_TO_DFA, TEST_A_STRING } from "./types/AvailableTools";
 import { DataContext } from "./Editor";
 
 export const Tools = (props: ToolsProps) => {
@@ -93,6 +93,14 @@ export const Tools = (props: ToolsProps) => {
           }}
         >
           {MINIMIZE_DFA}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleCloseToolsMenu();
+            props.setToolSelected(TEST_A_STRING);
+          }}
+        >
+          {TEST_A_STRING}
         </MenuItem>
       </Menu>
     </Box>

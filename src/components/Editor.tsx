@@ -28,6 +28,7 @@ import {
 } from "./types/AvailableTools";
 import { MinimizeDfa } from "../features/MinimizeDfa";
 import { MinimizeDfaProps } from "../features/props/MinimizeDfaProps";
+import TestAString from "../features/TestAString";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -118,6 +119,7 @@ export const Editor = () => {
   const [toolSelected, setToolSelected] = useState<
     typeof NFA_TO_DFA | typeof MINIMIZE_DFA | typeof TEST_A_STRING | null
   >(null);
+  const isTestAStringDialogOpen = useState(false);
 
   const handleAddRow = (row: RowModel) => {
     if (states.length >= MaxNumberOfStates) {
@@ -637,6 +639,7 @@ export const Editor = () => {
         </Box>
         {toolSelected && toolSelected === NFA_TO_DFA && <NfaToDfa />}
         {toolSelected && toolSelected === MINIMIZE_DFA && <MinimizeDfa />}
+        {toolSelected && toolSelected === TEST_A_STRING && <TestAString />}
       </>
     </DataContext.Provider>
   );
