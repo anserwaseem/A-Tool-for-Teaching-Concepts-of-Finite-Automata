@@ -98,6 +98,7 @@ export const Tools = (props: ToolsProps) => {
           onClick={() => {
             handleCloseToolsMenu();
             props.setToolSelected(TEST_A_STRING);
+            props.setIsTestAStringDialogOpen(true);
           }}
         >
           {TEST_A_STRING}

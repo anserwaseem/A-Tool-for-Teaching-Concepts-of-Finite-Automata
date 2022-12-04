@@ -16,4 +16,5 @@ export type ToolsProps = {
       typeof NFA_TO_DFA | typeof MINIMIZE_DFA | typeof TEST_A_STRING | null
     >
   >;
+  setIsTestAStringDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
