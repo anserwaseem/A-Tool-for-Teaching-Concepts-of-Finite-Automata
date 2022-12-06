@@ -8,4 +8,5 @@ export type ToolsPlaygroundProps = {
   states: DraggableStateModel[];
   transitions: TransitionModel[];
   canvasWidth?: number | string;
+  currentStates?: string[];
 };

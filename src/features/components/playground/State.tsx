@@ -105,11 +105,7 @@ export const State = (props: any) => {
 
   return (
     <>
-      <Draggable
-        onStart={props.position !== "static" ? () => {} : undefined}
-        bounds="parent"
-        onDrag={updateXarrow}
-      >
+      <Draggable onDrag={updateXarrow}>
         <div
           ref={props.state.reference}
           className={`state ${props.position} hoverMarker`}

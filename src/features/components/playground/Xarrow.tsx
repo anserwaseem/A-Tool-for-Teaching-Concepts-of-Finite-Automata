@@ -24,7 +24,7 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
       cursor: "pointer",
     },
   };
-  let color = state.color;
+  let color = props?.color ?? state.color;
   if (
     selected &&
     selected.type === "transition" &&

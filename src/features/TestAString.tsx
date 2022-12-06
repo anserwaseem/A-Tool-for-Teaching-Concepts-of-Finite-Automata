@@ -4,7 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TestAStringProps } from "./props/TestAStringProps";
 import {
   Box,
@@ -25,9 +25,14 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
+import { DataContext } from "../components/Editor";
+import { startingStateColor } from "../consts/Colors";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
+
+  const dataContext = useContext(DataContext);
+
   const [duration, setDuration] = useState(AnimationDurationOptions[5]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -41,11 +46,43 @@ const TestAString = (props: TestAStringProps) => {
     TransitionModel[]
   >([]);
 
-  const [testString, setTestString] = useState<string>("");
+  // 0 for highlighting states
+  // 1 for highlighting transitions
+  const [displayStep, setDisplayStep] = useState<number>(0);
 
-  const handleClose = () => {
-    props.setIsTestAStringDialogOpen(false);
-  };
+  const [testString, setTestString] = useState<string>("");
+  const [testStringIndex, setTestStringIndex] = useState<number>(-1); // before iterating original string, check if there are any null transitions from the initial state, hence the index is -1
+
+  const [currentChar, setCurrentChar] = useState<string>("^"); // ^ is the starting character
+  const [currentStates, setCurrentStates] = useState<string[]>([]);
+  const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
+  const [transitionsToHighlight, setTransitionsToHighlight] = useState<
+    TransitionModel[]
+  >([]);
+
+  useEffect(() => {
+    // append ^ after every character in testString
+    setTestString((testString) => testString.split("").join("^") + "^");
+  }, [testString]);
+
+  useEffect(() => {
+    console.log("TestAString useEffect, dataContext: ", dataContext);
+    if (dataContext) {
+      setTestAStringStates(
+        dataContext.states.map((state) => { 
+          return {
+            ...state,
+            id: `${state.id}ts`,
+          };
+        })
+      );
+      setTestAStringTransitions(dataContext.transitions);
+      setCurrentStates((currentStates) => [
+        ...currentStates,
+        dataContext.rows.find((r) => r.isInitial)?.state ?? "",
+      ]);
+    }
+  }, []);
 
   useEffect(() => {
     console.log(
@@ -59,17 +96,80 @@ const TestAString = (props: TestAStringProps) => {
 
         handleUpdateData();
 
-        if (true) {
-          setIsComplete(true);
-          setIsPlaying(false);
-        } else {
-        }
+        // if (true) {
+        //   setIsComplete(true);
+        //   setIsPlaying(false);
+        // } else {
+        // }
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [isPlaying]);
+  }, [isPlaying, displayStep]);
 
-  const handleUpdateData = () => {};
+  const handleUpdateData = () => {
+    if (displayStep === 0) {
+      setStatesToHighlight((statesToHighlight) => [
+        ...statesToHighlight,
+        ...currentStates,
+      ]);
+
+      setDisplayStep(1);
+    } else if (displayStep === 1) {
+      setTestAStringTransitions((testAStringTransitions) => {
+        const filteredTransitions = testAStringTransitions.filter(
+          (t) =>
+            currentStates.includes(t.props.start) &&
+            t.props.value === currentChar
+        );
+        const transitions = testAStringTransitions.map((t) => {
+          if (filteredTransitions.includes(t)) {
+            return {
+              ...t,
+              props: {
+                ...t.props,
+                color: startingStateColor,
+                dashness: {
+                  animation: 1,
+                },
+              },
+            };
+          }
+          return t;
+        });
+        setCurrentStates((currentStates) => [
+          ...currentStates,
+          ...filteredTransitions.map((t) => t.props.end),
+        ]);
+        return transitions;
+      });
+
+      // setTransitionsToHighlight((transitionsToHighlight) => [
+      //   ...transitionsToHighlight,
+      //   ...(testAStringTransitions
+      //     ?.filter(
+      //       (t) =>
+      //         currentStates.includes(t.props.start) &&
+      //         t.props.value === currentChar
+      //     )
+      //     ?.map((t) => ({
+      //       ...t,
+      //       props: {
+      //         ...t.props,
+      //         color: startingStateColor,
+      //         dashness: {
+      //           animation: 10,
+      //         },
+      //       },
+      //     })) ?? []),
+      //   // .find(
+      //   //   (t) =>
+      //   //     currentStates.includes(t.props.start) &&
+      //   //     t.props.value === currentChar
+      //   // ) ?? null,
+      // ]);
+      setDisplayStep(0);
+    }
+  };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
     setDuration(Number(event.target.value));
@@ -101,9 +201,23 @@ const TestAString = (props: TestAStringProps) => {
     }
   };
 
+  const handleClose = () => {
+    props.setIsTestAStringDialogOpen(false);
+  };
+
   const playgroundProps: ToolsPlaygroundProps = {
     states: testAStringStates,
-    transitions: testAStringTransitions,
+    transitions: testAStringTransitions.map((transition) => {
+      return {
+        ...transition,
+        props: {
+          ...transition.props,
+          start: `${transition.props.start}ts`,
+          end: `${transition.props.end}ts`,
+        },
+      };
+    }),
+    currentStates: currentStates.map((state) => `${state}ts`),
   };
 
   return (
@@ -152,54 +266,52 @@ const TestAString = (props: TestAStringProps) => {
             md: 3,
           }}
         >
-          <Grid container alignItems={"center"}>
-            <Grid item xs={12}>
-              <ButtonGroup
-                disableElevation
-                fullWidth
-                variant="outlined"
-                size="large"
-              >
-                <FormControl fullWidth>
-                  <InputLabel id="delay-select-label">Delay</InputLabel>
-                  <Select
-                    labelId="delay-select-label"
-                    id="delay-select"
-                    value={duration.toString()}
-                    label="Delay"
-                    onChange={handleDurationChange}
-                  >
-                    {AnimationDurationOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+          <Grid item xs={12} alignItems={"center"}>
+            <ButtonGroup
+              disableElevation
+              fullWidth
+              variant="outlined"
+              size="large"
+            >
+              <FormControl fullWidth>
+                <InputLabel id="delay-select-label">Delay</InputLabel>
+                <Select
+                  labelId="delay-select-label"
+                  id="delay-select"
+                  value={duration.toString()}
+                  label="Delay"
+                  onChange={handleDurationChange}
+                >
+                  {AnimationDurationOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-                <Button
-                  onClick={handleAnimation}
-                  startIcon={
-                    isPlaying ? (
-                      <PauseRoundedIcon />
-                    ) : isComplete ? (
-                      <ReplayRoundedIcon />
-                    ) : (
-                      <PlayArrowRoundedIcon />
-                    )
-                  }
-                >
-                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                </Button>
-                <Button
-                  variant={isComplete ? "contained" : "outlined"}
-                  onClick={showNextRow}
-                  disabled={isReady}
-                >
-                  {isComplete ? "Complete" : "Next"}
-                </Button>
-              </ButtonGroup>
-            </Grid>
+              <Button
+                onClick={handleAnimation}
+                startIcon={
+                  isPlaying ? (
+                    <PauseRoundedIcon />
+                  ) : isComplete ? (
+                    <ReplayRoundedIcon />
+                  ) : (
+                    <PlayArrowRoundedIcon />
+                  )
+                }
+              >
+                {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+              </Button>
+              <Button
+                variant={isComplete ? "contained" : "outlined"}
+                onClick={showNextRow}
+                disabled={isReady}
+              >
+                {isComplete ? "Complete" : "Next"}
+              </Button>
+            </ButtonGroup>
           </Grid>
           {/* Playground grid */}
           <Grid item xs={12}>
