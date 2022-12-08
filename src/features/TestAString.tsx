@@ -61,15 +61,10 @@ const TestAString = (props: TestAStringProps) => {
   >([]);
 
   useEffect(() => {
-    // append ^ after every character in testString
-    setTestString((testString) => testString.split("").join("^") + "^");
-  }, [testString]);
-
-  useEffect(() => {
     console.log("TestAString useEffect, dataContext: ", dataContext);
     if (dataContext) {
       setTestAStringStates(
-        dataContext.states.map((state) => { 
+        dataContext.states.map((state) => {
           return {
             ...state,
             id: `${state.id}ts`,
@@ -205,6 +200,16 @@ const TestAString = (props: TestAStringProps) => {
     props.setIsTestAStringDialogOpen(false);
   };
 
+  const handleOk = () => {
+    setTestString((testString) => {
+      // append ^ at start and after every character in testString
+      let ts = testString.split("").join("^") + "^";
+      ts = testString === "" ? "^".concat(ts) : ts;
+      return ts;
+    });
+    handleClose();
+  };
+
   const playgroundProps: ToolsPlaygroundProps = {
     states: testAStringStates,
     transitions: testAStringTransitions.map((transition) => {
@@ -236,13 +241,13 @@ const TestAString = (props: TestAStringProps) => {
             type="text"
             fullWidth
             variant="standard"
-            value={testString}
+            value={testString.replaceAll("^", "")}
             onChange={(e) => setTestString(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Ok</Button>
+          <Button onClick={handleOk}>Ok</Button>
         </DialogActions>
       </Dialog>
 
