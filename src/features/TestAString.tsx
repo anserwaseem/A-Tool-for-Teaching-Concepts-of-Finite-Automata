@@ -26,7 +26,7 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../components/Editor";
-import { startingStateColor } from "../consts/Colors";
+import { startingStateColor, transitionColor, transitionHoverColor } from "../consts/Colors";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -51,12 +51,10 @@ const TestAString = (props: TestAStringProps) => {
   const [displayStep, setDisplayStep] = useState<number>(0);
 
   const [testString, setTestString] = useState<string>("");
-  const [testStringIndex, setTestStringIndex] = useState<number>(-1); // before iterating original string, check if there are any null transitions from the initial state, hence the index is -1
-
-  const [currentChar, setCurrentChar] = useState<string>("^"); // ^ is the starting character
+  const [testStringIndex, setTestStringIndex] = useState<number>(0);
   const [currentStates, setCurrentStates] = useState<string[]>([]);
   const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
-  const [transitionsToHighlight, setTransitionsToHighlight] = useState<
+  const [highlightedTransitions, setHighlightedTransitions] = useState<
     TransitionModel[]
   >([]);
 
@@ -72,8 +70,7 @@ const TestAString = (props: TestAStringProps) => {
         })
       );
       setTestAStringTransitions(dataContext.transitions);
-      setCurrentStates((currentStates) => [
-        ...currentStates,
+      setCurrentStates([
         dataContext.rows.find((r) => r.isInitial)?.state ?? "",
       ]);
     }
@@ -108,13 +105,33 @@ const TestAString = (props: TestAStringProps) => {
         ...currentStates,
       ]);
 
+      // reset previously highlighted transitions
+      setTestAStringTransitions((testAStringTransitions) =>
+        testAStringTransitions.map((t) => {
+          if (highlightedTransitions.includes(t)) {
+            return {
+              ...t,
+              props: {
+                ...t.props,
+                color: transitionHoverColor,
+                animateDrawing: false,
+                dashness: false,
+              },
+            };
+          }
+          return t;
+        })
+      );
+
+      setTestStringIndex((i) => i + 1);
+
       setDisplayStep(1);
     } else if (displayStep === 1) {
       setTestAStringTransitions((testAStringTransitions) => {
         const filteredTransitions = testAStringTransitions.filter(
           (t) =>
             currentStates.includes(t.props.start) &&
-            t.props.value === currentChar
+            t.props.value === testString[testStringIndex]
         );
         const transitions = testAStringTransitions.map((t) => {
           if (filteredTransitions.includes(t)) {
@@ -135,33 +152,10 @@ const TestAString = (props: TestAStringProps) => {
           ...currentStates,
           ...filteredTransitions.map((t) => t.props.end),
         ]);
+        setHighlightedTransitions(filteredTransitions);
         return transitions;
       });
 
-      // setTransitionsToHighlight((transitionsToHighlight) => [
-      //   ...transitionsToHighlight,
-      //   ...(testAStringTransitions
-      //     ?.filter(
-      //       (t) =>
-      //         currentStates.includes(t.props.start) &&
-      //         t.props.value === currentChar
-      //     )
-      //     ?.map((t) => ({
-      //       ...t,
-      //       props: {
-      //         ...t.props,
-      //         color: startingStateColor,
-      //         dashness: {
-      //           animation: 10,
-      //         },
-      //       },
-      //     })) ?? []),
-      //   // .find(
-      //   //   (t) =>
-      //   //     currentStates.includes(t.props.start) &&
-      //   //     t.props.value === currentChar
-      //   // ) ?? null,
-      // ]);
       setDisplayStep(0);
     }
   };
@@ -200,14 +194,12 @@ const TestAString = (props: TestAStringProps) => {
     props.setIsTestAStringDialogOpen(false);
   };
 
-  const handleOk = () => {
-    setTestString((testString) => {
-      // append ^ at start and after every character in testString
-      let ts = testString.split("").join("^") + "^";
-      ts = testString === "" ? "^".concat(ts) : ts;
-      return ts;
-    });
-    handleClose();
+  const handleChange = (value: string) => {
+    let appendedValue = value.split("").join("^");
+    if (appendedValue?.length > 0) {
+      appendedValue = "^" + appendedValue + "^";
+    }
+    setTestString(appendedValue);
   };
 
   const playgroundProps: ToolsPlaygroundProps = {
@@ -222,7 +214,7 @@ const TestAString = (props: TestAStringProps) => {
         },
       };
     }),
-    currentStates: currentStates.map((state) => `${state}ts`),
+    currentStates: statesToHighlight.map((state) => `${state}ts`),
   };
 
   return (
@@ -242,12 +234,12 @@ const TestAString = (props: TestAStringProps) => {
             fullWidth
             variant="standard"
             value={testString.replaceAll("^", "")}
-            onChange={(e) => setTestString(e.target.value)}
+            onChange={(e) => handleChange(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleOk}>Ok</Button>
+          <Button onClick={handleClose}>Ok</Button>
         </DialogActions>
       </Dialog>
 

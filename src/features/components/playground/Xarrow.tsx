@@ -1,14 +1,15 @@
 import { useState } from "react";
 import Xarrow from "react-xarrows";
+import { transitionColor, transitionHoverColor, transitionSelectedColor } from "../../../consts/Colors";
 
 export default ({ setSelected, selected, transition: { props } }: any) => {
   console.log("re rendering Xarrow: props", props);
-  const [state, setState] = useState({ color: "coral" });
+  const [state, setState] = useState({ color: transitionColor });
   const defProps = {
     passProps: {
       className: "xarrow",
-      onMouseEnter: () => setState({ color: "IndianRed" }),
-      onMouseLeave: () => setState({ color: "coral" }),
+      onMouseEnter: () => setState({ color: transitionHoverColor }),
+      onMouseLeave: () => setState({ color: transitionColor }),
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
         console.log("Xarrow onClick props", props);
@@ -31,7 +32,7 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
     selected?.id.start === props.start &&
     selected?.id.end === props.end
   )
-    color = "black";
+    color = transitionSelectedColor;
   return (
     console.log(
       "custom Xarrow defProps, props, state, color",
