@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/css/main.3630b2d6.css",
-    "main.js": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.9d49a55d.js",
-    "static/js/787.1f7a2659.chunk.js": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/787.1f7a2659.chunk.js",
-    "index.html": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/index.html",
-    "main.3630b2d6.css.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/css/main.3630b2d6.css.map",
-    "main.9d49a55d.js.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/main.9d49a55d.js.map",
-    "787.1f7a2659.chunk.js.map": "/A-Tool-for-Teaching-Concepts-of-Finite-Automata/static/js/787.1f7a2659.chunk.js.map"
+    "main.css": "/automadeasy/static/css/main.3630b2d6.css",
+    "main.js": "/automadeasy/static/js/main.435303f4.js",
+    "static/js/787.c1321107.chunk.js": "/automadeasy/static/js/787.c1321107.chunk.js",
+    "index.html": "/automadeasy/index.html",
+    "main.3630b2d6.css.map": "/automadeasy/static/css/main.3630b2d6.css.map",
+    "main.435303f4.js.map": "/automadeasy/static/js/main.435303f4.js.map",
+    "787.c1321107.chunk.js.map": "/automadeasy/static/js/787.c1321107.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3630b2d6.css",
-    "static/js/main.9d49a55d.js"
+    "static/js/main.435303f4.js"
   ]
 }
