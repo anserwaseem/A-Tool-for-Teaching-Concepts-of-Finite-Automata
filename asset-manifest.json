@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/automadeasy/static/css/main.3630b2d6.css",
-    "main.js": "/automadeasy/static/js/main.435303f4.js",
-    "static/js/787.c1321107.chunk.js": "/automadeasy/static/js/787.c1321107.chunk.js",
-    "index.html": "/automadeasy/index.html",
-    "main.3630b2d6.css.map": "/automadeasy/static/css/main.3630b2d6.css.map",
-    "main.435303f4.js.map": "/automadeasy/static/js/main.435303f4.js.map",
-    "787.c1321107.chunk.js.map": "/automadeasy/static/js/787.c1321107.chunk.js.map"
+    "main.css": "/static/css/main.3630b2d6.css",
+    "main.js": "/static/js/main.3f8c8a20.js",
+    "static/js/787.c1321107.chunk.js": "/static/js/787.c1321107.chunk.js",
+    "index.html": "/index.html",
+    "main.3630b2d6.css.map": "/static/css/main.3630b2d6.css.map",
+    "main.3f8c8a20.js.map": "/static/js/main.3f8c8a20.js.map",
+    "787.c1321107.chunk.js.map": "/static/js/787.c1321107.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3630b2d6.css",
-    "static/js/main.435303f4.js"
+    "static/js/main.3f8c8a20.js"
   ]
 }
