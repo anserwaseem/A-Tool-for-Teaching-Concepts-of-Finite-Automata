@@ -2,7 +2,7 @@
   "name": "automadeasy",
   "version": "v1.0.0",
   "private": true,
-  "homepage": "https://anserwaseem.github.io/automadeasy/",
+  "homepage": "https://automadeasy.com/",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
