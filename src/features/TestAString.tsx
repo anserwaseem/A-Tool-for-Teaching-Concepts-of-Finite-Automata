@@ -309,6 +309,31 @@ const TestAString = (props: TestAStringProps) => {
               variant="outlined"
               size="large"
             >
+              {testString
+                .replaceAll("^", "")
+                .split("")
+                .map((char, index) => (
+                  <TextField
+                    key={index}
+                    id={`testString${index}`}
+                    value={char}
+                    variant="standard"
+                    InputProps={{
+                      readOnly: true,
+                      sx: {
+                        textAlignLast: "center",
+                      },
+                    }}
+                    sx={{
+                      flexDirection: "inherit",
+                      backgroundColor:
+                        Math.floor((testStringIndex - 1) / 2) === index
+                          ? startingStateColor
+                          : "inherit",
+                    }}
+                  />
+                ))}
+
               <FormControl fullWidth>
                 <InputLabel id="delay-select-label">Delay</InputLabel>
                 <Select
