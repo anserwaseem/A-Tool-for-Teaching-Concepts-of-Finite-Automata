@@ -11,4 +11,4 @@ Teaching and Learning concepts of Theory of Automata are now made easy and inter
 
 ## Try it Out
 
-You can use the app [here](https://anserwaseem.github.io/A-Tool-for-Teaching-Concepts-of-Finite-Automata).
+You can use the app [here](https://anserwaseem.github.io/automadeasy).
