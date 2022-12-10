@@ -26,7 +26,11 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../components/Editor";
-import { startingStateColor, transitionColor, transitionHoverColor } from "../consts/Colors";
+import {
+  startingStateColor,
+  transitionColor,
+  transitionHoverColor,
+} from "../consts/Colors";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -51,8 +55,9 @@ const TestAString = (props: TestAStringProps) => {
   const [displayStep, setDisplayStep] = useState<number>(0);
 
   const [testString, setTestString] = useState<string>("");
-  const [testStringIndex, setTestStringIndex] = useState<number>(0);
+  const [testStringIndex, setTestStringIndex] = useState<number>(-1);
   const [currentStates, setCurrentStates] = useState<string[]>([]);
+  const [previousStates, setPreviousStates] = useState<string[]>([]); // states before currentStates
   const [statesToHighlight, setStatesToHighlight] = useState<string[]>([]);
   const [highlightedTransitions, setHighlightedTransitions] = useState<
     TransitionModel[]
@@ -88,11 +93,10 @@ const TestAString = (props: TestAStringProps) => {
 
         handleUpdateData();
 
-        // if (true) {
-        //   setIsComplete(true);
-        //   setIsPlaying(false);
-        // } else {
-        // }
+        if (testStringIndex === testString.length) {
+          setIsComplete(true);
+          setIsPlaying(false);
+        }
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
@@ -100,28 +104,26 @@ const TestAString = (props: TestAStringProps) => {
 
   const handleUpdateData = () => {
     if (displayStep === 0) {
-      setStatesToHighlight((statesToHighlight) => [
-        ...statesToHighlight,
-        ...currentStates,
-      ]);
+      setStatesToHighlight(currentStates);
 
       // reset previously highlighted transitions
-      setTestAStringTransitions((testAStringTransitions) =>
-        testAStringTransitions.map((t) => {
-          if (highlightedTransitions.includes(t)) {
-            return {
-              ...t,
-              props: {
-                ...t.props,
-                color: transitionHoverColor,
-                animateDrawing: false,
-                dashness: false,
-              },
-            };
-          }
-          return t;
-        })
-      );
+      setTestAStringTransitions(dataContext.transitions);
+      // setTestAStringTransitions((testAStringTransitions) =>
+      //   testAStringTransitions.map((t) => {
+      //     if (highlightedTransitions.includes(t)) {
+      //       return {
+      //         ...t,
+      //         props: {
+      //           ...t.props,
+      //           color: transitionHoverColor,
+      //           animateDrawing: false,
+      //           dashness: false,
+      //         },
+      //       };
+      //     }
+      //     return t;
+      //   })
+      // );
 
       setTestStringIndex((i) => i + 1);
 
@@ -131,8 +133,11 @@ const TestAString = (props: TestAStringProps) => {
         const filteredTransitions = testAStringTransitions.filter(
           (t) =>
             currentStates.includes(t.props.start) &&
-            t.props.value === testString[testStringIndex]
+            t.props.value.includes(testString[testStringIndex])
         );
+
+        setHighlightedTransitions(filteredTransitions);
+
         const transitions = testAStringTransitions.map((t) => {
           if (filteredTransitions.includes(t)) {
             return {
@@ -148,11 +153,27 @@ const TestAString = (props: TestAStringProps) => {
           }
           return t;
         });
-        setCurrentStates((currentStates) => [
-          ...currentStates,
-          ...filteredTransitions.map((t) => t.props.end),
-        ]);
-        setHighlightedTransitions(filteredTransitions);
+
+        const filteredStates = filteredTransitions.map((t) => t.props.end);
+
+        if (testString[testStringIndex] === "^") {
+          setCurrentStates((currentStates) =>
+            Array.from(new Set([...currentStates, ...filteredStates]))
+          );
+
+          // check if any of the filteredStates have a null transition, if yes, then decrement testStringIndex in order to check null transitions again for the new currentStates
+          if (
+            currentStates.toString() !== previousStates.toString() &&
+            dataContext?.transitions?.find(
+              (t) =>
+                filteredStates.includes(t.props.start) &&
+                t.props.value.includes("^")
+            )
+          )
+            setTestStringIndex((i) => i - 1);
+        } else setCurrentStates(filteredStates);
+        setPreviousStates(currentStates);
+
         return transitions;
       });
 
@@ -172,6 +193,25 @@ const TestAString = (props: TestAStringProps) => {
       setIsReady(false);
       setIsComplete(false);
       setIsPlaying(true);
+
+      setTestAStringStates(
+        dataContext.states.map((state) => {
+          return {
+            ...state,
+            id: `${state.id}ts`,
+          };
+        })
+      );
+      setTestAStringTransitions(dataContext.transitions);
+      setCurrentStates([
+        dataContext.rows.find((r) => r.isInitial)?.state ?? "",
+      ]);
+      setTestStringIndex(-1);
+      setDisplayStep(0);
+      setStatesToHighlight([]);
+      setHighlightedTransitions([]);
+      setCurrentStates([]);
+      setPreviousStates([]);
     } else setIsPlaying((v) => !v);
   };
 
@@ -183,10 +223,9 @@ const TestAString = (props: TestAStringProps) => {
 
     handleUpdateData();
 
-    if (true) {
+    if (testStringIndex === testString.length) {
       setIsComplete(true);
       setIsPlaying(false);
-    } else {
     }
   };
 
