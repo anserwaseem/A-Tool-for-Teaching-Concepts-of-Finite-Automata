@@ -186,6 +186,7 @@ const TestAString = (props: TestAStringProps) => {
       setIsComplete(false);
       setIsPlaying(true);
 
+      setDisplayStep(0);
       setTestAStringStates(
         dataContext.states.map((state) => {
           return {
@@ -198,12 +199,10 @@ const TestAString = (props: TestAStringProps) => {
       setCurrentStates([
         dataContext.rows.find((r) => r.isInitial)?.state ?? "",
       ]);
+      setPreviousStates([]);
       setTestStringIndex(-1);
-      setDisplayStep(0);
       setStatesToHighlight([]);
       setHighlightedTransitions([]);
-      setCurrentStates([]);
-      setPreviousStates([]);
     } else setIsPlaying((v) => !v);
   };
 
