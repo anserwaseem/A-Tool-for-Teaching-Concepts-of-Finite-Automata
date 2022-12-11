@@ -1,35 +1,12 @@
-import {
-  Box,
-  Tooltip,
-  IconButton,
-  Menu,
-  Typography,
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Button,
-  Drawer,
-  Toolbar,
-  MenuItem,
-} from "@mui/material";
-import { useContext, useState } from "react";
-import MoreIcon from "@mui/icons-material/MoreVert";
+import { Box, Menu, Button, MenuItem } from "@mui/material";
+import { useState } from "react";
 import { Download } from "../features/Download";
 import { Upload } from "../features/Upload";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { ToolsProps } from "./props/ToolsProps";
-import { IsDFA } from "../utils/IsDFA";
-import { MINIMIZE_DFA, NFA_TO_DFA, TEST_A_STRING } from "./types/AvailableTools";
-import { DataContext } from "./Editor";
+import * as AvailableTools from "./types/AvailableTools";
 
 export const Tools = (props: ToolsProps) => {
   console.log("re rendering Tools: props");
-
-  const dataContext = useContext(DataContext);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -42,68 +19,92 @@ export const Tools = (props: ToolsProps) => {
   };
 
   return (
-    <Box>
-      <Button
-        size="small"
-        aria-label="tools"
-        aria-controls="menu-appbar-tools"
-        aria-haspopup="true"
-        onClick={handleOpenUserMenu}
-        sx={{ marginLeft: 3 }}
-      >
-        Tools
-      </Button>
-      <Menu
-        id="menu-appbar-tools"
-        anchorEl={anchorElUser}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        open={Boolean(anchorElUser)}
-        onClose={handleCloseToolsMenu}
-      >
-        <Download handleCloseToolsMenu={handleCloseToolsMenu} />
-        <Upload handleCloseToolsMenu={handleCloseToolsMenu} />
-        <MenuItem
-          onClick={() => {
-            handleCloseToolsMenu();
-            IsDFA(dataContext.rows);
-          }}
+    <>
+      <Box>
+        <Button
+          size="small"
+          aria-label="tools"
+          aria-controls="menu-appbar-tools"
+          aria-haspopup="true"
+          onClick={handleOpenUserMenu}
+          sx={{ marginLeft: 3 }}
         >
-          Is DFA
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleCloseToolsMenu();
-            props.setToolSelected(NFA_TO_DFA);
+          Tools
+        </Button>
+        <Menu
+          id="menu-appbar-tools"
+          anchorEl={anchorElUser}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
           }}
-        >
-          {NFA_TO_DFA}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleCloseToolsMenu();
-            props.setToolSelected(MINIMIZE_DFA);
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
           }}
+          open={Boolean(anchorElUser)}
+          onClose={handleCloseToolsMenu}
         >
-          {MINIMIZE_DFA}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleCloseToolsMenu();
-            props.setToolSelected(TEST_A_STRING);
-            props.setIsTestAStringDialogOpen(true);
-          }}
-        >
-          {TEST_A_STRING}
-        </MenuItem>
-      </Menu>
-    </Box>
+          <Download handleCloseToolsMenu={handleCloseToolsMenu} />
+          <Upload handleCloseToolsMenu={handleCloseToolsMenu} />
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.IS_DFA);
+            }}
+          >
+            {AvailableTools.IS_DFA}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.IS_NFA);
+            }}
+          >
+            {AvailableTools.IS_NFA}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.NFA_TO_DFA);
+            }}
+          >
+            {AvailableTools.NFA_TO_DFA}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.MINIMIZE_DFA);
+            }}
+          >
+            {AvailableTools.MINIMIZE_DFA}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.TEST_A_STRING);
+              props.setIsTestAStringDialogOpen(true);
+            }}
+          >
+            {AvailableTools.TEST_A_STRING}
+          </MenuItem>
+        </Menu>
+      </Box>
+
+      {/* {isDFA && (
+        <Alert severity={isDFA?.[0] ? "success" : "error"}>
+          <AlertTitle>Is DFA</AlertTitle>
+          {isDFA?.[1]}
+        </Alert>
+      )}
+
+      {isNFA && (
+        <Alert severity={isNFA?.[0] ? "success" : "error"}>
+          <AlertTitle>Is NFA</AlertTitle>
+          {isNFA?.[1]}
+        </Alert>
+      )} */}
+    </>
   );
 };

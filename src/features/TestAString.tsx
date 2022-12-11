@@ -64,7 +64,6 @@ const TestAString = (props: TestAStringProps) => {
   >([]);
 
   useEffect(() => {
-    console.log("TestAString useEffect, dataContext: ", dataContext);
     if (dataContext) {
       setTestAStringStates(
         dataContext.states.map((state) => {
@@ -82,15 +81,8 @@ const TestAString = (props: TestAStringProps) => {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "ResultantDfa useEffect, isPlaying, duration: ",
-      isPlaying,
-      duration
-    );
     if (isPlaying) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout");
-
         handleUpdateData();
 
         if (testStringIndex === testString.length) {
@@ -325,11 +317,14 @@ const TestAString = (props: TestAStringProps) => {
                       },
                     }}
                     sx={{
-                      flexDirection: "inherit",
                       backgroundColor:
                         Math.floor((testStringIndex - 1) / 2) === index
                           ? startingStateColor
                           : "inherit",
+                      flexDirection: "inherit",
+                      borderRadius: "20px",
+                      border: "1px solid rgb(200,200,200)",
+                      borderWidth: "0 1px 0 1px",
                     }}
                   />
                 ))}

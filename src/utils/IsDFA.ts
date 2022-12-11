@@ -26,13 +26,18 @@ export const IsDFA = (rows: RowModel[]) => {
   });
 
   let alertMessage = "";
+
+  if (rows === undefined || rows?.length === 0)
+    return [false, "There is no automaton."];
+
   if (numberOfInitialStates === 0) {
     alertMessage += "There is no initial state.\n";
   }
 
-  if (numberOfInitialStates === 1 && numberOfFinalStates === 0) {
-    alertMessage += "There is/are no final state(s).\n";
+  if (numberOfFinalStates === 0) {
+    alertMessage += "There is no final state.\n";
   }
+
   if (numberOfInitialStates === 1 && numberOfFinalStates > 0) {
     const arrayOfMissingTransitions = Array.from(missingTransitions);
     const arrayOfNullTransitions = Array.from(nullTransitions);
@@ -57,5 +62,9 @@ export const IsDFA = (rows: RowModel[]) => {
         ".\n";
     }
   }
-  alert(alertMessage !== "" ? alertMessage : "The automaton is a DFA.");
+
+  return alertMessage === ""
+    ? [true, "The automaton is a DFA."]
+    : [false, alertMessage];
+  // alert(alertMessage !== "" ? alertMessage : "The automaton is a DFA.");
 };

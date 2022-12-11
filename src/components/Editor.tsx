@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Grid, Snackbar } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
@@ -20,16 +20,12 @@ import { AutomataData } from "./types/AutomataData";
 import { Tools } from "./Tools";
 import { ToolsProps } from "./props/ToolsProps";
 import { NfaToDfa } from "../features/NfaToDfa";
-import { NfaToDfaProps } from "../features/props/NfaToDfaProps";
-import {
-  MINIMIZE_DFA,
-  NFA_TO_DFA,
-  TEST_A_STRING,
-} from "./types/AvailableTools";
+import * as AvailableTools from "./types/AvailableTools";
 import { MinimizeDfa } from "../features/MinimizeDfa";
-import { MinimizeDfaProps } from "../features/props/MinimizeDfaProps";
 import TestAString from "../features/TestAString";
 import { TestAStringProps } from "../features/props/TestAStringProps";
+import { IsDFA } from "../utils/IsDFA";
+import { IsNFA } from "../utils/IsNFA";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -118,7 +114,12 @@ export const Editor = () => {
   const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
 
   const [toolSelected, setToolSelected] = useState<
-    typeof NFA_TO_DFA | typeof MINIMIZE_DFA | typeof TEST_A_STRING | null
+    | typeof AvailableTools.IS_DFA
+    | typeof AvailableTools.IS_NFA
+    | typeof AvailableTools.NFA_TO_DFA
+    | typeof AvailableTools.MINIMIZE_DFA
+    | typeof AvailableTools.TEST_A_STRING
+    | null
   >(null);
   const [isTestAStringDialogOpen, setIsTestAStringDialogOpen] = useState(false);
 
@@ -640,9 +641,46 @@ export const Editor = () => {
             </Grid>
           </Grid>
         </Box>
-        {toolSelected && toolSelected === NFA_TO_DFA && <NfaToDfa />}
-        {toolSelected && toolSelected === MINIMIZE_DFA && <MinimizeDfa />}
-        {toolSelected && toolSelected === TEST_A_STRING && (
+
+        {toolSelected && toolSelected === AvailableTools.IS_DFA && (
+          <Snackbar
+            open={true}
+            autoHideDuration={6000}
+            onClose={() => setToolSelected(null)}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <Alert severity={IsDFA(rows)?.[0] ? "success" : "error"}>
+              <AlertTitle>{AvailableTools.IS_DFA}</AlertTitle>
+              {IsDFA(rows)?.[1]}
+            </Alert>
+          </Snackbar>
+        )}
+        {toolSelected && toolSelected === AvailableTools.IS_NFA && (
+          <Snackbar
+            open={true}
+            autoHideDuration={6000}
+            onClose={() => setToolSelected(null)}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <Alert severity={IsNFA(rows)?.[0] ? "success" : "error"}>
+              <AlertTitle>{AvailableTools.IS_NFA}</AlertTitle>
+              {IsNFA(rows)?.[1]}
+            </Alert>
+          </Snackbar>
+        )}
+        {toolSelected && toolSelected === AvailableTools.NFA_TO_DFA && (
+          <NfaToDfa />
+        )}
+        {toolSelected && toolSelected === AvailableTools.MINIMIZE_DFA && (
+          <MinimizeDfa />
+        )}
+        {toolSelected && toolSelected === AvailableTools.TEST_A_STRING && (
           <TestAString {...testAStringProps} />
         )}
       </>
