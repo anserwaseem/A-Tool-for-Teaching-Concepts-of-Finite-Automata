@@ -66,5 +66,4 @@ export const IsDFA = (rows: RowModel[]) => {
   return alertMessage === ""
     ? [true, "The automaton is a DFA."]
     : [false, alertMessage];
-  // alert(alertMessage !== "" ? alertMessage : "The automaton is a DFA.");
 };

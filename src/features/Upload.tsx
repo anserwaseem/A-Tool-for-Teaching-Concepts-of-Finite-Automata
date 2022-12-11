@@ -5,12 +5,9 @@ import { AutomataData } from "../components/types/AutomataData";
 import { DataContext } from "../components/Editor";
 import { TransitionModel } from "../models";
 import { StyledTransitionLabel } from "./components/playground/StyledTransitionLabel";
+import { UploadProps } from "./props/UploadProps";
 
-export const Upload = ({
-  handleCloseToolsMenu,
-}: {
-  handleCloseToolsMenu: () => void;
-}) => {
+export const Upload = (props: UploadProps) => {
   const dataContext = useContext(DataContext);
 
   const handleSetTransitions = (transitions: TransitionModel[]) => {
@@ -34,7 +31,7 @@ export const Upload = ({
       reader.onload = (e) => {
         // if no result, return
         if (!e?.target?.result) {
-          alert("Failed reading data.");
+          props.setAlertMessage("Failed reading data.");
           return;
         }
 
@@ -48,14 +45,14 @@ export const Upload = ({
           !rawData?.states ||
           !rawData?.transitions
         ) {
-          alert("Data is corrupted.");
+          props.setAlertMessage("Data is corrupted.");
           return;
         }
 
         const data = rawData as AutomataData;
         if (!data?.rows || data?.rows?.length <= 0) {
           // if no rows found in data, return
-          alert("No data found");
+          props.setAlertMessage("No data found");
           return;
         }
 
@@ -70,7 +67,7 @@ export const Upload = ({
       //clear file input (cache)
       event.target.value = "";
     }
-    handleCloseToolsMenu();
+    props.handleCloseToolsMenu();
   };
 
   return (

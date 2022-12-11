@@ -1,6 +1,8 @@
 import { Box, Menu, Button, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { Download } from "../features/Download";
+import { DownloadProps } from "../features/props/DownloadProps";
+import { UploadProps } from "../features/props/UploadProps";
 import { Upload } from "../features/Upload";
 import { ToolsProps } from "./props/ToolsProps";
 import * as AvailableTools from "./types/AvailableTools";
@@ -16,6 +18,16 @@ export const Tools = (props: ToolsProps) => {
 
   const handleCloseToolsMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const downloadProps: DownloadProps = {
+    handleCloseToolsMenu: handleCloseToolsMenu,
+    setAlertMessage: props.setAlertMessage,
+  };
+
+  const uploadProps: UploadProps = {
+    handleCloseToolsMenu: handleCloseToolsMenu,
+    setAlertMessage: props.setAlertMessage,
   };
 
   return (
@@ -46,8 +58,8 @@ export const Tools = (props: ToolsProps) => {
           open={Boolean(anchorElUser)}
           onClose={handleCloseToolsMenu}
         >
-          <Download handleCloseToolsMenu={handleCloseToolsMenu} />
-          <Upload handleCloseToolsMenu={handleCloseToolsMenu} />
+          <Download {...downloadProps} />
+          <Upload {...uploadProps} />
           <MenuItem
             onClick={() => {
               handleCloseToolsMenu();

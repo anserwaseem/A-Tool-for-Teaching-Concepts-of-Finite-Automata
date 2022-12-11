@@ -26,7 +26,7 @@ import TestAString from "../features/TestAString";
 import { TestAStringProps } from "../features/props/TestAStringProps";
 import { IsDFA } from "../utils/IsDFA";
 import { IsNFA } from "../utils/IsNFA";
-import { startingStateColor, transitionSelectedColor } from "../consts/Colors";
+import { transitionSelectedColor } from "../consts/Colors";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -125,9 +125,11 @@ export const Editor = () => {
   >(null);
   const [isTestAStringDialogOpen, setIsTestAStringDialogOpen] = useState(false);
 
+  const [alertMessage, setAlertMessage] = useState("");
+
   const handleAddRow = (row: RowModel) => {
     if (states.length >= MaxNumberOfStates) {
-      alert(`Maximum ${MaxNumberOfStates} states allowed`);
+      setAlertMessage(`Maximum ${MaxNumberOfStates} states allowed.`);
       return;
     }
     setRows((prev) => [...prev, row]);
@@ -208,18 +210,20 @@ export const Editor = () => {
     console.log("handleSaveRow", rows);
 
     if (isRowEmpty(row)) {
-      alert("Cannot save empty row.");
+      setAlertMessage("Cannot save empty row.");
       return;
     }
 
     const oldRow = rows.find((r) => r.id === row.id);
     if (!oldRow) {
-      alert("Cannot save row.");
+      setAlertMessage("Cannot save row.");
       return;
     }
 
     if (row.state.length > StateNameMaxLength) {
-      alert(`State name cannot be more than ${StateNameMaxLength} characters.`);
+      setAlertMessage(
+        `State name cannot be more than ${StateNameMaxLength} characters.`
+      );
       if (oldRow) {
         setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
       }
@@ -234,7 +238,7 @@ export const Editor = () => {
           row[key === "^" ? "nul" : key] !== oldRow[key === "^" ? "nul" : key]
       )
     ) {
-      alert(
+      setAlertMessage(
         `Cannot change state name when transition values are added/updated/removed.`
       );
       if (oldRow) {
@@ -276,7 +280,7 @@ export const Editor = () => {
 
       console.log("areTransitionValuesInvalid", areTransitionValuesInvalid);
       if (areTransitionValuesInvalid) {
-        alert(
+        setAlertMessage(
           `Transition values must be empty or from the following: ${availableStateValues.join(
             ", "
           )}`
@@ -293,7 +297,9 @@ export const Editor = () => {
           r.nul === row.nul
       );
       if (stateAlreadyExists) {
-        alert("This state value already exists. Kindly choose another value.");
+        setAlertMessage(
+          "This state value already exists. Kindly choose another value."
+        );
         errorWhileSavingRow = true;
         return prev;
       }
@@ -447,7 +453,7 @@ export const Editor = () => {
     setRows((prev) => {
       console.log("toggleInitialState prev", prev);
       if (!prev || isRowEmpty(row)) {
-        alert("Cannot make empty row initial state.");
+        setAlertMessage("Cannot make empty row initial state.");
         return prev;
       }
 
@@ -456,12 +462,12 @@ export const Editor = () => {
           prev.filter((r) => r.state === row.state && r.id === row.id)[0]
         )
       ) {
-        alert("Kindly save the row before making it initial state.");
+        setAlertMessage("Kindly save the row before making it initial state.");
         return prev;
       }
 
       if (prev.filter((r) => r.isInitial).length > 0 && !row.isInitial) {
-        alert("Only one initial state is allowed.");
+        setAlertMessage("Only one initial state is allowed.");
         return prev;
       }
 
@@ -479,7 +485,7 @@ export const Editor = () => {
     setRows((prev) => {
       console.log("toggleFinalState prev", prev);
       if (!prev || isRowEmpty(row)) {
-        alert("Cannot make empty row final state.");
+        setAlertMessage("Cannot make empty row final state.");
         return prev;
       }
 
@@ -488,7 +494,7 @@ export const Editor = () => {
           prev.filter((r) => r.state === row.state && r.id === row.id)[0]
         )
       ) {
-        alert("Kindly save the row before making it final state.");
+        setAlertMessage("Kindly save the row before making it final state.");
       }
 
       return prev.map((r) => {
@@ -518,7 +524,7 @@ export const Editor = () => {
   const handleDropDynamic = (e: any) => {
     console.log("handleDropDynamic", e);
     if (states.length >= MaxNumberOfStates) {
-      alert(`Maximum ${MaxNumberOfStates} states allowed.`);
+      setAlertMessage(`Maximum ${MaxNumberOfStates} states allowed.`);
       return;
     }
 
@@ -594,6 +600,7 @@ export const Editor = () => {
   const toolsProps: ToolsProps = {
     setToolSelected,
     setIsTestAStringDialogOpen,
+    setAlertMessage,
   };
 
   const testAStringProps: TestAStringProps = {
@@ -617,6 +624,19 @@ export const Editor = () => {
       }}
     >
       <>
+        {alertMessage !== "" && (
+          <Snackbar
+            open={true}
+            autoHideDuration={6000}
+            onClose={() => setAlertMessage("")}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <Alert severity="warning">{alertMessage}</Alert>
+          </Snackbar>
+        )}
         <Box sx={{ flexGrow: 1, m: 1 }}>
           {/* Grid to incorporate Transition table and Playground */}
           <Grid

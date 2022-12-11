@@ -2,24 +2,21 @@ import { Button, MenuItem } from "@mui/material";
 import { useContext } from "react";
 import { DataContext } from "../components/Editor";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import { DownloadProps } from "./props/DownloadProps";
 
-export const Download = ({
-  handleCloseToolsMenu,
-}: {
-  handleCloseToolsMenu: () => void;
-}) => {
+export const Download = (props:DownloadProps) => {
   const dataContext = useContext(DataContext);
 
   return (
     <MenuItem
       onClick={() => {
-        handleCloseToolsMenu();
+        props.handleCloseToolsMenu();
         if (!dataContext) {
           console.log("no data.");
           return;
         }
         if (dataContext?.states?.length === 0) {
-          alert("no data to download.");
+          props.setAlertMessage("no data to download.");
           return;
         }
         const element = document.createElement("a");
@@ -27,7 +24,7 @@ export const Download = ({
           type: "application/json",
         });
         element.href = URL.createObjectURL(file);
-        element.download = "data.json";
+        element.download = "automadeasy.json";
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
       }}
