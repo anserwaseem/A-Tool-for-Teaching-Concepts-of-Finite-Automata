@@ -89,22 +89,16 @@ export const Tools = (props: ToolsProps) => {
           >
             {AvailableTools.TEST_A_STRING}
           </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseToolsMenu();
+              props.setToolSelected(AvailableTools.HIGHLIGHT_NULL_TRANSITIONS);
+            }}
+          >
+            {AvailableTools.HIGHLIGHT_NULL_TRANSITIONS}
+          </MenuItem>
         </Menu>
       </Box>
-
-      {/* {isDFA && (
-        <Alert severity={isDFA?.[0] ? "success" : "error"}>
-          <AlertTitle>Is DFA</AlertTitle>
-          {isDFA?.[1]}
-        </Alert>
-      )}
-
-      {isNFA && (
-        <Alert severity={isNFA?.[0] ? "success" : "error"}>
-          <AlertTitle>Is NFA</AlertTitle>
-          {isNFA?.[1]}
-        </Alert>
-      )} */}
     </>
   );
 };

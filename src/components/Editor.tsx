@@ -26,6 +26,7 @@ import TestAString from "../features/TestAString";
 import { TestAStringProps } from "../features/props/TestAStringProps";
 import { IsDFA } from "../utils/IsDFA";
 import { IsNFA } from "../utils/IsNFA";
+import { startingStateColor, transitionSelectedColor } from "../consts/Colors";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -119,6 +120,7 @@ export const Editor = () => {
     | typeof AvailableTools.NFA_TO_DFA
     | typeof AvailableTools.MINIMIZE_DFA
     | typeof AvailableTools.TEST_A_STRING
+    | typeof AvailableTools.HIGHLIGHT_NULL_TRANSITIONS
     | null
   >(null);
   const [isTestAStringDialogOpen, setIsTestAStringDialogOpen] = useState(false);
@@ -539,6 +541,27 @@ export const Editor = () => {
     setRowId((prev) => prev + 1);
   };
 
+  const handleHighlightNullTransitions = () => {
+    setTransitions((transitions) =>
+      transitions.map((t) => {
+        if (t.props.value.includes("^")) {
+          return {
+            ...t,
+            props: {
+              ...t.props,
+              color: transitionSelectedColor,
+              dashness: {
+                animation: 1,
+              },
+            },
+          };
+        }
+        return t;
+      })
+    );
+    setToolSelected(null);
+  };
+
   const transitionTableProps: TransitionTableProps = {
     rows,
     setRows,
@@ -683,6 +706,9 @@ export const Editor = () => {
         {toolSelected && toolSelected === AvailableTools.TEST_A_STRING && (
           <TestAString {...testAStringProps} />
         )}
+        {toolSelected &&
+          toolSelected === AvailableTools.HIGHLIGHT_NULL_TRANSITIONS &&
+          handleHighlightNullTransitions()}
       </>
     </DataContext.Provider>
   );

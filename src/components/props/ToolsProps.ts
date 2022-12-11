@@ -8,6 +8,7 @@ export type ToolsProps = {
       | typeof AvailableTools.NFA_TO_DFA
       | typeof AvailableTools.MINIMIZE_DFA
       | typeof AvailableTools.TEST_A_STRING
+      | typeof AvailableTools.HIGHLIGHT_NULL_TRANSITIONS
       | null
     >
   >;
