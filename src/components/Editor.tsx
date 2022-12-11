@@ -1,5 +1,13 @@
 import { createContext, useState } from "react";
-import { Alert, AlertTitle, Box, Button, Grid, Snackbar } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Grid,
+  Slider,
+  Snackbar,
+} from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveSharpIcon from "@mui/icons-material/SaveSharp";
@@ -112,7 +120,8 @@ export const Editor = () => {
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
-  const [size, setSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
+  const [playgroundSize, setPlaygroundSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
+  const [stateSize, setStateSize] = useState(50); // in pixels
 
   const [toolSelected, setToolSelected] = useState<
     | typeof AvailableTools.IS_DFA
@@ -136,13 +145,13 @@ export const Editor = () => {
     setRowId((prev) => prev + 1);
     console.log(
       "added row, now adding new state at: ",
-      size.width,
-      size.height
+      playgroundSize.width,
+      playgroundSize.height
     );
     const newState = new DraggableStateModel(
       row.state,
-      Math.floor(Math.random() * size.width),
-      Math.floor(Math.random() * size.height)
+      Math.floor(Math.random() * playgroundSize.width),
+      Math.floor(Math.random() * playgroundSize.height)
     );
     setStates((prev) => [...prev, newState]);
   };
@@ -594,7 +603,7 @@ export const Editor = () => {
     handleDeleteRow,
     toggleInitialState,
     toggleFinalState,
-    setSize,
+    setPlaygroundSize,
   };
 
   const toolsProps: ToolsProps = {
@@ -620,7 +629,8 @@ export const Editor = () => {
         transitions,
         setTransitions,
         columns,
-        editorPlaygroundSize: size,
+        playgroundSize,
+        stateSize
       }}
     >
       <>
@@ -650,8 +660,8 @@ export const Editor = () => {
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
               {/* Grid for Add a Row button and Tools */}
-              <Grid container alignItems={"center"}>
-                <Grid item xs={10}>
+              <Grid container justifyContent={"space-between"}>
+                <Grid item>
                   <Button
                     size="small"
                     onClick={() =>
@@ -672,14 +682,24 @@ export const Editor = () => {
                   </Button>
                 </Grid>
 
-                <Grid item xs={2}>
+                <Grid item>
                   <Tools {...toolsProps} />
                 </Grid>
               </Grid>
               <TransitionTable {...transitionTableProps} />
             </Grid>
+
             {/* Playground grid */}
             <Grid item xs={12} md={8}>
+              <Slider
+                defaultValue={50}
+                min={10}
+                aria-label="Default"
+                valueLabelDisplay="auto"
+                sx={{
+                  marginBottom: "-3px",
+                }}
+              />
               <Playground {...playgroundProps} />
             </Grid>
           </Grid>

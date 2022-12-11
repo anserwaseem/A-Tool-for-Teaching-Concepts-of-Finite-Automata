@@ -3,7 +3,9 @@ import { useXarrow, Xwrapper } from "react-xarrows";
 import Xarrow from "../playground/Xarrow";
 import { ToolsPlaygroundProps } from "./props/PlaygroundProps";
 import Draggable from "react-draggable";
-import { startingStateColor } from "../../../consts/Colors";
+import { startingStateColor, stateHoverColor } from "../../../consts/Colors";
+import { XarrowProps } from "../playground/props/XarrowProps";
+import { Box } from "@mui/material";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   console.log("re rendering ToolsPlayground: props", props);
@@ -24,6 +26,11 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
       ? "ts"
       : "";
 
+  const xarrowProps: XarrowProps = {
+    selected: null,
+    setSelected: () => {},
+  };
+
   return (
     <div>
       <Xwrapper>
@@ -37,27 +44,32 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
             className="statesContainer"
             onDragOver={(e) => e.preventDefault()}
           >
-            {props.states.map((state, stateIndex) => (
+            {props.states.map((state) => (
               <Draggable onDrag={updateXarrow}>
-                <div
-                  className={`state absolute hoverMarker`}
-                  style={{
+                <Box
+                  className="state"
+                  sx={{
                     left: state.x,
                     top: state.y,
                     background: props?.currentStates?.includes(state.id)
                       ? startingStateColor
                       : undefined,
+                    position: "absolute",
+                    "&:hover": {
+                      background: stateHoverColor,
+                    },
                   }}
                   id={state.id}
                 >
                   {state.id.replaceAll(uniqueWord, "")}
-                </div>
+                </Box>
               </Draggable>
             ))}
           </div>
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
+              xarrowProps={xarrowProps}
               key={
                 transition.props.start +
                 "-" +
@@ -66,8 +78,6 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
                 uniqueWord
               }
               transition={transition}
-              selected={null}
-              setSelected={() => {}}
             />
           ))}
         </div>

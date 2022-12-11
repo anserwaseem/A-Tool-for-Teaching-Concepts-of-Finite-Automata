@@ -5,5 +5,5 @@ export type NfaToDfaProps = {
   rows: RowModel[];
   states: DraggableStateModel[];
   transitions: TransitionModel[];
-  editorPlaygroundSize: PlaygroundSize;
+  playgroundSize: PlaygroundSize;
 };

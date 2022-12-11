@@ -1,8 +1,14 @@
 import { useState } from "react";
 import Xarrow from "react-xarrows";
-import { transitionColor, transitionHoverColor, transitionSelectedColor } from "../../../consts/Colors";
+import {
+  transitionColor,
+  transitionHoverColor,
+  transitionSelectedColor,
+} from "../../../consts/Colors";
+import { SelectedElementTypeId } from "../../props/SelectedElementType";
+import { XarrowAllProps } from "./props/XarrowProps";
 
-export default ({ setSelected, selected, transition: { props } }: any) => {
+export default (props: XarrowAllProps) => {
   console.log("re rendering Xarrow: props", props);
   const [state, setState] = useState({ color: transitionColor });
   const defProps = {
@@ -13,11 +19,11 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
         console.log("Xarrow onClick props", props);
-        setSelected({
+        props.xarrowProps.setSelected({
           id: {
-            start: props.start,
-            end: props.end,
-            value: props.value,
+            start: props.transition.props.start,
+            end: props.transition.props.end,
+            value: props.transition.props.value,
           },
           type: "transition",
         });
@@ -25,12 +31,14 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
       cursor: "pointer",
     },
   };
-  let color = props?.color ?? state.color;
+  let color = props.transition.props?.color ?? state.color;
   if (
-    selected &&
-    selected.type === "transition" &&
-    selected?.id.start === props.start &&
-    selected?.id.end === props.end
+    props.xarrowProps.selected &&
+    props.xarrowProps.selected.type === "transition" &&
+    (props.xarrowProps.selected?.id as SelectedElementTypeId).start ===
+      props.transition.props.start &&
+    (props.xarrowProps.selected?.id as SelectedElementTypeId).end ===
+      props.transition.props.end
   )
     color = transitionSelectedColor;
   return (
@@ -41,6 +49,16 @@ export default ({ setSelected, selected, transition: { props } }: any) => {
       state,
       color
     ),
-    (<Xarrow {...{ ...defProps, ...props, ...state, color }} />)
+    (
+      <Xarrow
+        {...{
+          ...defProps,
+          ...props.transition.props,
+          ...props.xarrowProps,
+          ...state,
+          color,
+        }}
+      />
+    )
   );
 };

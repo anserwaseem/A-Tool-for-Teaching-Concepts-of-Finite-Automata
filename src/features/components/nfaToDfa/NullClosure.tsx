@@ -27,6 +27,7 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
+import { stateSelectedColor } from "../../../consts/Colors";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -225,7 +226,7 @@ export const NullClosure = (props: NullClosureProps) => {
           gutterBottom
           align="center"
           fontWeight={"bold"}
-          bgcolor={"rgb(200, 200, 200)"}
+          bgcolor={stateSelectedColor}
         >
           Null Closure (Reachability)
         </Typography>
@@ -289,9 +290,7 @@ export const NullClosure = (props: NullClosureProps) => {
               </ButtonGroup>
               {/* <AnimationController {...animationControllerProps} /> */}
             </Grid>
-            <ToolsTransitionTable
-              {...transitionTableProps}
-            />
+            <ToolsTransitionTable {...transitionTableProps} />
           </Grid>
           {/* Playground grid */}
           <Grid item xs={12} md={8}>

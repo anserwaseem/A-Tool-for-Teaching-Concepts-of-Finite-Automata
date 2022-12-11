@@ -28,6 +28,7 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
+import { stateSelectedColor } from "../../../consts/Colors";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -183,8 +184,8 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
             ...resultantDfaStates,
             {
               id: stateToProcess,
-              x: Math.floor(Math.random() * props.editorPlaygroundSize.width),
-              y: Math.floor(Math.random() * props.editorPlaygroundSize.height),
+              x: Math.floor(Math.random() * props.playgroundSize.width),
+              y: Math.floor(Math.random() * props.playgroundSize.height),
             },
           ]);
 
@@ -504,7 +505,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
         gutterBottom
         align="center"
         fontWeight={"bold"}
-        bgcolor={"rgb(200, 200, 200)"}
+        bgcolor={stateSelectedColor}
       >
         DFA Table (use null closure of initial state to start)
       </Typography>

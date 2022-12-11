@@ -127,7 +127,7 @@ export const NfaToDfa = () => {
       };
     }),
     setIsResultantDfaComplete: setIsResultantDfaComplete,
-    editorPlaygroundSize: dataContext.editorPlaygroundSize,
+    playgroundSize: dataContext.playgroundSize,
   };
 
   return (

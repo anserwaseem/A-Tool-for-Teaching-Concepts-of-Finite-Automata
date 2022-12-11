@@ -8,10 +8,13 @@ import { TopBarActions } from "../../../consts/TopBarActions";
 import { TransitionValuesSeparator } from "../../../consts/TransitionValuesSeparator";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "./StyledTransitionLabel";
-// import MaterialIcon from "material-icons-react";
+import { DataContext } from "../../../components/Editor";
+import { useContext } from "react";
 
 export const TopBar = (props: TopBarProps) => {
   console.log("re rendering TopBar: props", props);
+
+  const dataContext = useContext(DataContext);
 
   const handleEditAction = (e, action: any) => {
     console.log("handleEditAction", action, props);
@@ -19,11 +22,11 @@ export const TopBar = (props: TopBarProps) => {
       // state actions
       case "Edit Name":
         const newName = promptNewStateName(
-          props.states,
+          dataContext?.states,
           props.selected?.id as string
         );
 
-        props.setRows((rows) =>
+        dataContext?.setRows((rows) =>
           rows.map((row) =>
             props.selected
               ? {
@@ -46,7 +49,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
 
-        props.setTransitions((transitions) =>
+        dataContext?.setTransitions((transitions) =>
           transitions.map((transition) => {
             if (
               props.selected &&
@@ -81,7 +84,7 @@ export const TopBar = (props: TopBarProps) => {
           })
         );
 
-        props.setStates((states) =>
+        dataContext?.setStates((states) =>
           states.map((state) =>
             props.selected && state.id === props.selected?.id
               ? { ...state, id: newName }
@@ -105,7 +108,7 @@ export const TopBar = (props: TopBarProps) => {
             `Are you sure you want to remove all transitions of ${props.selected?.id}?`
           )
         ) {
-          props.setTransitions((transitions) =>
+          dataContext?.setTransitions((transitions) =>
             transitions.filter(
               (transition) =>
                 !(
@@ -116,7 +119,7 @@ export const TopBar = (props: TopBarProps) => {
             )
           );
 
-          props.setRows((rows) =>
+          dataContext?.setRows((rows) =>
             rows.map((row) =>
               props.selected && row.state === props.selected?.id
                 ? // if row found, remove all its transition values
@@ -165,7 +168,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         ) {
           // first remove any transitions connected to the state.
-          props.setTransitions((transitions) =>
+          dataContext?.setTransitions((transitions) =>
             transitions.filter(
               (transition) =>
                 !(
@@ -179,11 +182,11 @@ export const TopBar = (props: TopBarProps) => {
           // then remove that state.
           if (
             props.selected &&
-            props.states
+            dataContext?.states
               .map((state) => state.id)
               .includes(props.selected?.id as string)
           ) {
-            props.setStates((states) =>
+            dataContext?.setStates((states) =>
               states.filter(
                 (state) => props.selected && !(state.id === props.selected?.id)
               )
@@ -194,7 +197,7 @@ export const TopBar = (props: TopBarProps) => {
           if (props.selected) {
             console.log("selected id", props.selected?.id);
             props.handleDeleteRow(
-              props.rows.find(
+              dataContext?.rows.find(
                 (row) => row.state === (props.selected?.id as string)
               ) as RowModel
             );
@@ -204,7 +207,7 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Toggle Initial State":
-        const initialStateRow = [...props.rows].find(
+        const initialStateRow = [...dataContext?.rows].find(
           (row) =>
             props.selected && row.state === (props.selected?.id as string)
         );
@@ -216,7 +219,7 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Toggle Final State":
-        const finalStateRow = props.rows.find(
+        const finalStateRow = dataContext?.rows.find(
           (row) =>
             props.selected && row.state === (props.selected?.id as string)
         );
@@ -230,7 +233,7 @@ export const TopBar = (props: TopBarProps) => {
       // transition actions
       case "Remove Transition":
         console.log("remove transition triggered", props);
-        props.setTransitions((transitions) => {
+        dataContext?.setTransitions((transitions) => {
           return transitions.filter(
             (transition) =>
               !(
@@ -244,7 +247,7 @@ export const TopBar = (props: TopBarProps) => {
         });
         console.log(
           "transitions after",
-          props.transitions.filter(
+          dataContext?.transitions.filter(
             (transition) =>
               !(
                 props.selected &&
@@ -256,7 +259,7 @@ export const TopBar = (props: TopBarProps) => {
           )
         );
 
-        props.setRows((rows) =>
+        dataContext?.setRows((rows) =>
           rows.map((row) =>
             props.selected &&
             row.state === (props.selected?.id as SelectedElementTypeId).start
@@ -284,12 +287,12 @@ export const TopBar = (props: TopBarProps) => {
 
       case "Edit label":
         const newValue = promptNewTransitionValue(
-          props.transitions,
+          dataContext?.transitions,
           (props.selected?.id as SelectedElementTypeId).value
         ); //send original value
         console.log("new value", newValue);
 
-        props.setTransitions((transitions) =>
+        dataContext?.setTransitions((transitions) =>
           transitions.map((transition) =>
             props.selected &&
             transition.props.start ===
@@ -314,7 +317,7 @@ export const TopBar = (props: TopBarProps) => {
         );
         console.log(
           "transitions after Edit label",
-          props.transitions.map((transition) =>
+          dataContext?.transitions.map((transition) =>
             props.selected &&
             props.selected?.id &&
             transition.props.start ===
@@ -344,7 +347,7 @@ export const TopBar = (props: TopBarProps) => {
         console.log("transitionValues", transitionValues);
 
         // console.log("setRows edit label")
-        props.setRows((rows) => {
+        dataContext?.setRows((rows) => {
           console.log("starting setRows");
           let newRows = [...rows];
           newRows.map((row) => {

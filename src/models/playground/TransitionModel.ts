@@ -9,7 +9,7 @@ type TransitionModelProps = {
   end: string;
   labels?: TransitionModelLabels | JSX.Element | string; //transitionValue: a, b or ^
   value?: string; //transitionValue: a, b or ^ (using to store label here too in case labels is a JSX.Element)
-  path?: string;
+  path?: "smooth" | "grid" | "straight";
   color?: string;
   lineColor?: string;
   strokeWidth?: number;
@@ -31,7 +31,5 @@ type TransitionModelProps = {
 };
 
 export default class TransitionModel {
-  constructor(
-    public props: TransitionModelProps
-  ) {}
+  constructor(public props: TransitionModelProps) {}
 }

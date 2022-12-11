@@ -28,6 +28,7 @@ import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../components/Editor";
 import {
   startingStateColor,
+  stateSelectedColor,
   transitionColor,
   transitionHoverColor,
 } from "../consts/Colors";
@@ -280,7 +281,7 @@ const TestAString = (props: TestAStringProps) => {
           gutterBottom
           align="center"
           fontWeight={"bold"}
-          bgcolor={"rgb(200, 200, 200)"}
+          bgcolor={stateSelectedColor}
         >
           Test a String
         </Typography>
@@ -322,7 +323,7 @@ const TestAString = (props: TestAStringProps) => {
                           : "inherit",
                       flexDirection: "inherit",
                       borderRadius: "20px",
-                      border: "1px solid rgb(200,200,200)",
+                      border: `1px solid ${stateSelectedColor}`,
                       borderWidth: "0 1px 0 1px",
                     }}
                   />

@@ -19,5 +19,5 @@ export type PlaygroundProps = {
   handleDeleteRow: (row: RowModel) => void;
   toggleInitialState: (row: RowModel) => void;
   toggleFinalState: (row: RowModel) => void;
-  setSize: React.Dispatch<React.SetStateAction<PlaygroundSize>>;
+  setPlaygroundSize: React.Dispatch<React.SetStateAction<PlaygroundSize>>;
 };

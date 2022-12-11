@@ -9,45 +9,37 @@ import Xarrow from "./components/playground/Xarrow";
 import useElementSize from "./hooks/useElementSize";
 import { useEffect } from "react";
 import { XarrowProps } from "./components/playground/props/XarrowProps";
+import { DataContext } from "../components/Editor";
+import { useContext } from "react";
 
 const Playground = (props: PlaygroundProps) => {
   console.log("re rendering Playground: props", props);
 
+  const dataContext = useContext(DataContext);
+
   const [boxRef, { width, height }] = useElementSize();
-  const { setSize } = props;
+  const { setPlaygroundSize } = props;
 
   useEffect(() => {
     console.log("useEffect of playground due to width & height", width, height);
-    setSize({ width, height });
-  }, [width, height, setSize]);
+    setPlaygroundSize({ width, height });
+  }, [width, height, setPlaygroundSize]);
 
   const topBarprops: TopBarProps = {
-    states: props.states,
-    setStates: props.setStates,
-    transitions: props.transitions,
-    setTransitions: props.setTransitions,
     selected: props.selected,
     setSelected: props.setSelected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
     setActionState: props.setActionState,
-    rows: props.rows,
-    setRows: props.setRows,
     handleDeleteRow: props.handleDeleteRow,
     toggleInitialState: props.toggleInitialState,
     toggleFinalState: props.toggleFinalState,
   };
 
   const stateProps: StateProps = {
-    states: props.states,
-    setStates: props.setStates,
-    transitions: props.transitions,
-    setTransitions: props.setTransitions,
     selected: props.selected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
-    rows: props.rows,
-    setRows: props.setRows,
   };
 
   const xarrowProps: XarrowProps = {
@@ -67,7 +59,15 @@ const Playground = (props: PlaygroundProps) => {
             <div className="toolboxTitle">Drag & drop me!</div>
             <hr />
             <div className="toolboxContainer">
-              <div className="state" draggable>
+              <div
+                className="state"
+                draggable
+                style={{
+                  width: `${dataContext?.stateSize}px`,
+                  height: `${dataContext?.stateSize}px`,
+                  borderRadius: `${dataContext?.stateSize}px`,
+                }}
+              >
                 state
               </div>
             </div>
@@ -83,18 +83,16 @@ const Playground = (props: PlaygroundProps) => {
 
             {props.states.map((state) => (
               <State
-                {...stateProps}
+                stateProps={stateProps}
                 key={state.id}
                 state={state}
-                position="absolute"
-                sidePos="middle"
               />
             ))}
           </div>
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
-              {...xarrowProps}
+              xarrowProps={xarrowProps}
               key={transition.props.start + "-" + transition.props.end + i}
               transition={transition}
             />

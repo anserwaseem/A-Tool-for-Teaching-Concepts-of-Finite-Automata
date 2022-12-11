@@ -7,5 +7,5 @@ export type MinimizeDfaProps = {
   states: DraggableStateModel[];
   transitions: TransitionModel[];
   columns: GridColumns;
-  editorPlaygroundSize: PlaygroundSize;
+  playgroundSize: PlaygroundSize;
 };

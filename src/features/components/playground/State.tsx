@@ -1,41 +1,47 @@
-import "./css/State.css";
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
+import { DataContext } from "../../../components/Editor";
+import { useContext } from "react";
+import { StateAllProps } from "./props/StateProps";
+import { Box } from "@mui/material";
+import { stateFinalColor, stateHoverColor, stateInitialColor, stateInitialFinalColor, stateOperationColor, stateSelectedColor } from "../../../consts/Colors";
 
-export const State = (props: any) => {
+export const State = (props: StateAllProps) => {
   console.log("re rendering Box: props", props);
+
+  const dataContext = useContext(DataContext);
 
   const updateXarrow = useXarrow();
   const handleClick = (e: any) => {
     console.log("Box handleClick", props);
     e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
 
-    if (props.actionState === "Normal") {
+    if (props.stateProps.actionState === "Normal") {
       console.log("Box handleClick Normal", props);
-      props.handleSelect(e);
-    } else if (props.actionState === "Add Transition") {
+      props.stateProps.handleSelect(e);
+    } else if (props.stateProps.actionState === "Add Transition") {
       console.log("Box handleClick Add Transition", props);
 
       // restrict adding of new transition between states where a transition already exists
       if (
-        !props.transitions.find(
+        !dataContext?.transitions.find(
           (transition: TransitionModel) =>
-            transition.props.start === props.selected?.id &&
+            transition.props.start === props.stateProps.selected?.id &&
             transition.props.end === props.state.id
         )
       ) {
         console.log("Box handleClick Add Transition setTransitions", props);
-        const isSelfTransition = props.selected?.id === props.state.id;
-        props.setTransitions((transitions: TransitionModel[]) => [
+        const isSelfTransition =
+          props.stateProps.selected?.id === props.state.id;
+        dataContext?.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
           {
             props: {
               labels: "",
               value: "",
-              start: props.selected?.id,
+              start: props.stateProps.selected?.id as string,
               end: props.state.id,
-              // dashness: { animation: 10 },
               animateDrawing: true,
               _extendSVGcanvas: isSelfTransition ? 25 : 0,
               _cpx1Offset: isSelfTransition ? -50 : 0,
@@ -46,13 +52,13 @@ export const State = (props: any) => {
           },
         ]);
       }
-    } else if (props.actionState === "Remove Transitions") {
+    } else if (props.stateProps.actionState === "Remove Transitions") {
       console.log("Box handleClick Remove Transitions", props);
-      props.setTransitions((transitions: TransitionModel[]) =>
+      dataContext?.setTransitions((transitions: TransitionModel[]) =>
         transitions.filter(
           (transition) =>
             !(
-              transition.props.start === props.selected?.id &&
+              transition.props.start === props.stateProps.selected?.id &&
               transition.props.end === props.state.id
             )
         )
@@ -60,66 +66,73 @@ export const State = (props: any) => {
     }
   };
 
-  console.log("changing background color now", props.actionState);
+  console.log("changing background color now", props.stateProps.actionState);
   let background = null;
-  if (props.selected && props.selected?.id === props.state.id) {
-    background = "rgb(200, 200, 200)";
+  if (
+    props.stateProps.selected &&
+    props.stateProps.selected?.id === props.state.id
+  ) {
+    background = stateSelectedColor;
   } else if (
-    (props.actionState === "Add Transition" &&
-      // props.sidePos !== "right" &&
-      props.transitions.filter(
+    (props.stateProps.actionState === "Add Transition" &&
+      dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.props.start === props.selected?.id &&
+          transition.props.start === props.stateProps.selected?.id &&
           transition.props.end === props.state.id
       ).length === 0) ||
-    (props.actionState === "Remove Transitions" &&
-      props.transitions.filter(
+    (props.stateProps.actionState === "Remove Transitions" &&
+      dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.props.start === props.selected?.id &&
+          transition.props.start === props.stateProps.selected?.id &&
           transition.props.end === props.state.id
       ).length > 0)
   ) {
-    background = "LemonChiffon";
+    background = stateOperationColor;
   }
-  // link for these color names and codes: https://mui.com/material-ui/customization/palette/
+  
   else if (
-    props.rows.find(
+    dataContext?.rows.find(
       (row: RowModel) =>
         row.state === props.state.id && row.isInitial && row.isFinal
     )
   ) {
-    background = "#4fc3f7"; // mui theme.palette.info.light
+    background = stateInitialFinalColor;
   } else if (
-    props.rows.find(
+    dataContext?.rows.find(
       (row: RowModel) => row.state === props.state.id && row.isInitial
     )
   ) {
-    background = "#ffb74d"; // mui theme.palette.warning.light
+    background = stateInitialColor;
   } else if (
-    props.rows.find(
+    dataContext?.rows.find(
       (row: RowModel) => row.state === props.state.id && row.isFinal
     )
   ) {
-    background = "#81c784"; // mui theme.palette.success.light;
+    background = stateFinalColor;
   }
 
   return (
     <>
       <Draggable onDrag={updateXarrow}>
-        <div
-          ref={props.state.reference}
-          className={`state ${props.position} hoverMarker`}
-          style={{
+        <Box
+          className="state"
+          sx={{
             left: props.state.x,
             top: props.state.y,
             background: background ?? undefined,
-            // border: "black solid 2px",
+            width: `${dataContext?.stateSize}px`,
+            height: `${dataContext?.stateSize}px`,
+            borderRadius: `${dataContext?.stateSize}px`,
+            position: "absolute",
+            "&:hover": {
+              background: stateHoverColor,
+            },
           }}
           onClick={handleClick}
           id={props.state.id}
         >
-          {props.state.name ? props.state.name : props.state.id}
-        </div>
+          {props.state.id}
+        </Box>
       </Draggable>
     </>
   );

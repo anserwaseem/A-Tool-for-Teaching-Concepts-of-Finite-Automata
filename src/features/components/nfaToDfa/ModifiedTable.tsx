@@ -21,6 +21,7 @@ import { ToolsTransitionTable } from "../tools/TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
+import { stateSelectedColor } from "../../../consts/Colors";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -224,7 +225,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
           gutterBottom
           align="center"
           fontWeight={"bold"}
-          bgcolor={"rgb(200, 200, 200)"}
+          bgcolor={stateSelectedColor}
         >
           Modified Transition Table (replace each state with its null closure)
         </Typography>

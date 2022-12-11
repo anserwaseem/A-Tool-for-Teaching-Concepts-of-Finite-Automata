@@ -12,5 +12,6 @@ export type AutomataData = {
   transitions: TransitionModel[];
   setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   columns: GridColumns;
-  editorPlaygroundSize: PlaygroundSize;
+  playgroundSize: PlaygroundSize;
+  stateSize: number;
 };
