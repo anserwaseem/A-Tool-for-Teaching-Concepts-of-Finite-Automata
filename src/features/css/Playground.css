@@ -13,7 +13,6 @@
 }
 
 .toolboxMenu {
-  width: fit-content;
   background: rgba(148, 148, 148, 0.15);
   text-align: center;
   border: solid rgb(200, 200, 200) 1px;

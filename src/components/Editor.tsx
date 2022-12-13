@@ -35,6 +35,7 @@ import { TestAStringProps } from "../features/props/TestAStringProps";
 import { IsDFA } from "../utils/IsDFA";
 import { IsNFA } from "../utils/IsNFA";
 import { transitionSelectedColor } from "../consts/Colors";
+import { StateDefaultSize, StateMaxSize, StateMinSize } from "../consts/StateSizes";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -124,7 +125,7 @@ export const Editor = () => {
     width: 0,
     height: 0,
   });
-  const [stateSize, setStateSize] = useState(50); // in pixels
+  const [stateSize, setStateSize] = useState(StateDefaultSize);
 
   const [toolSelected, setToolSelected] = useState<
     | typeof AvailableTools.IS_DFA
@@ -407,19 +408,21 @@ export const Editor = () => {
                 (t) => t.start === row.state && t.end === v
               )
             ) {
-              // console.log("adding new transition");
-              updatedtransitions.push({
-                start: row.state,
-                end: v,
-                labels: <StyledTransitionLabel label={key} />,
-                value: key,
-                animateDrawing: true,
-                _extendSVGcanvas: isSelfTransition ? 25 : 0,
-                _cpx1Offset: isSelfTransition ? -50 : 0,
-                _cpy1Offset: isSelfTransition ? -50 : 0,
-                _cpx2Offset: isSelfTransition ? 50 : 0,
-                _cpy2Offset: isSelfTransition ? -50 : 0,
-              });
+              updatedtransitions.push(
+                new TransitionModel({
+                  start: row.state,
+                  end: v,
+                  labels: <StyledTransitionLabel label={key} />,
+                  value: key,
+                  strokeWidth: stateSize / 10,
+                  animateDrawing: true,
+                  _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                  _cpx1Offset: isSelfTransition ? -50 : 0,
+                  _cpy1Offset: isSelfTransition ? -50 : 0,
+                  _cpx2Offset: isSelfTransition ? 50 : 0,
+                  _cpy2Offset: isSelfTransition ? -50 : 0,
+                })
+              );
             } // if transition is already added, update its labels & value
             else {
               // console.log("updating existing transition");
@@ -605,12 +608,11 @@ export const Editor = () => {
     activeThumb: number
   ): void {
     setStateSize(value);
-    // increase or decrease strokeWidth of every transition by 0.1 when value is changed
     setTransitions((transitions) =>
       transitions.map((t) => {
         return {
           ...t,
-          strokeWidth: t?.strokeWidth + (value - stateSize) * 0.1,
+          strokeWidth: value / 10,
         };
       })
     );
@@ -693,8 +695,8 @@ export const Editor = () => {
               <Slider
                 value={stateSize}
                 onChange={handleStateSizeChange}
-                min={35}
-                max={230}
+                min={StateMinSize}
+                max={StateMaxSize}
                 aria-label="Default"
                 valueLabelDisplay="auto"
                 sx={{

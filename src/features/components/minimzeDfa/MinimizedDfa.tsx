@@ -275,9 +275,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       (transitionValue) => transitionValue !== "^"
     ).forEach((transitionValue) => {
       const transitionExists = newtransitions?.find(
-        (t) =>
-          t?.start === row?.state &&
-          t?.end === row?.[transitionValue]
+        (t) => t?.start === row?.state && t?.end === row?.[transitionValue]
       );
       const isSelfTransition = row?.state === row?.[transitionValue];
       if (!transitionExists) {

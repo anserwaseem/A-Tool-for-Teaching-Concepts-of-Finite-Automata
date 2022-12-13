@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { XarrowProps } from "./components/playground/props/XarrowProps";
 import { DataContext } from "../components/Editor";
 import { useContext } from "react";
+import { Box } from "@mui/material";
 
 const Playground = (props: PlaygroundProps) => {
   console.log("re rendering Playground: props", props);
@@ -56,7 +57,8 @@ const Playground = (props: PlaygroundProps) => {
           onClick={() => props.handleSelect(null)}
         >
           <div className="toolboxMenu">
-            <div className="toolboxTitle">Drag & drop me!</div>
+            <Box>Drag & drop me!</Box>
+            {/* <div className="toolboxTitle">Drag & drop me!</div> */}
             <hr />
             <div className="toolboxContainer">
               <div

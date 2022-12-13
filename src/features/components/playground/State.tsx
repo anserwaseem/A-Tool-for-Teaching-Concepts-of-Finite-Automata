@@ -43,18 +43,19 @@ export const State = (props: StateAllProps) => {
           props.stateProps.selected?.id === props.state.id;
         dataContext?.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
-          {
-              labels: "",
-              value: "",
-              start: props.stateProps.selected?.id as string,
-              end: props.state.id,
-              animateDrawing: true,
-              _extendSVGcanvas: isSelfTransition ? 25 : 0,
-              _cpx1Offset: isSelfTransition ? -50 : 0,
-              _cpy1Offset: isSelfTransition ? -50 : 0,
-              _cpx2Offset: isSelfTransition ? 50 : 0,
-              _cpy2Offset: isSelfTransition ? -50 : 0,
-          },
+          new TransitionModel({
+            start: props.stateProps.selected?.id as string,
+            end: props.state.id,
+            labels: "",
+            value: "",
+            strokeWidth: dataContext?.stateSize / 10,
+            animateDrawing: true,
+            _extendSVGcanvas: isSelfTransition ? 25 : 0,
+            _cpx1Offset: isSelfTransition ? -50 : 0,
+            _cpy1Offset: isSelfTransition ? -50 : 0,
+            _cpx2Offset: isSelfTransition ? 50 : 0,
+            _cpy2Offset: isSelfTransition ? -50 : 0,
+          }),
         ]);
       }
     } else if (props.stateProps.actionState === "Remove Transitions") {
