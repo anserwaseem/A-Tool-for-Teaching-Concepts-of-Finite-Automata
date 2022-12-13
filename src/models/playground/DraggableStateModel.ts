@@ -3,6 +3,5 @@ export default class DraggableStateModel {
     public id: string,
     public x: number,
     public y: number,
-    // public ref?: React.RefObject<HTMLDivElement>
   ) {}
 }

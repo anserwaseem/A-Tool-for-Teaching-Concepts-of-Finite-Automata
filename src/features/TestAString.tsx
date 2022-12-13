@@ -125,8 +125,8 @@ const TestAString = (props: TestAStringProps) => {
       setTestAStringTransitions((testAStringTransitions) => {
         const filteredTransitions = testAStringTransitions.filter(
           (t) =>
-            currentStates.includes(t.props.start) &&
-            t.props.value.includes(testString[testStringIndex])
+            currentStates.includes(t.start) &&
+            t.value.includes(testString[testStringIndex])
         );
 
         setHighlightedTransitions(filteredTransitions);
@@ -135,19 +135,16 @@ const TestAString = (props: TestAStringProps) => {
           if (filteredTransitions.includes(t)) {
             return {
               ...t,
-              props: {
-                ...t.props,
-                color: startingStateColor,
-                dashness: {
-                  animation: 1,
-                },
+              color: startingStateColor,
+              dashness: {
+                animation: 1,
               },
             };
           }
           return t;
         });
 
-        const filteredStates = filteredTransitions.map((t) => t.props.end);
+        const filteredStates = filteredTransitions.map((t) => t.end);
 
         if (testString[testStringIndex] === "^") {
           setCurrentStates((currentStates) =>
@@ -158,9 +155,7 @@ const TestAString = (props: TestAStringProps) => {
           if (
             currentStates.toString() !== previousStates.toString() &&
             dataContext?.transitions?.find(
-              (t) =>
-                filteredStates.includes(t.props.start) &&
-                t.props.value.includes("^")
+              (t) => filteredStates.includes(t.start) && t.value.includes("^")
             )
           )
             setTestStringIndex((i) => i - 1);
@@ -238,11 +233,8 @@ const TestAString = (props: TestAStringProps) => {
     transitions: testAStringTransitions.map((transition) => {
       return {
         ...transition,
-        props: {
-          ...transition.props,
-          start: `${transition.props.start}ts`,
-          end: `${transition.props.end}ts`,
-        },
+        start: `${transition.start}ts`,
+        end: `${transition.end}ts`,
       };
     }),
     currentStates: statesToHighlight.map((state) => `${state}ts`),

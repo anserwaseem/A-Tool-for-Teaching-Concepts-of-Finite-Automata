@@ -120,7 +120,10 @@ export const Editor = () => {
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
-  const [playgroundSize, setPlaygroundSize] = useState<PlaygroundSize>({ width: 0, height: 0 });
+  const [playgroundSize, setPlaygroundSize] = useState<PlaygroundSize>({
+    width: 0,
+    height: 0,
+  });
   const [stateSize, setStateSize] = useState(50); // in pixels
 
   const [toolSelected, setToolSelected] = useState<
@@ -200,9 +203,7 @@ export const Editor = () => {
     );
 
     setTransitions((prev) =>
-      prev.filter(
-        (t) => t.props.start !== row.state && t.props.end !== row.state
-      )
+      prev.filter((t) => t.start !== row.state && t.end !== row.state)
     );
 
     setStates((prev) => prev.filter((s) => s.id !== row.state));
@@ -363,30 +364,21 @@ export const Editor = () => {
         )
       ) {
         let updatedtransitions = transitions.map((t) =>
-          t.props.start === oldRow.state && t.props.end === oldRow.state
+          t.start === oldRow.state && t.end === oldRow.state
             ? {
                 ...t,
-                props: {
-                  ...t.props,
-                  start: row.state,
-                  end: row.state,
-                },
+                start: row.state,
+                end: row.state,
               }
-            : t.props.start === oldRow.state
+            : t.start === oldRow.state
             ? {
                 ...t,
-                props: {
-                  ...t.props,
-                  start: row.state,
-                },
+                start: row.state,
               }
-            : t.props.end === oldRow.state
+            : t.end === oldRow.state
             ? {
                 ...t,
-                props: {
-                  ...t.props,
-                  end: row.state,
-                },
+                end: row.state,
               }
             : t
         );
@@ -396,7 +388,7 @@ export const Editor = () => {
       else {
         // remove those transitions which are going from this state
         let updatedtransitions = transitions.filter(
-          (t) => t.props.start !== oldRow.state
+          (t) => t.start !== oldRow.state
         );
 
         // for each possible transition value, add new transitions which are going from this state
@@ -412,38 +404,31 @@ export const Editor = () => {
             // if transition is not already added, add new transition
             if (
               !updatedtransitions.find(
-                (t) => t.props.start === row.state && t.props.end === v
+                (t) => t.start === row.state && t.end === v
               )
             ) {
               // console.log("adding new transition");
               updatedtransitions.push({
-                props: {
-                  start: row.state,
-                  end: v,
-                  labels: <StyledTransitionLabel label={key} />,
-                  value: key,
-                  animateDrawing: true,
-                  _extendSVGcanvas: isSelfTransition ? 25 : 0,
-                  _cpx1Offset: isSelfTransition ? -50 : 0,
-                  _cpy1Offset: isSelfTransition ? -50 : 0,
-                  _cpx2Offset: isSelfTransition ? 50 : 0,
-                  _cpy2Offset: isSelfTransition ? -50 : 0,
-                },
+                start: row.state,
+                end: v,
+                labels: <StyledTransitionLabel label={key} />,
+                value: key,
+                animateDrawing: true,
+                _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                _cpx1Offset: isSelfTransition ? -50 : 0,
+                _cpy1Offset: isSelfTransition ? -50 : 0,
+                _cpx2Offset: isSelfTransition ? 50 : 0,
+                _cpy2Offset: isSelfTransition ? -50 : 0,
               });
             } // if transition is already added, update its labels & value
             else {
               // console.log("updating existing transition");
               updatedtransitions = updatedtransitions.map((t) =>
-                t.props.start === row.state && t.props.end === v
+                t.start === row.state && t.end === v
                   ? {
                       ...t,
-                      props: {
-                        ...t.props,
-                        labels: (
-                          <StyledTransitionLabel label={t.props.value + key} />
-                        ),
-                        value: t.props.value + key,
-                      },
+                      labels: <StyledTransitionLabel label={t.value + key} />,
+                      value: t.value + key,
                     }
                   : t
               );
@@ -559,15 +544,12 @@ export const Editor = () => {
   const handleHighlightNullTransitions = () => {
     setTransitions((transitions) =>
       transitions.map((t) => {
-        if (t.props.value.includes("^")) {
+        if (t.value.includes("^")) {
           return {
             ...t,
-            props: {
-              ...t.props,
-              color: transitionSelectedColor,
-              dashness: {
-                animation: 1,
-              },
+            color: transitionSelectedColor,
+            dashness: {
+              animation: 1,
             },
           };
         }
@@ -617,6 +599,23 @@ export const Editor = () => {
     setIsTestAStringDialogOpen,
   };
 
+  function handleStateSizeChange(
+    event: Event,
+    value: number,
+    activeThumb: number
+  ): void {
+    setStateSize(value);
+    // increase or decrease strokeWidth of every transition by 0.1 when value is changed
+    setTransitions((transitions) =>
+      transitions.map((t) => {
+        return {
+          ...t,
+          strokeWidth: t?.strokeWidth + (value - stateSize) * 0.1,
+        };
+      })
+    );
+  }
+
   return (
     <DataContext.Provider
       value={{
@@ -630,7 +629,7 @@ export const Editor = () => {
         setTransitions,
         columns,
         playgroundSize,
-        stateSize
+        stateSize,
       }}
     >
       <>
@@ -692,8 +691,10 @@ export const Editor = () => {
             {/* Playground grid */}
             <Grid item xs={12} md={8}>
               <Slider
-                defaultValue={50}
-                min={10}
+                value={stateSize}
+                onChange={handleStateSizeChange}
+                min={35}
+                max={230}
                 aria-label="Default"
                 valueLabelDisplay="auto"
                 sx={{

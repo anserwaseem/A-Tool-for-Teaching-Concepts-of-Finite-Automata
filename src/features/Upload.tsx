@@ -12,11 +12,11 @@ export const Upload = (props: UploadProps) => {
 
   const handleSetTransitions = (transitions: TransitionModel[]) => {
     transitions.forEach((transition) => {
-      transition.props.labels =
-        transition.props.value === "" ? (
+      transition.labels =
+        transition.value === "" ? (
           ""
         ) : (
-          <StyledTransitionLabel label={transition.props.value} />
+          <StyledTransitionLabel label={transition.value} />
         );
     });
   };

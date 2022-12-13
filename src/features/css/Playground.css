@@ -3,17 +3,6 @@
   --canvasHeightVh: 85vh;
 }
 
-.statesContainer {
-  position: relative;
-  width: 100%;
-  border: solid rgb(200, 200, 200) 1px;
-}
-
-.titleStyle {
-  font-size: 40px;
-  margin: 20px 0 0 20px;
-}
-
 .canvasStyle {
   display: flex;
   position: relative;
@@ -24,13 +13,12 @@
 }
 
 .toolboxMenu {
-  width: 100px;
+  width: fit-content;
   background: rgba(148, 148, 148, 0.15);
   text-align: center;
   border: solid rgb(200, 200, 200) 1px;
   border-right: none;
 }
-
 .toolboxTitle {
   font-size: 20px;
   height: 50px;
@@ -41,6 +29,12 @@
   justify-content: space-evenly;
   align-items: center;
   height: calc(100% - 68px);
+}
+
+.statesContainer {
+  position: relative;
+  width: 100%;
+  border: solid rgb(200, 200, 200) 1px;
 }
 .state {
   border: 1px #999 solid;

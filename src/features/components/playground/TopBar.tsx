@@ -53,32 +53,21 @@ export const TopBar = (props: TopBarProps) => {
           transitions.map((transition) => {
             if (
               props.selected &&
-              transition.props.start === props.selected?.id &&
-              transition.props.end === props.selected?.id
+              transition.start === props.selected?.id &&
+              transition.end === props.selected?.id
             )
               return {
                 ...transition,
-                props: {
-                  ...transition.props,
                   start: newName,
                   end: newName,
-                },
               };
-            else if (
-              props.selected &&
-              transition.props.start === props.selected?.id
-            )
+            else if (props.selected && transition.start === props.selected?.id)
               return {
-                ...transition,
-                props: { ...transition.props, start: newName },
+                ...transition,start: newName,
               };
-            else if (
-              props.selected &&
-              transition.props.end === props.selected?.id
-            )
+            else if (props.selected && transition.end === props.selected?.id)
               return {
-                ...transition,
-                props: { ...transition.props, end: newName },
+                ...transition,end: newName ,
               };
             return transition;
           })
@@ -113,8 +102,8 @@ export const TopBar = (props: TopBarProps) => {
               (transition) =>
                 !(
                   props.selected &&
-                  (transition.props.start === props.selected?.id ||
-                    transition.props.end === props.selected?.id)
+                  (transition.start === props.selected?.id ||
+                    transition.end === props.selected?.id)
                 )
             )
           );
@@ -173,8 +162,8 @@ export const TopBar = (props: TopBarProps) => {
               (transition) =>
                 !(
                   props.selected &&
-                  (transition.props.start === props.selected?.id ||
-                    transition.props.end === props.selected?.id)
+                  (transition.start === props.selected?.id ||
+                    transition.end === props.selected?.id)
                 )
             )
           );
@@ -238,9 +227,9 @@ export const TopBar = (props: TopBarProps) => {
             (transition) =>
               !(
                 props.selected &&
-                transition.props.start ===
+                transition.start ===
                   (props.selected?.id as SelectedElementTypeId).start &&
-                transition.props.end ===
+                transition.end ===
                   (props.selected?.id as SelectedElementTypeId).end
               )
           );
@@ -251,9 +240,9 @@ export const TopBar = (props: TopBarProps) => {
             (transition) =>
               !(
                 props.selected &&
-                transition.props.start ===
+                transition.start ===
                   (props.selected?.id as SelectedElementTypeId).start &&
-                transition.props.end ===
+                transition.end ===
                   (props.selected?.id as SelectedElementTypeId).end
               )
           )
@@ -295,14 +284,11 @@ export const TopBar = (props: TopBarProps) => {
         dataContext?.setTransitions((transitions) =>
           transitions.map((transition) =>
             props.selected &&
-            transition.props.start ===
+            transition.start ===
               (props.selected?.id as SelectedElementTypeId).start &&
-            transition.props.end ===
-              (props.selected?.id as SelectedElementTypeId).end
+            transition.end === (props.selected?.id as SelectedElementTypeId).end
               ? {
                   ...transition,
-                  props: {
-                    ...transition.props,
                     labels:
                       newValue === "" ? (
                         ""
@@ -310,7 +296,7 @@ export const TopBar = (props: TopBarProps) => {
                         <StyledTransitionLabel label={newValue} />
                       ),
                     value: newValue,
-                  },
+                  
                 }
               : transition
           )
@@ -320,14 +306,11 @@ export const TopBar = (props: TopBarProps) => {
           dataContext?.transitions.map((transition) =>
             props.selected &&
             props.selected?.id &&
-            transition.props.start ===
+            transition.start ===
               (props.selected?.id as SelectedElementTypeId).start &&
-            transition.props.end ===
-              (props.selected?.id as SelectedElementTypeId).end
+            transition.end === (props.selected?.id as SelectedElementTypeId).end
               ? {
                   ...transition,
-                  props: {
-                    ...transition.props,
                     labels:
                       newValue === "" ? (
                         ""
@@ -335,7 +318,6 @@ export const TopBar = (props: TopBarProps) => {
                         <StyledTransitionLabel label={newValue} />
                       ),
                     value: newValue,
-                  },
                 }
               : transition
           )

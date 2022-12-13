@@ -61,16 +61,15 @@ export const NfaToDfa = () => {
     });
     console.log("nullClosureStatesUnique", nullClosureStatesUnique);
 
-    const nullClosureTransitionsUnique = dataContext.transitions.map((transition) => {
-      return {
-        ...transition,
-        props: {
-          ...transition.props,
-          start: `${transition.props.start}nc`,
-          end: `${transition.props.end}nc`,
-        },
-      };
-    });
+    const nullClosureTransitionsUnique = dataContext.transitions.map(
+      (transition) => {
+        return {
+          ...transition,
+          start: `${transition.start}nc`,
+          end: `${transition.end}nc`,
+        };
+      }
+    );
     console.log("nullClosureTransitionsUnique", nullClosureTransitionsUnique);
 
     setNullClosureRows(nullClosureRowsUnique);

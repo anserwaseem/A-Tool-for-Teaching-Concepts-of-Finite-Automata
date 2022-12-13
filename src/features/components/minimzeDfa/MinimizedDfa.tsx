@@ -276,8 +276,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     ).forEach((transitionValue) => {
       const transitionExists = newtransitions?.find(
         (t) =>
-          t?.props?.start === row?.state &&
-          t?.props?.end === row?.[transitionValue]
+          t?.start === row?.state &&
+          t?.end === row?.[transitionValue]
       );
       const isSelfTransition = row?.state === row?.[transitionValue];
       if (!transitionExists) {
@@ -285,19 +285,16 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         newtransitions = [
           ...newtransitions,
           {
-            props: {
-              labels: <StyledTransitionLabel label={transitionValue} />,
-              value: transitionValue,
-              start: row?.state + "md",
-              end: (row?.[transitionValue] as string) + "md",
-              // dashness: { animation: 10 },
-              animateDrawing: true,
-              _extendSVGcanvas: isSelfTransition ? 25 : 0,
-              _cpx1Offset: isSelfTransition ? -50 : 0,
-              _cpy1Offset: isSelfTransition ? -50 : 0,
-              _cpx2Offset: isSelfTransition ? 50 : 0,
-              _cpy2Offset: isSelfTransition ? -50 : 0,
-            },
+            labels: <StyledTransitionLabel label={transitionValue} />,
+            value: transitionValue,
+            start: row?.state + "md",
+            end: (row?.[transitionValue] as string) + "md",
+            animateDrawing: true,
+            _extendSVGcanvas: isSelfTransition ? 25 : 0,
+            _cpx1Offset: isSelfTransition ? -50 : 0,
+            _cpy1Offset: isSelfTransition ? -50 : 0,
+            _cpx2Offset: isSelfTransition ? 50 : 0,
+            _cpy2Offset: isSelfTransition ? -50 : 0,
           },
         ];
       } else {
@@ -305,15 +302,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         newtransitions = newtransitions.map((t) => {
           return {
             ...t,
-            props: {
-              ...t.props,
-              labels: (
-                <StyledTransitionLabel
-                  label={t.props.value + transitionValue}
-                />
-              ),
-              value: t.props.value + transitionValue,
-            },
+            labels: <StyledTransitionLabel label={t.value + transitionValue} />,
+            value: t.value + transitionValue,
           };
         });
       }

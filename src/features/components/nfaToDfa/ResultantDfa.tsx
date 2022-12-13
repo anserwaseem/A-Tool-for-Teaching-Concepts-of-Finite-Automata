@@ -213,19 +213,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                   console.log("row[k]: ", row[k]);
                   const isSelfTransition = row.state === stateToProcess;
                   newTransitions.push({
-                    props: {
-                      labels: <StyledTransitionLabel label={k} />,
-                      value: k,
-                      start: row.state,
-                      end: stateToProcess,
-                      // dashness: { animation: 10 },
-                      animateDrawing: true,
-                      _extendSVGcanvas: isSelfTransition ? 25 : 0,
-                      _cpx1Offset: isSelfTransition ? -50 : 0,
-                      _cpy1Offset: isSelfTransition ? -50 : 0,
-                      _cpx2Offset: isSelfTransition ? 50 : 0,
-                      _cpy2Offset: isSelfTransition ? -50 : 0,
-                    },
+                    labels: <StyledTransitionLabel label={k} />,
+                    value: k,
+                    start: row.state,
+                    end: stateToProcess,
+                    animateDrawing: true,
+                    _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                    _cpx1Offset: isSelfTransition ? -50 : 0,
+                    _cpy1Offset: isSelfTransition ? -50 : 0,
+                    _cpx2Offset: isSelfTransition ? 50 : 0,
+                    _cpy2Offset: isSelfTransition ? -50 : 0,
                   });
                 }
               });
@@ -364,23 +361,18 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           // if transition already exits, append its value
           if (
             resultantDfaTransitions.find(
-              (t) => t.props.start === state && t.props.end === updatedValue
+              (t) => t.start === state && t.end === updatedValue
             )
           ) {
             setResultantDfaTransitions((transitions) =>
               transitions.map((t) => {
-                if (t.props.start === state && t.props.end === updatedValue) {
+                if (t.start === state && t.end === updatedValue) {
                   return {
                     ...t,
-                    props: {
-                      ...t.props,
-                      labels: (
-                        <StyledTransitionLabel
-                          label={t.props.value + updatedColumn}
-                        />
-                      ),
-                      value: t.props.value + updatedColumn,
-                    },
+                    labels: (
+                      <StyledTransitionLabel label={t.value + updatedColumn} />
+                    ),
+                    value: t.value + updatedColumn,
                   };
                 } else return t;
               })
@@ -393,19 +385,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
             setResultantDfaTransitions((transitions: TransitionModel[]) => [
               ...transitions,
               {
-                props: {
-                  labels: <StyledTransitionLabel label={updatedColumn} />,
-                  value: updatedColumn,
-                  start: state,
-                  end: updatedValue,
-                  // dashness: { animation: 10 },
-                  animateDrawing: true,
-                  _extendSVGcanvas: isSelfTransition ? 25 : 0,
-                  _cpx1Offset: isSelfTransition ? -50 : 0,
-                  _cpy1Offset: isSelfTransition ? -50 : 0,
-                  _cpx2Offset: isSelfTransition ? 50 : 0,
-                  _cpy2Offset: isSelfTransition ? -50 : 0,
-                },
+                labels: <StyledTransitionLabel label={updatedColumn} />,
+                value: updatedColumn,
+                start: state,
+                end: updatedValue,
+                animateDrawing: true,
+                _extendSVGcanvas: isSelfTransition ? 25 : 0,
+                _cpx1Offset: isSelfTransition ? -50 : 0,
+                _cpy1Offset: isSelfTransition ? -50 : 0,
+                _cpx2Offset: isSelfTransition ? 50 : 0,
+                _cpy2Offset: isSelfTransition ? -50 : 0,
               },
             ]);
           }

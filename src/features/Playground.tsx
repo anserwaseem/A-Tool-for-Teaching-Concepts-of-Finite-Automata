@@ -82,18 +82,14 @@ const Playground = (props: PlaygroundProps) => {
             <TopBar {...topBarprops} />
 
             {props.states.map((state) => (
-              <State
-                stateProps={stateProps}
-                key={state.id}
-                state={state}
-              />
+              <State stateProps={stateProps} key={state.id} state={state} />
             ))}
           </div>
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
               xarrowProps={xarrowProps}
-              key={transition.props.start + "-" + transition.props.end + i}
+              key={transition.start + "-" + transition.end + i}
               transition={transition}
             />
           ))}

@@ -21,9 +21,9 @@ export default (props: XarrowAllProps) => {
         console.log("Xarrow onClick props", props);
         props.xarrowProps.setSelected({
           id: {
-            start: props.transition.props.start,
-            end: props.transition.props.end,
-            value: props.transition.props.value,
+            start: props.transition.start,
+            end: props.transition.end,
+            value: props.transition.value,
           },
           type: "transition",
         });
@@ -31,14 +31,14 @@ export default (props: XarrowAllProps) => {
       cursor: "pointer",
     },
   };
-  let color = props.transition.props?.color ?? state.color;
+  let color = props.transition?.color ?? state.color;
   if (
     props.xarrowProps.selected &&
     props.xarrowProps.selected.type === "transition" &&
     (props.xarrowProps.selected?.id as SelectedElementTypeId).start ===
-      props.transition.props.start &&
+      props.transition.start &&
     (props.xarrowProps.selected?.id as SelectedElementTypeId).end ===
-      props.transition.props.end
+      props.transition.end
   )
     color = transitionSelectedColor;
   return (
@@ -53,7 +53,7 @@ export default (props: XarrowAllProps) => {
       <Xarrow
         {...{
           ...defProps,
-          ...props.transition.props,
+          ...props.transition,
           ...props.xarrowProps,
           ...state,
           color,

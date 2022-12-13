@@ -139,10 +139,9 @@ export const NullClosure = (props: NullClosureProps) => {
     setNullClosureTransitions(
       transitions.filter(
         (transition) =>
-          transition.props.value.includes("^") &&
-          states.findIndex((state) => state.id === transition.props.start) !==
-            -1 &&
-          states.findIndex((state) => state.id === transition.props.end) !== -1
+          transition.value.includes("^") &&
+          states.findIndex((state) => state.id === transition.start) !== -1 &&
+          states.findIndex((state) => state.id === transition.end) !== -1
       )
     );
   };

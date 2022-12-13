@@ -68,11 +68,8 @@ export const MinimizeDfa = () => {
     transitions: dataContext.transitions.map((transition) => {
       return {
         ...transition,
-        props: {
-          ...transition.props,
-          start: `${transition.props.start}md`,
-          end: `${transition.props.end}md`,
-        },
+        start: `${transition.start}md`,
+        end: `${transition.end}md`,
       };
     }),
     equivalentStatesRows: equivalentStatesRows,

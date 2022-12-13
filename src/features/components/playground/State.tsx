@@ -5,7 +5,14 @@ import { DataContext } from "../../../components/Editor";
 import { useContext } from "react";
 import { StateAllProps } from "./props/StateProps";
 import { Box } from "@mui/material";
-import { stateFinalColor, stateHoverColor, stateInitialColor, stateInitialFinalColor, stateOperationColor, stateSelectedColor } from "../../../consts/Colors";
+import {
+  stateFinalColor,
+  stateHoverColor,
+  stateInitialColor,
+  stateInitialFinalColor,
+  stateOperationColor,
+  stateSelectedColor,
+} from "../../../consts/Colors";
 
 export const State = (props: StateAllProps) => {
   console.log("re rendering Box: props", props);
@@ -27,8 +34,8 @@ export const State = (props: StateAllProps) => {
       if (
         !dataContext?.transitions.find(
           (transition: TransitionModel) =>
-            transition.props.start === props.stateProps.selected?.id &&
-            transition.props.end === props.state.id
+            transition.start === props.stateProps.selected?.id &&
+            transition.end === props.state.id
         )
       ) {
         console.log("Box handleClick Add Transition setTransitions", props);
@@ -37,7 +44,6 @@ export const State = (props: StateAllProps) => {
         dataContext?.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
           {
-            props: {
               labels: "",
               value: "",
               start: props.stateProps.selected?.id as string,
@@ -48,7 +54,6 @@ export const State = (props: StateAllProps) => {
               _cpy1Offset: isSelfTransition ? -50 : 0,
               _cpx2Offset: isSelfTransition ? 50 : 0,
               _cpy2Offset: isSelfTransition ? -50 : 0,
-            },
           },
         ]);
       }
@@ -58,8 +63,8 @@ export const State = (props: StateAllProps) => {
         transitions.filter(
           (transition) =>
             !(
-              transition.props.start === props.stateProps.selected?.id &&
-              transition.props.end === props.state.id
+              transition.start === props.stateProps.selected?.id &&
+              transition.end === props.state.id
             )
         )
       );
@@ -77,20 +82,18 @@ export const State = (props: StateAllProps) => {
     (props.stateProps.actionState === "Add Transition" &&
       dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.props.start === props.stateProps.selected?.id &&
-          transition.props.end === props.state.id
+          transition.start === props.stateProps.selected?.id &&
+          transition.end === props.state.id
       ).length === 0) ||
     (props.stateProps.actionState === "Remove Transitions" &&
       dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.props.start === props.stateProps.selected?.id &&
-          transition.props.end === props.state.id
+          transition.start === props.stateProps.selected?.id &&
+          transition.end === props.state.id
       ).length > 0)
   ) {
     background = stateOperationColor;
-  }
-  
-  else if (
+  } else if (
     dataContext?.rows.find(
       (row: RowModel) =>
         row.state === props.state.id && row.isInitial && row.isFinal

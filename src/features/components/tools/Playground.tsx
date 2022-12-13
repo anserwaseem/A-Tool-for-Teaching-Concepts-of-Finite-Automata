@@ -70,13 +70,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
           {props.transitions.map((transition, i) => (
             <Xarrow
               xarrowProps={xarrowProps}
-              key={
-                transition.props.start +
-                "-" +
-                transition.props.end +
-                i +
-                uniqueWord
-              }
+              key={transition.start + "-" + transition.end + i + uniqueWord}
               transition={transition}
             />
           ))}
