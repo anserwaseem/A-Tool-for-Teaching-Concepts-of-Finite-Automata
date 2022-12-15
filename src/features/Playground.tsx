@@ -18,7 +18,7 @@ const Playground = (props: PlaygroundProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [boxRef, { width, height }] = useElementSize();
+  const [boxRef, { width, height }] = useElementSize(dataContext.stateSize, dataContext.setStates);
   const { setPlaygroundSize } = props;
 
   useEffect(() => {
