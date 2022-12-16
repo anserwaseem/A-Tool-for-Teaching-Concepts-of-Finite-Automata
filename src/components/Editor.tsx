@@ -632,6 +632,7 @@ export const Editor = () => {
         columns,
         playgroundSize,
         stateSize,
+        setStateSize
       }}
     >
       <>

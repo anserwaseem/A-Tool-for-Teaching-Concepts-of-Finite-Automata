@@ -3,6 +3,7 @@ import { RowModel, DraggableStateModel, TransitionModel } from "../../models";
 import { PlaygroundSize } from "./PlaygroundSize";
 
 export type AutomataData = {
+  [x: string]: any;
   rowId: number;
   setRowId: React.Dispatch<React.SetStateAction<number>>;
   rows: RowModel[];
@@ -14,4 +15,5 @@ export type AutomataData = {
   columns: GridColumns;
   playgroundSize: PlaygroundSize;
   stateSize: number;
+  setStateSize: React.Dispatch<React.SetStateAction<number>>;
 };

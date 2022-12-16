@@ -6,6 +6,7 @@ import { DataContext } from "../components/Editor";
 import { TransitionModel } from "../models";
 import { StyledTransitionLabel } from "./components/playground/StyledTransitionLabel";
 import { UploadProps } from "./props/UploadProps";
+import { StateMaxSize, StateMinSize } from "../consts/StateSizes";
 
 export const Upload = (props: UploadProps) => {
   const dataContext = useContext(DataContext);
@@ -29,30 +30,36 @@ export const Upload = (props: UploadProps) => {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        // if no result, return
         if (!e?.target?.result) {
-          props.setAlertMessage("Failed reading data.");
+          props.setAlertMessage("Failed reading file.");
           return;
         }
 
-        const rawData = JSON.parse(e.target?.result as string);
-        console.log("raw data", rawData);
+        let data: AutomataData;
+        try {
+          data = JSON.parse(e.target?.result as string);
+          // freeze the data to avoid mutating it
+          Object.freeze(data);
+        } catch (e) {
+          props.setAlertMessage("Failed parsing data.");
+          return;
+        }
+        console.log("raw data", data);
 
-        // data is corrupted if there is no rowId, rows, states, transitions
         if (
-          !rawData?.rowId ||
-          !rawData?.rows ||
-          !rawData?.states ||
-          !rawData?.transitions
+          !data?.rowId ||
+          !data?.rows ||
+          !data?.states ||
+          !data?.transitions ||
+          !data?.stateSize ||
+          data?.rowId < 0 ||
+          data?.rows?.length <= 0 ||
+          data?.states?.length <= 0 ||
+          data?.transitions?.length <= 0 ||
+          data?.stateSize < StateMinSize ||
+          data?.stateSize > StateMaxSize
         ) {
           props.setAlertMessage("Data is corrupted.");
-          return;
-        }
-
-        const data = rawData as AutomataData;
-        if (!data?.rows || data?.rows?.length <= 0) {
-          // if no rows found in data, return
-          props.setAlertMessage("No data found");
           return;
         }
 
@@ -61,10 +68,11 @@ export const Upload = (props: UploadProps) => {
         dataContext?.setStates(data.states);
         handleSetTransitions(data.transitions);
         dataContext?.setTransitions(data.transitions);
+        dataContext?.setStateSize(data.stateSize);
         console.log("Successfuly uploaded data.");
       };
       reader.readAsText(newFile);
-      //clear file input (cache)
+      // clear file input (cache)
       event.target.value = "";
     }
     props.handleCloseToolsMenu();
