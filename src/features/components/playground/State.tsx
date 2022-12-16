@@ -1,4 +1,4 @@
-import Draggable from "react-draggable";
+import Draggable, { DraggableEvent } from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
 import { DataContext } from "../../../components/Editor";
@@ -117,7 +117,11 @@ export const State = (props: StateAllProps) => {
 
   return (
     <>
-      <Draggable onDrag={updateXarrow}>
+      <Draggable
+        // prevent the state from being dragged outside the container
+        bounds="parent"
+        onDrag={updateXarrow}
+      >
         <Box
           className="state"
           sx={{
