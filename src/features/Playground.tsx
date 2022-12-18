@@ -18,7 +18,10 @@ const Playground = (props: PlaygroundProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [boxRef, { width, height }] = useElementSize(dataContext.stateSize, dataContext.setStates);
+  const [boxRef, { width, height }] = useElementSize(
+    dataContext.stateSize,
+    dataContext.setStates
+  );
   const { setPlaygroundSize } = props;
 
   useEffect(() => {
@@ -68,7 +71,10 @@ const Playground = (props: PlaygroundProps) => {
                   width: `${dataContext?.stateSize}px`,
                   height: `${dataContext?.stateSize}px`,
                   borderRadius: `${dataContext?.stateSize}px`,
+                  touchAction: "none",
                 }}
+                // enable touch events for mobile devices
+                onTouchMove={props.handleDropDynamic}
               >
                 state
               </div>
@@ -83,12 +89,12 @@ const Playground = (props: PlaygroundProps) => {
           >
             <TopBar {...topBarprops} />
 
-            {props.states.map((state) => (
+            {dataContext.states.map((state) => (
               <State stateProps={stateProps} key={state.id} state={state} />
             ))}
           </div>
           {/* xarrow connections*/}
-          {props.transitions.map((transition, i) => (
+          {dataContext.transitions.map((transition, i) => (
             <Xarrow
               xarrowProps={xarrowProps}
               key={transition.start + "-" + transition.end + i}

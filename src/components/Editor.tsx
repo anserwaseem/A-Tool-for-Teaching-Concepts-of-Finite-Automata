@@ -35,7 +35,11 @@ import { TestAStringProps } from "../features/props/TestAStringProps";
 import { IsDFA } from "../utils/IsDFA";
 import { IsNFA } from "../utils/IsNFA";
 import { transitionSelectedColor } from "../consts/Colors";
-import { StateDefaultSize, StateMaxSize, StateMinSize } from "../consts/StateSizes";
+import {
+  StateDefaultSize,
+  StateMaxSize,
+  StateMinSize,
+} from "../consts/StateSizes";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -525,17 +529,23 @@ export const Editor = () => {
       return;
     }
 
-    let { x, y } = e.target.getBoundingClientRect();
+    const rect = e.target.getBoundingClientRect();
+
+    let stateX: number, stateY: number;
+    // check if event has touch data (mobile) or mouse data (desktop)
+    if (e.touches) {
+      stateX = e.touches[0].clientX - rect.x;
+      stateY = e.touches[0].clientY - rect.y;
+    } else {
+      stateX = e.clientX - rect.x;
+      stateY = e.clientY - rect.y;
+    }
+    
     const stateName = promptNewStateName(states, `q${rowId}`);
     if (stateName) {
-      const newState = new DraggableStateModel(
-        stateName,
-        e.clientX - x,
-        e.clientY - y
-      );
-      setStates([...states, newState]);
+      const newState = new DraggableStateModel(stateName, stateX, stateY);
+      setStates((prev) => [...prev, newState]);
     }
-    console.log("states", states);
 
     setRows((prev) => [
       ...prev,
@@ -572,10 +582,6 @@ export const Editor = () => {
   };
 
   const playgroundProps: PlaygroundProps = {
-    states,
-    setStates,
-    transitions,
-    setTransitions,
     selected,
     setSelected,
     actionState,
@@ -583,8 +589,6 @@ export const Editor = () => {
     handleSelect,
     checkExsitence,
     handleDropDynamic,
-    rows,
-    setRows,
     handleDeleteRow,
     toggleInitialState,
     toggleFinalState,
@@ -632,7 +636,7 @@ export const Editor = () => {
         columns,
         playgroundSize,
         stateSize,
-        setStateSize
+        setStateSize,
       }}
     >
       <>

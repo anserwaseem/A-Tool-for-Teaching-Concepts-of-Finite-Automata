@@ -1,4 +1,4 @@
-import Draggable, { DraggableEvent } from "react-draggable";
+import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
 import { DataContext } from "../../../components/Editor";
@@ -21,8 +21,7 @@ export const State = (props: StateAllProps) => {
 
   const updateXarrow = useXarrow();
   const handleClick = (e: any) => {
-    console.log("Box handleClick", props);
-    e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
+    e.stopPropagation(); // so that click/touch event will be fired on the state only and not on the container itself
 
     if (props.stateProps.actionState === "Normal") {
       console.log("Box handleClick Normal", props);
@@ -137,6 +136,7 @@ export const State = (props: StateAllProps) => {
             },
           }}
           onClick={handleClick}
+          onTouchMove={handleClick}
           id={props.state.id}
         >
           {props.state.id}
