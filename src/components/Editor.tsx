@@ -149,44 +149,21 @@ export const Editor = () => {
       setAlertMessage(`Maximum ${MaxNumberOfStates} states allowed.`);
       return;
     }
+
     setRows((prev) => [...prev, row]);
+
     setRowId((prev) => prev + 1);
-    console.log(
-      "added row, now adding new state at: ",
-      playgroundSize.width,
-      playgroundSize.height
-    );
+
     const newState = new DraggableStateModel(
       row.state,
       Math.floor(Math.random() * playgroundSize.width),
       Math.floor(Math.random() * playgroundSize.height)
     );
+
     setStates((prev) => [...prev, newState]);
   };
 
   const handleDeleteRow = (row: RowModel) => {
-    console.log("handleDeleteRow", row);
-    console.log(
-      "resultant data",
-      rows
-        .filter((r) => r.id !== row.id)
-        .map((r) => {
-          return {
-            ...r,
-            ...Object.fromEntries(
-              PossibleTransitionValues.map((key) => [
-                key === "^" ? "nul" : key,
-                r[key === "^" ? "nul" : key].toString().includes(row.state)
-                  ? r[key === "^" ? "nul" : key]
-                      .toString()
-                      .replace(row.state, "")
-                  : r[key === "^" ? "nul" : key],
-              ])
-            ),
-          };
-        })
-    );
-
     setRows((rows) =>
       rows
         .filter((r) => r.id !== row.id)
@@ -221,13 +198,22 @@ export const Editor = () => {
   };
 
   const handleSaveRow = (row: RowModel) => {
-    console.log("handleSaveRow", row);
-    console.log("handleSaveRow", rows);
-
     if (isRowEmpty(row)) {
       setAlertMessage("Cannot save empty row.");
       return;
     }
+    
+    PossibleTransitionValues.forEach(
+      (key) =>
+        (row[key === "^" ? "nul" : key] = Array.from(
+          new Set(
+            row[key === "^" ? "nul" : key]
+              .toString()
+              .split(" ")
+              .filter((s) => s !== "")
+          )
+        ).join(" "))
+    );
 
     const oldRow = rows.find((r) => r.id === row.id);
     if (!oldRow) {
@@ -268,18 +254,12 @@ export const Editor = () => {
     let updatedRows: RowModel[] = [];
     let errorWhileSavingRow = false;
     setRows((prev) => {
-      console.log("handleSaveRow prev", prev);
       let availableStateValues = prev
         .map((r) => r.state)
         .filter((v) => v !== "");
-      // if (oldRow.state !== row.state)
-      //   availableStateValues = availableStateValues
-      //     .filter((v) => v !== oldRow.state)
-      //     .concat(row.state);
 
       if (!availableStateValues.includes(row.state))
         availableStateValues.push(row.state);
-      console.log("availableStateValues", availableStateValues);
 
       const areTransitionValuesInvalid = nulPossibleTransitionValues.some(
         (key) => {
@@ -293,7 +273,6 @@ export const Editor = () => {
         }
       );
 
-      console.log("areTransitionValuesInvalid", areTransitionValuesInvalid);
       if (areTransitionValuesInvalid) {
         setAlertMessage(
           `Transition values must be empty or from the following: ${availableStateValues.join(
@@ -311,6 +290,7 @@ export const Editor = () => {
           r.b === row.b &&
           r.nul === row.nul
       );
+
       if (stateAlreadyExists) {
         setAlertMessage(
           "This state value already exists. Kindly choose another value."
@@ -387,10 +367,10 @@ export const Editor = () => {
               }
             : t
         );
-        console.log("updatedtransitions", updatedtransitions);
+
         setTransitions(updatedtransitions);
-      } // if new transitions are added
-      else {
+      } else {
+        // if new transitions are added
         // remove those transitions which are going from this state
         let updatedtransitions = transitions.filter(
           (t) => t.start !== oldRow.state
@@ -402,16 +382,16 @@ export const Editor = () => {
             .toString()
             .split(" ")
             .filter((v) => v !== "");
-          console.log("transitionValues", transitionValues);
+
           transitionValues.forEach((v) => {
-            // console.log("key, v: ", key, v);
             const isSelfTransition = v === row.state;
+
             // if transition is not already added, add new transition
             if (
               !updatedtransitions.find(
                 (t) => t.start === row.state && t.end === v
               )
-            ) {
+            )
               updatedtransitions.push(
                 new TransitionModel({
                   start: row.state,
@@ -427,9 +407,8 @@ export const Editor = () => {
                   _cpy2Offset: isSelfTransition ? -50 : 0,
                 })
               );
-            } // if transition is already added, update its labels & value
-            else {
-              // console.log("updating existing transition");
+            // else, update its labels & value
+            else
               updatedtransitions = updatedtransitions.map((t) =>
                 t.start === row.state && t.end === v
                   ? {
@@ -439,20 +418,16 @@ export const Editor = () => {
                     }
                   : t
               );
-            }
           });
         });
 
-        // console.log("updatedtransitions", updatedtransitions);
         setTransitions(updatedtransitions);
       }
     }
   };
 
   const toggleInitialState = (row: RowModel) => {
-    console.log("toggleInitialState", row);
     setRows((prev) => {
-      console.log("toggleInitialState prev", prev);
       if (!prev || isRowEmpty(row)) {
         setAlertMessage("Cannot make empty row initial state.");
         return prev;
@@ -482,9 +457,7 @@ export const Editor = () => {
   };
 
   const toggleFinalState = (row: RowModel) => {
-    console.log("toggleFinalState", row);
     setRows((prev) => {
-      console.log("toggleFinalState prev", prev);
       if (!prev || isRowEmpty(row)) {
         setAlertMessage("Cannot make empty row final state.");
         return prev;
@@ -508,14 +481,10 @@ export const Editor = () => {
   };
 
   const handleSelect = (e: any) => {
-    console.log("Playground handleStateSelect e", e);
     if (e === null) {
       setSelected(null);
       setActionState("Normal");
-    } else {
-      console.log("Playground handleStateSelect id", e.target.id);
-      setSelected({ id: e.target.id, type: "state" });
-    }
+    } else setSelected({ id: e.target.id, type: "state" });
   };
 
   const checkExsitence = (id: string) => {
@@ -523,7 +492,6 @@ export const Editor = () => {
   };
 
   const handleDropDynamic = (e: any) => {
-    console.log("handleDropDynamic", e);
     if (states.length >= MaxNumberOfStates) {
       setAlertMessage(`Maximum ${MaxNumberOfStates} states allowed.`);
       return;
@@ -540,8 +508,9 @@ export const Editor = () => {
       stateX = e.clientX - rect.x;
       stateY = e.clientY - rect.y;
     }
-    
+
     const stateName = promptNewStateName(states, `q${rowId}`);
+
     if (stateName) {
       const newState = new DraggableStateModel(stateName, stateX, stateY);
       setStates((prev) => [...prev, newState]);
@@ -551,6 +520,7 @@ export const Editor = () => {
       ...prev,
       new RowModel(rowId, stateName, "", "", "", false, false),
     ]);
+
     setRowId((prev) => prev + 1);
   };
 
@@ -569,6 +539,7 @@ export const Editor = () => {
         return t;
       })
     );
+
     setToolSelected(null);
   };
 
@@ -606,12 +577,13 @@ export const Editor = () => {
     setIsTestAStringDialogOpen,
   };
 
-  function handleStateSizeChange(
+  const handleStateSizeChange = (
     event: Event,
     value: number,
     activeThumb: number
-  ): void {
+  ) => {
     setStateSize(value);
+
     setTransitions((transitions) =>
       transitions.map((t) => {
         return {
@@ -620,7 +592,7 @@ export const Editor = () => {
         };
       })
     );
-  }
+  };
 
   return (
     <DataContext.Provider
