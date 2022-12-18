@@ -49,6 +49,9 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
                 <Box
                   className="state"
                   sx={{
+                    width: `${props?.stateSize}px`,
+                    height: `${props?.stateSize}px`,
+                    borderRadius: `${props?.stateSize}px`,
                     left: state.x,
                     top: state.y,
                     background: props?.currentStates?.includes(state.id)

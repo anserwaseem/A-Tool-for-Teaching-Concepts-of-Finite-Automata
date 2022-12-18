@@ -489,6 +489,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     states: minimizedDfaStates,
     transitions: minimizedDfaTransitions,
     canvasWidth: "150%",
+    stateSize: props.stateSize,
   };
 
   return (

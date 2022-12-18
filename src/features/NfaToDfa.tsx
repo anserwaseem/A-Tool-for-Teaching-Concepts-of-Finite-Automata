@@ -85,6 +85,7 @@ export const NfaToDfa = () => {
     transitions: nullClosureTransitions,
     setTransitions: setNullClosureTransitions,
     setIsNullClosureTableComplete: setIsNullClosureTableComplete,
+    stateSize: dataContext.stateSize,
   };
 
   let modifiedTableProps: ModifiedTableProps = {
@@ -127,6 +128,7 @@ export const NfaToDfa = () => {
     }),
     setIsResultantDfaComplete: setIsResultantDfaComplete,
     playgroundSize: dataContext.playgroundSize,
+    stateSize: dataContext.stateSize,
   };
 
   return (

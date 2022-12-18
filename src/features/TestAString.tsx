@@ -238,6 +238,7 @@ const TestAString = (props: TestAStringProps) => {
       };
     }),
     currentStates: statesToHighlight.map((state) => `${state}ts`),
+    stateSize: dataContext.stateSize
   };
 
   return (

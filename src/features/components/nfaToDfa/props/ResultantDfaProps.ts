@@ -5,4 +5,5 @@ export type ResultantDfaProps = {
   rows: RowModel[];
   setIsResultantDfaComplete: React.Dispatch<React.SetStateAction<boolean>>;
   playgroundSize: PlaygroundSize;
+  stateSize: number;
 };

@@ -12,4 +12,5 @@ export type NullClosureProps = {
   transitions: TransitionModel[];
   setTransitions: React.Dispatch<React.SetStateAction<TransitionModel[]>>;
   setIsNullClosureTableComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  stateSize: number;
 };

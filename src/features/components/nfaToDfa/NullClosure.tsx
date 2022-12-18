@@ -28,6 +28,7 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { stateSelectedColor } from "../../../consts/Colors";
+import { DataContext } from "../../../components/Editor";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -214,6 +215,7 @@ export const NullClosure = (props: NullClosureProps) => {
   const playgroundProps: ToolsPlaygroundProps = {
     states: nullClosureStates,
     transitions: nullClosureTransitions,
+    stateSize: props.stateSize,
   };
 
   return (

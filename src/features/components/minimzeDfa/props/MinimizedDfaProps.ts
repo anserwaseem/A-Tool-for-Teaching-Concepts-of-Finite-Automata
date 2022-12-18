@@ -11,4 +11,5 @@ export type MinimizedDfaProps = {
   transitions: TransitionModel[];
   equivalentStatesRows: EquivalentStatesRowModel[];
   setIsMinimizedDfaComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  stateSize: number;
 };

@@ -9,4 +9,5 @@ export type ToolsPlaygroundProps = {
   transitions: TransitionModel[];
   canvasWidth?: number | string;
   currentStates?: string[];
+  stateSize?: number;
 };

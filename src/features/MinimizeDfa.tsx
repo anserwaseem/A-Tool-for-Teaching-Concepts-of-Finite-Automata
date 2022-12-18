@@ -22,22 +22,8 @@ export const MinimizeDfa = () => {
   >([]);
 
   const [isMinimizedDfaComplete, setIsMinimizedDfaComplete] = useState(false);
-  const [resultantDfaStates, setResultantDfaStates] = useState<
-    DraggableStateModel[]
-  >([]);
-  const [resultantDfaTransitions, setResultantDfaTransitions] = useState<
-    TransitionModel[]
-  >([]);
-
-  const [
-    isModifiedTransitionTableComplete,
-    setIsModifiedTransitionTableComplete,
-  ] = useState(false); //no need
-  const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]); // no need
 
   let equivalentStatesProps: EquivalentStatesProps = {
-    // rows: dataContext.rows,
-    // columns: dataContext.columns,
     setFilledEquivalentStatesRows: setEquivalentStatesRows,
     setIsEquivalentStatesFilled: setIsEquivalentStatesFilled,
   };
@@ -74,6 +60,7 @@ export const MinimizeDfa = () => {
     }),
     equivalentStatesRows: equivalentStatesRows,
     setIsMinimizedDfaComplete: setIsMinimizedDfaComplete,
+    stateSize: dataContext.stateSize,
   };
 
   return (
