@@ -545,11 +545,7 @@ export const Editor = () => {
 
   const transitionTableProps: TransitionTableProps = {
     rows,
-    setRows,
     columns,
-    rowId,
-    setRowId,
-    handleAddRow,
   };
 
   const playgroundProps: PlaygroundProps = {

@@ -6,11 +6,13 @@ import {
   transitionSelectedColor,
 } from "../../../consts/Colors";
 import { SelectedElementTypeId } from "../../props/SelectedElementType";
-import { XarrowAllProps } from "./props/XarrowProps";
+import { XarrowProps } from "./props/XarrowProps";
 
-export default (props: XarrowAllProps) => {
+export default (props: XarrowProps) => {
   console.log("re rendering Xarrow: props", props);
+
   const [state, setState] = useState({ color: transitionColor });
+
   const defProps = {
     passProps: {
       className: "xarrow",
@@ -19,7 +21,7 @@ export default (props: XarrowAllProps) => {
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
         console.log("Xarrow onClick props", props);
-        props.xarrowProps.setSelected({
+        props?.core?.setSelected({
           id: {
             start: props.transition.start,
             end: props.transition.end,
@@ -31,30 +33,25 @@ export default (props: XarrowAllProps) => {
       cursor: "pointer",
     },
   };
+
   let color = props.transition?.color ?? state.color;
   if (
-    props.xarrowProps.selected &&
-    props.xarrowProps.selected.type === "transition" &&
-    (props.xarrowProps.selected?.id as SelectedElementTypeId).start ===
+    props?.core?.selected &&
+    props?.core?.selected.type === "transition" &&
+    (props?.core?.selected?.id as SelectedElementTypeId)?.start ===
       props.transition.start &&
-    (props.xarrowProps.selected?.id as SelectedElementTypeId).end ===
+    (props?.core?.selected?.id as SelectedElementTypeId)?.end ===
       props.transition.end
   )
     color = transitionSelectedColor;
+    
   return (
-    console.log(
-      "custom Xarrow defProps, props, state, color",
-      defProps,
-      props,
-      state,
-      color
-    ),
     (
       <Xarrow
         {...{
           ...defProps,
           ...props.transition,
-          ...props.xarrowProps,
+          ...props.core,
           ...state,
           color,
         }}

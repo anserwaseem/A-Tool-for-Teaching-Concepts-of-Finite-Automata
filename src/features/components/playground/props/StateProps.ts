@@ -1,13 +1,13 @@
 import { DraggableStateModel } from "../../../../models";
 import { SelectedElementType } from "../../../props/SelectedElementType";
 
-export type StateProps = {
+export type StateCoreProps = {
   selected: SelectedElementType | null;
   handleSelect: (e: any) => void;
   actionState: string;
 };
 
-export type StateAllProps = {
-  stateProps: StateProps;
+export type StateProps = {
+  core: StateCoreProps;
   state: DraggableStateModel;
 };

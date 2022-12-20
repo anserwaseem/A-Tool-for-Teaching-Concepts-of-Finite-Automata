@@ -18,8 +18,8 @@ export const TopBar = (props: TopBarProps) => {
 
   const handleEditAction = (e, action: any) => {
     console.log("handleEditAction", action, props);
+
     switch (action) {
-      // state actions
       case "Edit Name":
         const newName = promptNewStateName(
           dataContext?.states,

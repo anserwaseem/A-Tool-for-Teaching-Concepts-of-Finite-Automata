@@ -1,6 +1,6 @@
 import "./css/Playground.css";
 import { Xwrapper } from "react-xarrows";
-import { StateProps } from "./components/playground/props/StateProps";
+import { StateCoreProps } from "./components/playground/props/StateProps";
 import { TopBarProps } from "./components/playground/props/TopBarProps";
 import TopBar from "./components/playground/TopBar";
 import { PlaygroundProps } from "./props/PlaygroundProps";
@@ -8,7 +8,7 @@ import State from "./components/playground/State";
 import Xarrow from "./components/playground/Xarrow";
 import useElementSize from "./hooks/useElementSize";
 import { useEffect } from "react";
-import { XarrowProps } from "./components/playground/props/XarrowProps";
+import { XarrowCoreProps } from "./components/playground/props/XarrowProps";
 import { DataContext } from "../components/Editor";
 import { useContext } from "react";
 import { Box } from "@mui/material";
@@ -40,13 +40,13 @@ const Playground = (props: PlaygroundProps) => {
     toggleFinalState: props.toggleFinalState,
   };
 
-  const stateProps: StateProps = {
+  const stateProps: StateCoreProps = {
     selected: props.selected,
     handleSelect: props.handleSelect,
     actionState: props.actionState,
   };
 
-  const xarrowProps: XarrowProps = {
+  const xarrowProps: XarrowCoreProps = {
     selected: props.selected,
     setSelected: props.setSelected,
   };
@@ -90,13 +90,13 @@ const Playground = (props: PlaygroundProps) => {
             <TopBar {...topBarprops} />
 
             {dataContext.states.map((state) => (
-              <State stateProps={stateProps} key={state.id} state={state} />
+              <State core={stateProps} key={state.id} state={state} />
             ))}
           </div>
           {/* xarrow connections*/}
           {dataContext.transitions.map((transition, i) => (
             <Xarrow
-              xarrowProps={xarrowProps}
+              core={xarrowProps}
               key={transition.start + "-" + transition.end + i}
               transition={transition}
             />

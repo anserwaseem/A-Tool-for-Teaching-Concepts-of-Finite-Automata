@@ -1,8 +1,4 @@
-import {
-  DraggableStateModel,
-  RowModel,
-  TransitionModel,
-} from "../../../../models";
+import { RowModel } from "../../../../models";
 import { SelectedElementType } from "../../../props/SelectedElementType";
 
 export type TopBarProps = {

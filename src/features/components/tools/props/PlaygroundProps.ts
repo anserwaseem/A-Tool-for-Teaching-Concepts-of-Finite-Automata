@@ -1,8 +1,4 @@
-import {
-  DraggableStateModel,
-  TransitionModel,
-  RowModel,
-} from "../../../../models";
+import { DraggableStateModel, TransitionModel } from "../../../../models";
 
 export type ToolsPlaygroundProps = {
   states: DraggableStateModel[];

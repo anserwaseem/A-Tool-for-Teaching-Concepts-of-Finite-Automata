@@ -3,7 +3,7 @@ import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
 import { DataContext } from "../../../components/Editor";
 import { useContext } from "react";
-import { StateAllProps } from "./props/StateProps";
+import { StateProps } from "./props/StateProps";
 import { Box } from "@mui/material";
 import {
   stateFinalColor,
@@ -14,7 +14,7 @@ import {
   stateSelectedColor,
 } from "../../../consts/Colors";
 
-export const State = (props: StateAllProps) => {
+export const State = (props: StateProps) => {
   console.log("re rendering Box: props", props);
 
   const dataContext = useContext(DataContext);
@@ -23,27 +23,26 @@ export const State = (props: StateAllProps) => {
   const handleClick = (e: any) => {
     e.stopPropagation(); // so that click/touch event will be fired on the state only and not on the container itself
 
-    if (props.stateProps.actionState === "Normal") {
+    if (props?.core?.actionState === "Normal") {
       console.log("Box handleClick Normal", props);
-      props.stateProps.handleSelect(e);
-    } else if (props.stateProps.actionState === "Add Transition") {
+      props?.core?.handleSelect(e);
+    } else if (props?.core?.actionState === "Add Transition") {
       console.log("Box handleClick Add Transition", props);
 
       // restrict adding of new transition between states where a transition already exists
       if (
         !dataContext?.transitions.find(
           (transition: TransitionModel) =>
-            transition.start === props.stateProps.selected?.id &&
+            transition.start === props?.core?.selected?.id &&
             transition.end === props.state.id
         )
       ) {
         console.log("Box handleClick Add Transition setTransitions", props);
-        const isSelfTransition =
-          props.stateProps.selected?.id === props.state.id;
+        const isSelfTransition = props?.core?.selected?.id === props.state.id;
         dataContext?.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
           new TransitionModel({
-            start: props.stateProps.selected?.id as string,
+            start: props?.core?.selected?.id as string,
             end: props.state.id,
             labels: "",
             value: "",
@@ -57,13 +56,13 @@ export const State = (props: StateAllProps) => {
           }),
         ]);
       }
-    } else if (props.stateProps.actionState === "Remove Transitions") {
+    } else if (props?.core?.actionState === "Remove Transitions") {
       console.log("Box handleClick Remove Transitions", props);
       dataContext?.setTransitions((transitions: TransitionModel[]) =>
         transitions.filter(
           (transition) =>
             !(
-              transition.start === props.stateProps.selected?.id &&
+              transition.start === props?.core?.selected?.id &&
               transition.end === props.state.id
             )
         )
@@ -71,24 +70,21 @@ export const State = (props: StateAllProps) => {
     }
   };
 
-  console.log("changing background color now", props.stateProps.actionState);
+  console.log("changing background color now", props?.core?.actionState);
   let background = null;
-  if (
-    props.stateProps.selected &&
-    props.stateProps.selected?.id === props.state.id
-  ) {
+  if (props?.core?.selected && props?.core?.selected?.id === props.state.id) {
     background = stateSelectedColor;
   } else if (
-    (props.stateProps.actionState === "Add Transition" &&
+    (props?.core?.actionState === "Add Transition" &&
       dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.start === props.stateProps.selected?.id &&
+          transition.start === props?.core?.selected?.id &&
           transition.end === props.state.id
       ).length === 0) ||
-    (props.stateProps.actionState === "Remove Transitions" &&
+    (props?.core?.actionState === "Remove Transitions" &&
       dataContext?.transitions.filter(
         (transition: TransitionModel) =>
-          transition.start === props.stateProps.selected?.id &&
+          transition.start === props?.core?.selected?.id &&
           transition.end === props.state.id
       ).length > 0)
   ) {

@@ -4,7 +4,7 @@ import Xarrow from "../playground/Xarrow";
 import { ToolsPlaygroundProps } from "./props/PlaygroundProps";
 import Draggable from "react-draggable";
 import { startingStateColor, stateHoverColor } from "../../../consts/Colors";
-import { XarrowProps } from "../playground/props/XarrowProps";
+import { XarrowCoreProps } from "../playground/props/XarrowProps";
 import { Box } from "@mui/material";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
@@ -26,7 +26,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
       ? "ts"
       : "";
 
-  const xarrowProps: XarrowProps = {
+  const xarrowProps: XarrowCoreProps = {
     selected: null,
     setSelected: () => {},
   };
@@ -72,7 +72,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
           {/* xarrow connections*/}
           {props.transitions.map((transition, i) => (
             <Xarrow
-              xarrowProps={xarrowProps}
+              core={xarrowProps}
               key={transition.start + "-" + transition.end + i + uniqueWord}
               transition={transition}
             />
