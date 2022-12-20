@@ -59,27 +59,6 @@ const Playground = (props: PlaygroundProps) => {
           id="canvas"
           onClick={() => props.handleSelect(null)}
         >
-          <div className="toolboxMenu">
-            <Box>Drag & drop me!</Box>
-            {/* <div className="toolboxTitle">Drag & drop me!</div> */}
-            <hr />
-            <div className="toolboxContainer">
-              <div
-                className="state"
-                draggable
-                style={{
-                  width: `${dataContext?.stateSize}px`,
-                  height: `${dataContext?.stateSize}px`,
-                  borderRadius: `${dataContext?.stateSize}px`,
-                  touchAction: "none",
-                }}
-                // enable touch events for mobile devices
-                onTouchMove={props.handleDropDynamic}
-              >
-                state
-              </div>
-            </div>
-          </div>
           <div
             id="statesContainer"
             className="statesContainer"
@@ -101,6 +80,28 @@ const Playground = (props: PlaygroundProps) => {
               transition={transition}
             />
           ))}
+          
+          <div className="toolboxMenu">
+            <Box>Drag & drop me!</Box>
+            {/* <div className="toolboxTitle">Drag & drop me!</div> */}
+            <hr />
+            <div className="toolboxContainer">
+              <div
+                className="state"
+                draggable
+                style={{
+                  width: `${dataContext?.stateSize}px`,
+                  height: `${dataContext?.stateSize}px`,
+                  borderRadius: `${dataContext?.stateSize}px`,
+                  touchAction: "none",
+                }}
+                // enable touch events for mobile devices
+                onTouchMove={props.handleDropDynamic}
+              >
+                state
+              </div>
+            </div>
+          </div>
         </div>
       </Xwrapper>
     </div>

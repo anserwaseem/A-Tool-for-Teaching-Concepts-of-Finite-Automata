@@ -1,9 +1,10 @@
-import { createContext, useState } from "react";
+import { createContext, useRef, useState } from "react";
 import {
   Alert,
   AlertTitle,
   Box,
   Button,
+  Divider,
   Grid,
   Slider,
   Snackbar,
@@ -202,7 +203,7 @@ export const Editor = () => {
       setAlertMessage("Cannot save empty row.");
       return;
     }
-    
+
     PossibleTransitionValues.forEach(
       (key) =>
         (row[key === "^" ? "nul" : key] = Array.from(
@@ -225,9 +226,10 @@ export const Editor = () => {
       setAlertMessage(
         `State name cannot be more than ${StateNameMaxLength} characters.`
       );
-      if (oldRow) {
-        setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
-      }
+
+      // reset this row to old row
+      setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
+
       return;
     }
 
@@ -242,9 +244,10 @@ export const Editor = () => {
       setAlertMessage(
         `Cannot change state name when transition values are added/updated/removed.`
       );
-      if (oldRow) {
-        setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
-      }
+
+      // reset this row to old row
+      setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
+
       return;
     }
 
@@ -296,7 +299,7 @@ export const Editor = () => {
           "This state value already exists. Kindly choose another value."
         );
         errorWhileSavingRow = true;
-        return prev;
+        return prev.map((r) => (r.id === row.id ? oldRow : r));
       }
 
       updatedRows = prev.map((r) =>
@@ -335,12 +338,13 @@ export const Editor = () => {
       return updatedRows;
     });
 
+    // add states and transitions
     if (!errorWhileSavingRow) {
       setStates((prev) =>
         prev.map((s) => (s.id === oldRow.state ? { ...s, id: row.state } : s))
       );
 
-      // if only state name is changed
+      // if only state name is changed, update existing transitions' start and end values to new state name
       if (
         oldRow.state !== row.state &&
         PossibleTransitionValues.every(
@@ -370,8 +374,7 @@ export const Editor = () => {
 
         setTransitions(updatedtransitions);
       } else {
-        // if new transitions are added
-        // remove those transitions which are going from this state
+        // if new transitions are added, remove those transitions which are going from old state
         let updatedtransitions = transitions.filter(
           (t) => t.start !== oldRow.state
         );
@@ -543,6 +546,23 @@ export const Editor = () => {
     setToolSelected(null);
   };
 
+  const handleStateSizeChange = (
+    event: Event,
+    value: number,
+    activeThumb: number
+  ) => {
+    setStateSize(value);
+
+    setTransitions((transitions) =>
+      transitions.map((t) => {
+        return {
+          ...t,
+          strokeWidth: value / 10,
+        };
+      })
+    );
+  };
+
   const transitionTableProps: TransitionTableProps = {
     rows,
     columns,
@@ -571,23 +591,6 @@ export const Editor = () => {
   const testAStringProps: TestAStringProps = {
     isTestAStringDialogOpen,
     setIsTestAStringDialogOpen,
-  };
-
-  const handleStateSizeChange = (
-    event: Event,
-    value: number,
-    activeThumb: number
-  ) => {
-    setStateSize(value);
-
-    setTransitions((transitions) =>
-      transitions.map((t) => {
-        return {
-          ...t,
-          strokeWidth: value / 10,
-        };
-      })
-    );
   };
 
   return (
@@ -635,7 +638,12 @@ export const Editor = () => {
             <Grid item xs={12} md={4}>
               {/* Grid for Add a Row button and Tools */}
               <Grid container justifyContent={"space-between"}>
-                <Grid item>
+                <Grid
+                  item
+                  sx={{
+                    display: "flex",
+                  }}
+                >
                   <Button
                     size="small"
                     onClick={() =>

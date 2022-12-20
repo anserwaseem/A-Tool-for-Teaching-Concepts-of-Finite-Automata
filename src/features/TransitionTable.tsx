@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TransitionTableProps } from "./props/TransitionTableProps";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import { GetBackgroundColor } from "../utils/GetBackgroundColor";
+import NoRowsOverlay from "./components/transitionTable/NoRowsOverlay";
 
 const TransitionTable = (props: TransitionTableProps) => {
   console.log("re rendering TransitionTable: props", props);
@@ -39,6 +40,10 @@ const TransitionTable = (props: TransitionTableProps) => {
       }}
     >
       <DataGrid
+        sx={{
+          minHeight:
+            props.rows?.length === 0 ? "250px !important" : "100% !important",
+        }}
         rows={props.rows}
         columns={props.columns}
         autoHeight
@@ -65,6 +70,9 @@ const TransitionTable = (props: TransitionTableProps) => {
               : params?.row?.isFinal && "Final"
           }`
         }
+        components={{
+          NoRowsOverlay: NoRowsOverlay,
+        }}
       ></DataGrid>
     </Box>
   );

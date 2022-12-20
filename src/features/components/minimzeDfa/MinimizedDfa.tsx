@@ -100,6 +100,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
+  justifyContent: "space-evenly",
+  backgroundColor: "rgba(148, 148, 148, 0.15)",
+  boxShadow:
+    "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
@@ -573,14 +577,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           anchor="left"
           open={open === 1}
         >
-          <DrawerHeader
-            sx={{
-              justifyContent: "space-evenly",
-              backgroundColor: "rgba(148, 148, 148, 0.15)",
-              boxShadow:
-                "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-            }}
-          >
+          <DrawerHeader>
             <Typography
               noWrap
               variant="overline"
@@ -607,7 +604,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           </Box>
         </Drawer>
 
-        <Main open={open} sx={{ paddingBottom: 12 }}>
+        <Main open={open}>
           <DrawerHeader />
           <Grid container>
             {/* Grid for Add a Row button and Tools */}
