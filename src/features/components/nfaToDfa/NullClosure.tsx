@@ -29,6 +29,7 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { stateSelectedColor } from "../../../consts/Colors";
 import { DataContext } from "../../../components/Editor";
+import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -138,12 +139,21 @@ export const NullClosure = (props: NullClosureProps) => {
 
     setNullClosureStates(states);
     setNullClosureTransitions(
-      transitions.filter(
-        (transition) =>
-          transition.value.includes("^") &&
-          states.findIndex((state) => state.id === transition.start) !== -1 &&
-          states.findIndex((state) => state.id === transition.end) !== -1
-      )
+      transitions
+        .filter(
+          (transition) =>
+            transition.start !== transition.end && // no self transitions
+            transition.value.includes("^") &&
+            states.findIndex((state) => state.id === transition.start) !== -1 &&
+            states.findIndex((state) => state.id === transition.end) !== -1
+        )
+        .map((transition) => {
+          return {
+            ...transition,
+            labels: <StyledTransitionLabel label="^" />,
+            value: "^",
+          };
+        })
     );
   };
 
