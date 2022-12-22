@@ -132,7 +132,8 @@ export const NullClosure = (props: NullClosureProps) => {
             // display null transitions for every row except the last row
             rowIndex - 1 === mapIndex && index % 2 === 0
               ? ""
-              : row.state + (row.nul ? ", " : "") + row.nul,
+              : // only show unique null transitions
+                Array.from(new Set(row.nul.split(" "))).join(", "),
         };
       })
     );
