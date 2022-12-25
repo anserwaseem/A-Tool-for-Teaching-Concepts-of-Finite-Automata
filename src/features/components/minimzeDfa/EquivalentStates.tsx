@@ -40,6 +40,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
+import { appBarBackgroundColor } from "../../../consts/Colors";
 
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
@@ -81,7 +82,7 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.enteringScreen,
   }),
   top: "auto",
-  backgroundColor: "rgba(148, 148, 148, 0.15)",
+  backgroundColor: appBarBackgroundColor,
   position: "absolute",
 
   ...(open === 0 && {
@@ -743,7 +744,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           <DrawerHeader
             sx={{
               justifyContent: "space-evenly",
-              backgroundColor: "rgba(148, 148, 148, 0.15)",
+              backgroundColor: appBarBackgroundColor,
               boxShadow:
                 "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
             }}
