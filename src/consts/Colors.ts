@@ -14,3 +14,5 @@ export const transitionSelectedColor = "black";
 export const startingStateColor = "#ff99bb"; // pink tone
 
 export const appBarBackgroundColor = "rgba(148, 148, 148, 0.15)";
+export const drawerHeaderBoxShadow =
+  "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)";

@@ -40,7 +40,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
-import { appBarBackgroundColor } from "../../../consts/Colors";
+import { appBarBackgroundColor, drawerHeaderBoxShadow } from "../../../consts/Colors";
 
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
@@ -745,8 +745,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             sx={{
               justifyContent: "space-evenly",
               backgroundColor: appBarBackgroundColor,
-              boxShadow:
-                "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
+              boxShadow: drawerHeaderBoxShadow,
             }}
           >
             <Typography

@@ -41,7 +41,7 @@ import {
   TransitionModel,
 } from "../../../models";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
-import { appBarBackgroundColor } from "../../../consts/Colors";
+import { appBarBackgroundColor, drawerHeaderBoxShadow } from "../../../consts/Colors";
 
 const drawerWidth = 300;
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
@@ -103,8 +103,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   justifyContent: "space-evenly",
   backgroundColor: appBarBackgroundColor,
-  boxShadow:
-    "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
+  boxShadow: drawerHeaderBoxShadow,
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
