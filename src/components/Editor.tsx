@@ -1,10 +1,9 @@
-import { createContext, useRef, useState } from "react";
+import { createContext, useState } from "react";
 import {
   Alert,
   AlertTitle,
   Box,
   Button,
-  Divider,
   Grid,
   Slider,
   Snackbar,
@@ -206,7 +205,9 @@ export const Editor = () => {
 
     if (PossibleTransitionValues.includes(row.state)) {
       setAlertMessage(
-        `State name cannot be ${PossibleTransitionValues.join(", ")}`
+        `State name cannot be one of the following: ${PossibleTransitionValues.join(
+          ", "
+        )}`
       );
       return;
     }

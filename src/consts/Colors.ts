@@ -11,7 +11,7 @@ export const transitionColor = "coral";
 export const transitionHoverColor = "IndianRed";
 export const transitionSelectedColor = "black";
 
-export const startingStateColor = "#ff99bb"; // pink tone
+export const startingStateColor = "lightblue"; // pink tone
 
 export const appBarBackgroundColor = "rgba(148, 148, 148, 0.15)";
 export const drawerHeaderBoxShadow =

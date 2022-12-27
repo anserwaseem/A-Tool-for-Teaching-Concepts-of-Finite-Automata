@@ -11,7 +11,13 @@ import { useEffect } from "react";
 import { XarrowCoreProps } from "./components/playground/props/XarrowProps";
 import { DataContext } from "../components/Editor";
 import { useContext } from "react";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import {
+  stateFinalColor,
+  stateInitialColor,
+  stateInitialFinalColor,
+} from "../consts/Colors";
+import { ToolboxStateSize } from "../consts/ToolboxStateSize";
 
 const Playground = (props: PlaygroundProps) => {
   console.log("re rendering Playground: props", props);
@@ -80,13 +86,13 @@ const Playground = (props: PlaygroundProps) => {
               transition={transition}
             />
           ))}
-          
+
           <div className="toolboxMenu">
             <Box>Drag & drop me!</Box>
             {/* <div className="toolboxTitle">Drag & drop me!</div> */}
             <hr />
             <div className="toolboxContainer">
-              <div
+              <Box
                 className="state"
                 draggable
                 style={{
@@ -99,7 +105,55 @@ const Playground = (props: PlaygroundProps) => {
                 onTouchMove={props.handleDropDynamic}
               >
                 state
-              </div>
+              </Box>
+
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Box
+                    className="state"
+                    sx={{
+                      width: `${ToolboxStateSize}px`,
+                      height: `${ToolboxStateSize}px`,
+                      borderRadius: `${ToolboxStateSize}px`,
+                      backgroundColor: stateInitialColor,
+                    }}
+                  >
+                    Initial
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Box
+                    className="state"
+                    sx={{
+                      width: `${ToolboxStateSize}px`,
+                      height: `${ToolboxStateSize}px`,
+                      borderRadius: `${ToolboxStateSize}px`,
+                      backgroundColor: stateFinalColor,
+                    }}
+                  >
+                    Final
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Box
+                    className="state"
+                    sx={{
+                      width: `${ToolboxStateSize}px`,
+                      height: `${ToolboxStateSize}px`,
+                      borderRadius: `${ToolboxStateSize}px`,
+                      backgroundColor: stateInitialFinalColor,
+                    }}
+                  >
+                    Initial Final
+                  </Box>
+                </Grid>
+              </Grid>
             </div>
           </div>
         </div>
