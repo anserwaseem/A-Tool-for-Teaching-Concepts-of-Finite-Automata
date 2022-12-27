@@ -1,5 +1,6 @@
 import { DraggableStateModel } from "../models";
 import { StateNameMaxLength } from "../consts/StateNameMaxLength";
+import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 
 export const promptNewStateName = (
   states: DraggableStateModel[],
@@ -9,7 +10,8 @@ export const promptNewStateName = (
   while (
     !newName ||
     (newName && [...states].map((s) => s.id).includes(newName)) ||
-    newName.length > StateNameMaxLength
+    newName.length > StateNameMaxLength ||
+    PossibleTransitionValues.includes(newName)
   ) {
     if (!newName)
       newName = prompt(
@@ -24,6 +26,13 @@ export const promptNewStateName = (
     else if (newName.length > StateNameMaxLength)
       newName = prompt(
         `State name cannot be more than ${StateNameMaxLength} characters.`,
+        originalName
+      );
+    else if (PossibleTransitionValues.includes(newName))
+      newName = prompt(
+        `State name cannot be one of the following: ${PossibleTransitionValues.join(
+          ", "
+        )}`,
         originalName
       );
   }

@@ -204,6 +204,13 @@ export const Editor = () => {
       return;
     }
 
+    if (PossibleTransitionValues.includes(row.state)) {
+      setAlertMessage(
+        `State name cannot be ${PossibleTransitionValues.join(", ")}`
+      );
+      return;
+    }
+
     PossibleTransitionValues.forEach(
       (key) =>
         (row[key === "^" ? "nul" : key] = Array.from(
