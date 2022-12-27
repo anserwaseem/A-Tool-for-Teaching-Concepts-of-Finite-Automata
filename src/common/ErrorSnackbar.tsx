@@ -1,0 +1,21 @@
+import { Snackbar, Alert, AlertTitle } from "@mui/material";
+import { ErrorSnackbarProps } from "./props/ErrorSnackbarProps";
+
+export const ErrorSnackbar = (props: ErrorSnackbarProps) => {
+  return (
+    <Snackbar
+      open={true}
+      autoHideDuration={6000}
+      onClose={props.handleErrorSnackbarClose}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "center",
+      }}
+    >
+      <Alert severity="error">
+        <AlertTitle>{props?.titleMessage}</AlertTitle>
+        {props?.bodyMessage}
+      </Alert>
+    </Snackbar>
+  );
+};

@@ -45,6 +45,7 @@ import {
   StateMaxSize,
   StateMinSize,
 } from "../consts/StateSizes";
+import { ErrorSnackbar } from "../common/ErrorSnackbar";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -613,6 +614,10 @@ export const Editor = () => {
     }
   };
 
+  const handleErrorSnackbarClose = () => {
+    setToolSelected(null);
+  };
+
   const transitionTableProps: TransitionTableProps = {
     rows,
     columns,
@@ -767,46 +772,59 @@ export const Editor = () => {
         </Box>
 
         {toolSelected && toolSelected === AvailableTools.IS_DFA && (
-          <Snackbar
-            open={true}
-            autoHideDuration={6000}
-            onClose={() => setToolSelected(null)}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <Alert severity={IsDFA(rows)?.[0] ? "success" : "error"}>
-              <AlertTitle>{AvailableTools.IS_DFA}</AlertTitle>
-              {IsDFA(rows)?.[1]}
-            </Alert>
-          </Snackbar>
+          <ErrorSnackbar
+            handleErrorSnackbarClose={handleErrorSnackbarClose}
+            titleMessage={AvailableTools.IS_DFA}
+            bodyMessage={IsDFA(rows)?.[1] as string}
+          />
         )}
+
         {toolSelected && toolSelected === AvailableTools.IS_NFA && (
-          <Snackbar
-            open={true}
-            autoHideDuration={6000}
-            onClose={() => setToolSelected(null)}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <Alert severity={IsNFA(rows)?.[0] ? "success" : "error"}>
-              <AlertTitle>{AvailableTools.IS_NFA}</AlertTitle>
-              {IsNFA(rows)?.[1]}
-            </Alert>
-          </Snackbar>
+          <ErrorSnackbar
+            handleErrorSnackbarClose={handleErrorSnackbarClose}
+            titleMessage={AvailableTools.IS_NFA}
+            bodyMessage={IsNFA(rows)?.[1] as string}
+          />
         )}
-        {toolSelected && toolSelected === AvailableTools.NFA_TO_DFA && (
-          <NfaToDfa />
-        )}
-        {toolSelected && toolSelected === AvailableTools.MINIMIZE_DFA && (
-          <MinimizeDfa />
-        )}
-        {toolSelected && toolSelected === AvailableTools.TEST_A_STRING && (
-          <TestAString {...testAStringProps} />
-        )}
+
+        {toolSelected &&
+          toolSelected === AvailableTools.NFA_TO_DFA &&
+          (IsNFA(rows)?.[0] ? (
+            <NfaToDfa />
+          ) : IsDFA(rows)?.[0] ? (
+            <ErrorSnackbar
+              handleErrorSnackbarClose={handleErrorSnackbarClose}
+              titleMessage="The Automaton is already DFA."
+            />
+          ) : (
+            <ErrorSnackbar
+              handleErrorSnackbarClose={handleErrorSnackbarClose}
+              titleMessage="Please create a valid Automaton for conversion."
+            />
+          ))}
+
+        {toolSelected &&
+          toolSelected === AvailableTools.MINIMIZE_DFA &&
+          (IsDFA(rows)?.[0] ? (
+            <MinimizeDfa />
+          ) : (
+            <ErrorSnackbar
+              handleErrorSnackbarClose={handleErrorSnackbarClose}
+              titleMessage="The Automaton is not DFA."
+            />
+          ))}
+
+        {toolSelected &&
+          toolSelected === AvailableTools.TEST_A_STRING &&
+          (IsNFA(rows)?.[0] || IsDFA(rows)?.[0] ? (
+            <TestAString {...testAStringProps} />
+          ) : (
+            <ErrorSnackbar
+              handleErrorSnackbarClose={handleErrorSnackbarClose}
+              titleMessage="Please create a valid Automaton for testing."
+            />
+          ))}
+
         {toolSelected &&
           toolSelected === AvailableTools.HIGHLIGHT_NULL_TRANSITIONS &&
           handleHighlightNullTransitions()}
