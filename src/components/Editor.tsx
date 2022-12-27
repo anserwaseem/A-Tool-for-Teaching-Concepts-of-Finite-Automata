@@ -4,9 +4,15 @@ import {
   AlertTitle,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   Slider,
   Snackbar,
+  TextField,
 } from "@mui/material";
 import { GridColumns, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -18,7 +24,6 @@ import { PlaygroundProps } from "../features/props/PlaygroundProps";
 import { SelectedElementType } from "../features/props/SelectedElementType";
 import { TransitionTableProps } from "../features/props/TransitionTableProps";
 import TransitionTable from "../features/TransitionTable";
-import { promptNewStateName } from "../utils/PromptNewStateName";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { StateNameMaxLength } from "../consts/StateNameMaxLength";
 import { PlaygroundSize } from "./types/PlaygroundSize";
@@ -143,6 +148,14 @@ export const Editor = () => {
   const [isTestAStringDialogOpen, setIsTestAStringDialogOpen] = useState(false);
 
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [isStateNameDialogOpen, setIsStateNameDialogOpen] = useState(false);
+  const [stateNameDialogValue, setStateNameDialogValue] = useState("");
+  const [stateNameDialogError, setStateNameDialogError] = useState("");
+  const [{ stateX, stateY }, setStateDropPosition] = useState({
+    stateX: 0,
+    stateY: 0,
+  });
 
   const handleAddRow = (row: RowModel) => {
     if (states.length >= MaxNumberOfStates) {
@@ -520,19 +533,9 @@ export const Editor = () => {
       stateY = e.clientY - rect.y;
     }
 
-    const stateName = promptNewStateName(states, `q${rowId}`);
-
-    if (stateName) {
-      const newState = new DraggableStateModel(stateName, stateX, stateY);
-      setStates((prev) => [...prev, newState]);
-    }
-
-    setRows((prev) => [
-      ...prev,
-      new RowModel(rowId, stateName, "", "", "", false, false),
-    ]);
-
-    setRowId((prev) => prev + 1);
+    setStateNameDialogValue(`q${rowId}`);
+    setIsStateNameDialogOpen(true);
+    setStateDropPosition({ stateX, stateY });
   };
 
   const handleHighlightNullTransitions = () => {
@@ -569,6 +572,45 @@ export const Editor = () => {
         };
       })
     );
+  };
+
+  const handleStateNameDialogValue = (e: any) => {
+    if (!stateNameDialogValue)
+      setStateNameDialogError("Name cannot be empty, choose another one: ");
+    else if (
+      stateNameDialogValue &&
+      [...states].map((s) => s.id).includes(stateNameDialogValue)
+    )
+      setStateNameDialogError("Name already taken, choose another one: ");
+    else if (stateNameDialogValue.length > StateNameMaxLength)
+      setStateNameDialogError(
+        `State name cannot be more than ${StateNameMaxLength} characters.`
+      );
+    else if (PossibleTransitionValues.includes(stateNameDialogValue))
+      setStateNameDialogError(
+        `State name cannot be one of the following: ${PossibleTransitionValues.join(
+          ", "
+        )}`
+      );
+    else {
+      setStateNameDialogError("");
+      setIsStateNameDialogOpen(false);
+      setStateNameDialogValue(stateNameDialogValue);
+
+      const newState = new DraggableStateModel(
+        stateNameDialogValue,
+        stateX,
+        stateY
+      );
+      setStates((prev) => [...prev, newState]);
+
+      setRows((prev) => [
+        ...prev,
+        new RowModel(rowId, stateNameDialogValue, "", "", "", false, false),
+      ]);
+
+      setRowId((prev) => prev + 1);
+    }
   };
 
   const transitionTableProps: TransitionTableProps = {
@@ -619,6 +661,33 @@ export const Editor = () => {
       }}
     >
       <>
+        <Dialog
+          open={isStateNameDialogOpen}
+          onClose={() => setIsStateNameDialogOpen(false)}
+        >
+          <DialogTitle>Enter New State Name</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{stateNameDialogError}</DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="testString"
+              label="State Name"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={stateNameDialogValue}
+              onChange={(e) => setStateNameDialogValue(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsStateNameDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleStateNameDialogValue}>Ok</Button>
+          </DialogActions>
+        </Dialog>
+
         {alertMessage !== "" && (
           <Snackbar
             open={true}
