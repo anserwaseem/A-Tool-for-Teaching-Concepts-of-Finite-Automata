@@ -92,66 +92,77 @@ const Playground = (props: PlaygroundProps) => {
             {/* <div className="toolboxTitle">Drag & drop me!</div> */}
             <hr />
             <div className="toolboxContainer">
-              <Box
-                className="state"
-                draggable
-                style={{
-                  width: `${dataContext?.stateSize}px`,
-                  height: `${dataContext?.stateSize}px`,
-                  borderRadius: `${dataContext?.stateSize}px`,
-                  touchAction: "none",
-                }}
-                // enable touch events for mobile devices
-                onTouchMove={props.handleDropDynamic}
-              >
-                state
-              </Box>
-
               <Grid
                 container
                 direction="column"
-                justifyContent="center"
+                justifyContent="space-between"
                 alignItems="center"
-                spacing={1}
+                sx={{ height: "100%" }}
               >
                 <Grid item>
                   <Box
                     className="state"
-                    sx={{
-                      width: `${ToolboxStateSize}px`,
-                      height: `${ToolboxStateSize}px`,
-                      borderRadius: `${ToolboxStateSize}px`,
-                      backgroundColor: stateInitialColor,
+                    draggable
+                    style={{
+                      width: `${dataContext?.stateSize}px`,
+                      height: `${dataContext?.stateSize}px`,
+                      borderRadius: `${dataContext?.stateSize}px`,
+                      touchAction: "none",
                     }}
+                    // enable touch events for mobile devices
+                    onTouchMove={props.handleDropDynamic}
                   >
-                    Initial
+                    state
                   </Box>
                 </Grid>
-                <Grid item>
-                  <Box
-                    className="state"
-                    sx={{
-                      width: `${ToolboxStateSize}px`,
-                      height: `${ToolboxStateSize}px`,
-                      borderRadius: `${ToolboxStateSize}px`,
-                      backgroundColor: stateFinalColor,
-                    }}
-                  >
-                    Final
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <Box
-                    className="state"
-                    sx={{
-                      width: `${ToolboxStateSize}px`,
-                      height: `${ToolboxStateSize}px`,
-                      borderRadius: `${ToolboxStateSize}px`,
-                      backgroundColor: stateInitialFinalColor,
-                    }}
-                  >
-                    Initial Final
-                  </Box>
+
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Grid item>
+                    <Box
+                      className="state"
+                      sx={{
+                        width: `${ToolboxStateSize}px`,
+                        height: `${ToolboxStateSize}px`,
+                        borderRadius: `${ToolboxStateSize}px`,
+                        backgroundColor: stateInitialColor,
+                      }}
+                    >
+                      Initial
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box
+                      className="state"
+                      sx={{
+                        width: `${ToolboxStateSize}px`,
+                        height: `${ToolboxStateSize}px`,
+                        borderRadius: `${ToolboxStateSize}px`,
+                        backgroundColor: stateFinalColor,
+                      }}
+                    >
+                      Final
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box
+                      className="state"
+                      sx={{
+                        width: `${ToolboxStateSize}px`,
+                        height: `${ToolboxStateSize}px`,
+                        borderRadius: `${ToolboxStateSize}px`,
+                        backgroundColor: stateInitialFinalColor,
+                      }}
+                    >
+                      Initial Final
+                    </Box>
+                  </Grid>
                 </Grid>
               </Grid>
             </div>
