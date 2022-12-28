@@ -1,96 +1,56 @@
 import "./css/TopBar.css";
 import { TopBarProps } from "./props/TopBarProps";
 import { RowModel } from "../../../models";
-import { SelectedElementTypeId } from "../../props/SelectedElementType";
-import { promptNewStateName } from "../../../utils/PromptNewStateName";
-import { promptNewTransitionValue } from "../../../utils/PromptNewTransitionValue";
+import {
+  SelectedElementType,
+  SelectedElementTypeId,
+} from "../../props/SelectedElementType";
 import { TopBarActions } from "../../../consts/TopBarActions";
 import { TransitionValuesSeparator } from "../../../consts/TransitionValuesSeparator";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "./StyledTransitionLabel";
 import { DataContext } from "../../../components/Editor";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  DialogActions,
+  Button,
+  Box,
+} from "@mui/material";
+import { StateNameMaxLength } from "../../../consts/StateNameMaxLength";
 
 export const TopBar = (props: TopBarProps) => {
   console.log("re rendering TopBar: props", props);
 
   const dataContext = useContext(DataContext);
 
-  const handleEditAction = (e, action: any) => {
-    console.log("handleEditAction", action, props);
+  const [isTopbarDialogOpen, setIsTopbarDialogOpen] = useState(false);
+  const [topbarDialogValue, setTopbarDialogValue] = useState("");
+  const [topbarDialogError, setTopbarDialogError] = useState("");
+  // false means operate State Name dialog
+  // true means operate Transition Value dialog
+  const [dialogType, setDialogType] = useState(false);
+  // to keep note that which state was originally selected when dialog was opened
+  const [stateSelected, setStateSelected] =
+    useState<SelectedElementType | null>(null);
 
+  const handleEditAction = (action: string) => {
     switch (action) {
       case "Edit Name":
-        const newName = promptNewStateName(
-          dataContext?.states,
-          props.selected?.id as string
-        );
-
-        dataContext?.setRows((rows) =>
-          rows.map((row) =>
-            props.selected
-              ? {
-                  ...row,
-                  state: row.state === props.selected?.id ? newName : row.state,
-                  ...Object.fromEntries(
-                    PossibleTransitionValues.map((key) => [
-                      key === "^" ? "nul" : key,
-                      row[key === "^" ? "nul" : key]
-                        .toString()
-                        .includes(props.selected?.id as string)
-                        ? row[key === "^" ? "nul" : key]
-                            .toString()
-                            .replace(props.selected?.id as string, newName)
-                        : row[key === "^" ? "nul" : key],
-                    ])
-                  ),
-                }
-              : row
-          )
-        );
-
-        dataContext?.setTransitions((transitions) =>
-          transitions.map((transition) => {
-            if (
-              props.selected &&
-              transition.start === props.selected?.id &&
-              transition.end === props.selected?.id
-            )
-              return {
-                ...transition,
-                  start: newName,
-                  end: newName,
-              };
-            else if (props.selected && transition.start === props.selected?.id)
-              return {
-                ...transition,start: newName,
-              };
-            else if (props.selected && transition.end === props.selected?.id)
-              return {
-                ...transition,end: newName ,
-              };
-            return transition;
-          })
-        );
-
-        dataContext?.setStates((states) =>
-          states.map((state) =>
-            props.selected && state.id === props.selected?.id
-              ? { ...state, id: newName }
-              : state
-          )
-        );
-
-        props.handleSelect(null);
+        setTopbarDialogValue(props.selected?.id as string);
+        setDialogType(false);
+        setIsTopbarDialogOpen(true);
         break;
 
       case "Add Transition":
-        console.log("TopBar Add Transition", props);
         props.setActionState(action);
         break;
 
       case "Remove Transitions":
-        console.log("remove transitions triggered", props);
         if (
           props.selected &&
           window.confirm(
@@ -184,7 +144,6 @@ export const TopBar = (props: TopBarProps) => {
 
           // then remove that state from the transition table.
           if (props.selected) {
-            console.log("selected id", props.selected?.id);
             props.handleDeleteRow(
               dataContext?.rows.find(
                 (row) => row.state === (props.selected?.id as string)
@@ -221,7 +180,6 @@ export const TopBar = (props: TopBarProps) => {
 
       // transition actions
       case "Remove Transition":
-        console.log("remove transition triggered", props);
         dataContext?.setTransitions((transitions) => {
           return transitions.filter(
             (transition) =>
@@ -234,19 +192,6 @@ export const TopBar = (props: TopBarProps) => {
               )
           );
         });
-        console.log(
-          "transitions after",
-          dataContext?.transitions.filter(
-            (transition) =>
-              !(
-                props.selected &&
-                transition.start ===
-                  (props.selected?.id as SelectedElementTypeId).start &&
-                transition.end ===
-                  (props.selected?.id as SelectedElementTypeId).end
-              )
-          )
-        );
 
         dataContext?.setRows((rows) =>
           rows.map((row) =>
@@ -275,165 +220,225 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Edit label":
-        const newValue = promptNewTransitionValue(
-          dataContext?.transitions,
+        setTopbarDialogValue(
           (props.selected?.id as SelectedElementTypeId).value
-        ); //send original value
-        console.log("new value", newValue);
-
-        dataContext?.setTransitions((transitions) =>
-          transitions.map((transition) =>
-            props.selected &&
-            transition.start ===
-              (props.selected?.id as SelectedElementTypeId).start &&
-            transition.end === (props.selected?.id as SelectedElementTypeId).end
-              ? {
-                  ...transition,
-                    labels:
-                      newValue === "" ? (
-                        ""
-                      ) : (
-                        <StyledTransitionLabel label={newValue} />
-                      ),
-                    value: newValue,
-                  
-                }
-              : transition
-          )
         );
-        console.log(
-          "transitions after Edit label",
-          dataContext?.transitions.map((transition) =>
-            props.selected &&
-            props.selected?.id &&
-            transition.start ===
-              (props.selected?.id as SelectedElementTypeId).start &&
-            transition.end === (props.selected?.id as SelectedElementTypeId).end
-              ? {
-                  ...transition,
-                    labels:
-                      newValue === "" ? (
-                        ""
-                      ) : (
-                        <StyledTransitionLabel label={newValue} />
-                      ),
-                    value: newValue,
-                }
-              : transition
-          )
-        );
-
-        const transitionValues: string[] = newValue.split(
-          TransitionValuesSeparator
-        );
-        console.log("transitionValues", transitionValues);
-
-        // console.log("setRows edit label")
-        dataContext?.setRows((rows) => {
-          console.log("starting setRows");
-          let newRows = [...rows];
-          newRows.map((row) => {
-            if (
-              props.selected &&
-              row.state === (props.selected?.id as SelectedElementTypeId).start
-            ) {
-              //if same target state's values are already in the row, remove them.
-              PossibleTransitionValues.forEach((val) => {
-                console.log(
-                  `original val '${row[val === "^" ? "nul" : val].toString()}'`,
-                  `target value to check '${
-                    (props.selected?.id as SelectedElementTypeId).end
-                  }'`
-                );
-                if (
-                  row[val === "^" ? "nul" : val]
-                    .toString()
-                    .includes((props.selected?.id as SelectedElementTypeId).end)
-                ) {
-                  console.log("removing ", row[val === "^" ? "nul" : val]);
-                  row[val === "^" ? "nul" : val] = row[
-                    val === "^" ? "nul" : val
-                  ]
-                    .toString()
-                    .replace(
-                      (props.selected?.id as SelectedElementTypeId).end,
-                      ""
-                    );
-                }
-              });
-
-              //if there are new transition values to add, add them.
-              if (transitionValues.length > 0) {
-                transitionValues.forEach((val: string) => {
-                  const updatedValue = row[val === "^" ? "nul" : val]
-                    .toString()
-                    //add space if there is already a value in the cell
-                    .concat(
-                      row[val === "^" ? "nul" : val].toString() === ""
-                        ? ""
-                        : " "
-                    )
-                    //append new value
-                    .concat((props.selected?.id as SelectedElementTypeId).end);
-                  console.log(
-                    "val",
-                    val,
-                    "prev value",
-                    row[val === "^" ? "nul" : val],
-                    "paste",
-                    updatedValue
-                  );
-                  row[val === "^" ? "nul" : val] = updatedValue;
-                });
-
-                PossibleTransitionValues.forEach((val) => {
-                  row[val === "^" ? "nul" : val] = Array.from(
-                    new Set(
-                      row[val === "^" ? "nul" : val].toString().split(" ")
-                    )
-                  ).join(" ");
-                });
-              }
-
-              console.log("row after", row);
-            }
-            return row;
-          });
-
-          console.log("ending setRows");
-          return newRows;
-        });
-
-        props.setSelected({
-          id: {
-            start: (props.selected?.id as SelectedElementTypeId).start,
-            end: (props.selected?.id as SelectedElementTypeId).end,
-            value: newValue,
-          } as SelectedElementTypeId,
-          type: "transition",
-        });
-
+        setDialogType(true);
+        setIsTopbarDialogOpen(true);
         break;
       default:
     }
   };
 
-  var returnTopBarApearnce = () => {
-    let allowedActions: any[] = [];
+  const handleEditStateName = () => {
+    if (!topbarDialogValue)
+      setTopbarDialogError("Name cannot be empty, choose another one.");
+    else if (
+      topbarDialogValue &&
+      [...dataContext.states].map((s) => s.id).includes(topbarDialogValue)
+    )
+      setTopbarDialogError("Name already taken, choose another one.");
+    else if (topbarDialogValue.length > StateNameMaxLength)
+      setTopbarDialogError(
+        `State name cannot be more than ${StateNameMaxLength} characters.`
+      );
+    else if (PossibleTransitionValues.includes(topbarDialogValue))
+      setTopbarDialogError(
+        `State name cannot be one of the following: ${PossibleTransitionValues.join(
+          ", "
+        )}`
+      );
+    else {
+      setTopbarDialogError("");
+      setIsTopbarDialogOpen(false);
+      setTopbarDialogValue("");
+
+      const selected = props.selected ?? stateSelected;
+
+      dataContext?.setRows((rows) =>
+        rows.map((row) =>
+          selected
+            ? {
+                ...row,
+                state:
+                  row.state === selected?.id ? topbarDialogValue : row.state,
+                ...Object.fromEntries(
+                  PossibleTransitionValues.map((key) => [
+                    key === "^" ? "nul" : key,
+                    row[key === "^" ? "nul" : key]
+                      .toString()
+                      .includes(selected?.id as string)
+                      ? row[key === "^" ? "nul" : key]
+                          .toString()
+                          .replace(selected?.id as string, topbarDialogValue)
+                      : row[key === "^" ? "nul" : key],
+                  ])
+                ),
+              }
+            : row
+        )
+      );
+
+      dataContext?.setTransitions((transitions) =>
+        transitions.map((transition) => {
+          if (
+            selected &&
+            transition.start === selected?.id &&
+            transition.end === selected?.id
+          )
+            return {
+              ...transition,
+              start: topbarDialogValue,
+              end: topbarDialogValue,
+            };
+          else if (selected && transition.start === selected?.id)
+            return {
+              ...transition,
+              start: topbarDialogValue,
+            };
+          else if (selected && transition.end === selected?.id)
+            return {
+              ...transition,
+              end: topbarDialogValue,
+            };
+          return transition;
+        })
+      );
+
+      dataContext?.setStates((states) =>
+        states.map((state) =>
+          selected && state.id === selected?.id
+            ? { ...state, id: topbarDialogValue }
+            : state
+        )
+      );
+
+      props.handleSelect(null);
+    }
+    setStateSelected(props.selected);
+  };
+
+  const handleEditTransitionLabel = () => {
+    if (
+      !topbarDialogValue
+        .split(TransitionValuesSeparator)
+        .every((r: string) => PossibleTransitionValues.includes(r))
+    )
+      setTopbarDialogError(
+        `Please enter a valid transition label ${PossibleTransitionValues.join(
+          ", "
+        )}`
+      );
+    else if (topbarDialogValue.length > PossibleTransitionValues.length)
+      setTopbarDialogError(
+        `Label cannot be longer than ${PossibleTransitionValues.length} characters.`
+      );
+    else {
+      setTopbarDialogError("");
+      setIsTopbarDialogOpen(false);
+      setTopbarDialogValue("");
+
+      const selected = props.selected ?? stateSelected;
+
+      dataContext?.setTransitions((transitions) =>
+        transitions.map((transition) =>
+          selected &&
+          transition.start === (selected?.id as SelectedElementTypeId).start &&
+          transition.end === (selected?.id as SelectedElementTypeId).end
+            ? {
+                ...transition,
+                labels:
+                  topbarDialogValue === "" ? (
+                    ""
+                  ) : (
+                    <StyledTransitionLabel label={topbarDialogValue} />
+                  ),
+                value: topbarDialogValue,
+              }
+            : transition
+        )
+      );
+
+      const transitionValues: string[] = topbarDialogValue.split(
+        TransitionValuesSeparator
+      );
+
+      dataContext?.setRows((rows) => {
+        let newRows = [...rows];
+
+        newRows.map((row) => {
+          if (
+            selected &&
+            row.state === (selected?.id as SelectedElementTypeId).start
+          ) {
+            //if same target state's values are already in the row, remove them.
+            PossibleTransitionValues.forEach((val) => {
+              if (
+                row[val === "^" ? "nul" : val]
+                  .toString()
+                  .includes((selected?.id as SelectedElementTypeId).end)
+              )
+                row[val === "^" ? "nul" : val] = row[val === "^" ? "nul" : val]
+                  .toString()
+                  .replace((selected?.id as SelectedElementTypeId).end, "");
+            });
+
+            //if there are new transition values to add, add them.
+            if (transitionValues.length > 0) {
+              transitionValues.forEach((val: string) => {
+                const updatedValue = row[val === "^" ? "nul" : val]
+                  .toString()
+                  //add space if there is already a value in the cell
+                  .concat(
+                    row[val === "^" ? "nul" : val].toString() === "" ? "" : " "
+                  )
+                  //append new value
+                  .concat((selected?.id as SelectedElementTypeId).end);
+
+                row[val === "^" ? "nul" : val] = updatedValue;
+              });
+
+              PossibleTransitionValues.forEach((val) => {
+                row[val === "^" ? "nul" : val] = Array.from(
+                  new Set(row[val === "^" ? "nul" : val].toString().split(" "))
+                ).join(" ");
+              });
+            }
+          }
+          return row;
+        });
+
+        return newRows;
+      });
+
+      props.setSelected({
+        id: {
+          start: (selected?.id as SelectedElementTypeId).start,
+          end: (selected?.id as SelectedElementTypeId).end,
+          value: topbarDialogValue,
+        } as SelectedElementTypeId,
+        type: "transition",
+      });
+    }
+    setStateSelected(props.selected);
+  };
+
+  var returnTopBarAppearance = () => {
+    let allowedActions: string[] = [];
+
     if (props.selected)
       allowedActions =
         TopBarActions[props.selected.type as keyof typeof TopBarActions];
-    console.log("allowedActions", allowedActions);
-    console.log("returnTopBarApearnce", props);
+
     switch (props.actionState) {
       case "Normal":
         return (
           <div className="actionBubbles">
-            {allowedActions.map((action: any, i: number) => (
+            {allowedActions.map((action, i) => (
               <div
                 className="actionBubble"
                 key={i}
-                onClick={(e) => handleEditAction(e, action)}
+                onClick={() => handleEditAction(action)}
               >
                 {action}
               </div>
@@ -457,21 +462,62 @@ export const TopBar = (props: TopBarProps) => {
   };
 
   return (
-    <div
-      className="topBarStyle"
-      style={{ height: props.selected === null ? "0" : "60px" }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="topBarLabel" onClick={() => props.handleSelect(null)}>
-        {/*<MaterialIcon*/}
-        {/*  size={30}*/}
-        {/*  icon="keyboard_arrow_up"*/}
-        {/*  className="material-icons topBarToggleIcon"*/}
-        {/*/>*/}
-        {/* <p>Edit Menu</p> */}
-      </div>
-      {returnTopBarApearnce()}
-    </div>
+    <>
+      <Dialog
+        open={isTopbarDialogOpen}
+        onClose={() => setIsTopbarDialogOpen(false)}
+      >
+        <DialogTitle>
+          {dialogType
+            ? "Enter new Transition label(s)"
+            : "Enter New State Name"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>{topbarDialogError}</DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="topbarDialogValue"
+            label={dialogType ? "Transition Label" : "State Name"}
+            type="text"
+            fullWidth
+            variant="standard"
+            value={topbarDialogValue}
+            onChange={(e) =>
+              setTopbarDialogValue(
+                dialogType
+                  ? Array.from(
+                      new Set(e.target.value.split(TransitionValuesSeparator))
+                    ).join("")
+                  : e.target.value
+              )
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsTopbarDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              dialogType ? handleEditTransitionLabel() : handleEditStateName();
+            }}
+          >
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Box
+        className="topBarStyle"
+        style={{ height: props.selected === null ? "0" : "60px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="topBarLabel"
+          onClick={() => props.handleSelect(null)}
+        ></div>
+        {returnTopBarAppearance()}
+      </Box>
+    </>
   );
 };
 
