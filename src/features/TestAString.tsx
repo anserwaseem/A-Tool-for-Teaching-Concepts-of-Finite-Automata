@@ -26,12 +26,9 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../components/Editor";
-import {
-  startingStateColor,
-  stateSelectedColor,
-  transitionColor,
-  transitionHoverColor,
-} from "../consts/Colors";
+import { startingStateColor, stateSelectedColor } from "../consts/Colors";
+import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
+import { TestStringMaxLength } from "../consts/TestStringMaxLength";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -63,6 +60,7 @@ const TestAString = (props: TestAStringProps) => {
   const [highlightedTransitions, setHighlightedTransitions] = useState<
     TransitionModel[]
   >([]);
+  const [dialogError, setDialogError] = useState("");
 
   useEffect(() => {
     if (dataContext) {
@@ -221,11 +219,34 @@ const TestAString = (props: TestAStringProps) => {
   };
 
   const handleChange = (value: string) => {
-    let appendedValue = value.split("").join("^");
-    if (appendedValue?.length > 0) {
-      appendedValue = "^" + appendedValue + "^";
+    if (value.length <= TestStringMaxLength) {
+      let appendedValue = value.split("").join("^");
+      if (appendedValue?.length > 0) {
+        appendedValue = "^" + appendedValue + "^";
+      }
+      setTestString(appendedValue);
+    } else
+      setDialogError(
+        `Test string cannot be more than ${TestStringMaxLength} characters.`
+      );
+  };
+
+  const handleSubmit = () => {
+    if (testString === "") setDialogError("Please enter a valid string.");
+    else if (testString.includes("^^"))
+      setDialogError("Please remove ^ from the string.");
+    else if (
+      !testString.split("").every((c) => PossibleTransitionValues.includes(c))
+    )
+      setDialogError(
+        `Please enter a valid string from following characters ${PossibleTransitionValues.filter(
+          (v) => v !== "^"
+        ).join(", ")}`
+      );
+    else {
+      setDialogError("none");
+      handleClose();
     }
-    setTestString(appendedValue);
   };
 
   const playgroundProps: ToolsPlaygroundProps = {
@@ -238,7 +259,7 @@ const TestAString = (props: TestAStringProps) => {
       };
     }),
     currentStates: statesToHighlight.map((state) => `${state}ts`),
-    stateSize: dataContext.stateSize
+    stateSize: dataContext.stateSize,
   };
 
   return (
@@ -247,7 +268,9 @@ const TestAString = (props: TestAStringProps) => {
         <DialogTitle>Test a string</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Enter a string to test if it is accepted by the Automaton.
+            {dialogError === "" || dialogError === "none"
+              ? "Enter a string to test if it is accepted by the Automaton."
+              : dialogError}
           </DialogContentText>
           <TextField
             autoFocus
@@ -263,111 +286,113 @@ const TestAString = (props: TestAStringProps) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Ok</Button>
+          <Button onClick={handleSubmit}>Ok</Button>
         </DialogActions>
       </Dialog>
 
-      <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
-        <Typography
-          variant="h5"
-          component="div"
-          gutterBottom
-          align="center"
-          fontWeight={"bold"}
-          bgcolor={stateSelectedColor}
-        >
-          Test a String
-        </Typography>
+      {dialogError === "none" && (
+        <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
+          <Typography
+            variant="h5"
+            component="div"
+            gutterBottom
+            align="center"
+            fontWeight={"bold"}
+            bgcolor={stateSelectedColor}
+          >
+            Test a String
+          </Typography>
 
-        <Grid
-          container
-          columnSpacing={{
-            xs: 1,
-            sm: 2,
-            md: 3,
-          }}
-        >
-          <Grid item xs={12} alignItems={"center"}>
-            <ButtonGroup
-              disableElevation
-              fullWidth
-              variant="outlined"
-              size="large"
-            >
-              {testString
-                .replaceAll("^", "")
-                .split("")
-                .map((char, index) => (
-                  <TextField
-                    key={index}
-                    id={`testString${index}`}
-                    value={char}
-                    variant="standard"
-                    InputProps={{
-                      readOnly: true,
-                      sx: {
-                        textAlignLast: "center",
-                      },
-                    }}
-                    sx={{
-                      backgroundColor:
-                        Math.floor((testStringIndex - 1) / 2) === index
-                          ? startingStateColor
-                          : "inherit",
-                      flexDirection: "inherit",
-                      borderRadius: "20px",
-                      border: `1px solid ${stateSelectedColor}`,
-                      borderWidth: "0 1px 0 1px",
-                    }}
-                  />
-                ))}
-
-              <FormControl fullWidth>
-                <InputLabel id="delay-select-label">Delay</InputLabel>
-                <Select
-                  labelId="delay-select-label"
-                  id="delay-select"
-                  value={duration.toString()}
-                  label="Delay"
-                  onChange={handleDurationChange}
-                >
-                  {AnimationDurationOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
+          <Grid
+            container
+            columnSpacing={{
+              xs: 1,
+              sm: 2,
+              md: 3,
+            }}
+          >
+            <Grid item xs={12} alignItems={"center"}>
+              <ButtonGroup
+                disableElevation
+                fullWidth
+                variant="outlined"
+                size="large"
+              >
+                {testString
+                  .replaceAll("^", "")
+                  .split("")
+                  .map((char, index) => (
+                    <TextField
+                      key={index}
+                      id={`testString${index}`}
+                      value={char}
+                      variant="standard"
+                      InputProps={{
+                        readOnly: true,
+                        sx: {
+                          textAlignLast: "center",
+                        },
+                      }}
+                      sx={{
+                        backgroundColor:
+                          Math.floor((testStringIndex - 1) / 2) === index
+                            ? startingStateColor
+                            : "inherit",
+                        flexDirection: "inherit",
+                        borderRadius: "20px",
+                        border: `1px solid ${stateSelectedColor}`,
+                        borderWidth: "0 1px 0 1px",
+                      }}
+                    />
                   ))}
-                </Select>
-              </FormControl>
 
-              <Button
-                onClick={handleAnimation}
-                startIcon={
-                  isPlaying ? (
-                    <PauseRoundedIcon />
-                  ) : isComplete ? (
-                    <ReplayRoundedIcon />
-                  ) : (
-                    <PlayArrowRoundedIcon />
-                  )
-                }
-              >
-                {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-              </Button>
-              <Button
-                variant={isComplete ? "contained" : "outlined"}
-                onClick={showNextRow}
-                disabled={isReady}
-              >
-                {isComplete ? "Complete" : "Next"}
-              </Button>
-            </ButtonGroup>
+                <FormControl fullWidth>
+                  <InputLabel id="delay-select-label">Delay</InputLabel>
+                  <Select
+                    labelId="delay-select-label"
+                    id="delay-select"
+                    value={duration.toString()}
+                    label="Delay"
+                    onChange={handleDurationChange}
+                  >
+                    {AnimationDurationOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Button
+                  onClick={handleAnimation}
+                  startIcon={
+                    isPlaying ? (
+                      <PauseRoundedIcon />
+                    ) : isComplete ? (
+                      <ReplayRoundedIcon />
+                    ) : (
+                      <PlayArrowRoundedIcon />
+                    )
+                  }
+                >
+                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+                </Button>
+                <Button
+                  variant={isComplete ? "contained" : "outlined"}
+                  onClick={showNextRow}
+                  disabled={isReady}
+                >
+                  {isComplete ? "Complete" : "Next"}
+                </Button>
+              </ButtonGroup>
+            </Grid>
+            {/* Playground grid */}
+            <Grid item xs={12}>
+              <ToolsPlayground {...playgroundProps} />
+            </Grid>
           </Grid>
-          {/* Playground grid */}
-          <Grid item xs={12}>
-            <ToolsPlayground {...playgroundProps} />
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      )}
     </>
   );
 };

@@ -1,7 +1,6 @@
 import { createContext, useState } from "react";
 import {
   Alert,
-  AlertTitle,
   Box,
   Button,
   Dialog,
@@ -217,12 +216,17 @@ export const Editor = () => {
       return;
     }
 
+    const oldRow = rows.find((r) => r.id === row.id);
+
     if (PossibleTransitionValues.includes(row.state)) {
       setAlertMessage(
         `State name cannot be one of the following: ${PossibleTransitionValues.join(
           ", "
         )}`
       );
+
+      // reset this row to old row
+      setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
       return;
     }
 
@@ -238,7 +242,6 @@ export const Editor = () => {
         ).join(" "))
     );
 
-    const oldRow = rows.find((r) => r.id === row.id);
     if (!oldRow) {
       setAlertMessage("Cannot save row.");
       return;
@@ -251,7 +254,6 @@ export const Editor = () => {
 
       // reset this row to old row
       setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
-
       return;
     }
 
@@ -269,7 +271,6 @@ export const Editor = () => {
 
       // reset this row to old row
       setRows((prev) => prev.map((r) => (r.id === row.id ? oldRow : r)));
-
       return;
     }
 
@@ -318,7 +319,7 @@ export const Editor = () => {
 
       if (stateAlreadyExists) {
         setAlertMessage(
-          "This state value already exists. Kindly choose another value."
+          "This state name already exists. Kindly choose another name."
         );
         errorWhileSavingRow = true;
         return prev.map((r) => (r.id === row.id ? oldRow : r));
@@ -577,12 +578,12 @@ export const Editor = () => {
 
   const handleStateNameDialogValue = (e: any) => {
     if (!stateNameDialogValue)
-      setStateNameDialogError("Name cannot be empty, choose another one: ");
+      setStateNameDialogError("Name cannot be empty, choose another one.");
     else if (
       stateNameDialogValue &&
       [...states].map((s) => s.id).includes(stateNameDialogValue)
     )
-      setStateNameDialogError("Name already taken, choose another one: ");
+      setStateNameDialogError("Name already taken, choose another one.");
     else if (stateNameDialogValue.length > StateNameMaxLength)
       setStateNameDialogError(
         `State name cannot be more than ${StateNameMaxLength} characters.`
@@ -676,7 +677,7 @@ export const Editor = () => {
             <TextField
               autoFocus
               margin="dense"
-              id="testString"
+              id="newStateNameDialog"
               label="State Name"
               type="text"
               fullWidth
