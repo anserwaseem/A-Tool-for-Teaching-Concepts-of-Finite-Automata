@@ -96,21 +96,29 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
                         state.id
                           .replaceAll(uniqueWord, "")
                           .split(", ")
+                          .join(" ")
+                          .split(" ")
                           .includes(initialState) &&
                         state.id
                           .replaceAll(uniqueWord, "")
                           .split(", ")
+                          .join(" ")
+                          .split(" ")
                           .some((s) => finalStates.includes(s))
                       ? stateInitialFinalColor
                       : index === 0 &&
                         state.id
                           .replaceAll(uniqueWord, "")
                           .split(", ")
+                          .join(" ")
+                          .split(" ")
                           .includes(initialState)
                       ? stateInitialColor
                       : state.id
                           .replaceAll(uniqueWord, "")
                           .split(", ")
+                          .join(" ")
+                          .split(" ")
                           .some((s) => finalStates.includes(s))
                       ? stateFinalColor
                       : undefined,
