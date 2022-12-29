@@ -3,15 +3,38 @@ import { useXarrow, Xwrapper } from "react-xarrows";
 import Xarrow from "../playground/Xarrow";
 import { ToolsPlaygroundProps } from "./props/PlaygroundProps";
 import Draggable from "react-draggable";
-import { startingStateColor, stateHoverColor } from "../../../consts/Colors";
+import {
+  startingStateColor,
+  stateFinalColor,
+  stateHoverColor,
+  stateInitialColor,
+  stateInitialFinalColor,
+} from "../../../consts/Colors";
 import { XarrowCoreProps } from "../playground/props/XarrowProps";
 import { Box } from "@mui/material";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { DataContext } from "../../../components/Editor";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   console.log("re rendering ToolsPlayground: props", props);
 
+  const dataContext = useContext(DataContext);
+
+  const [initialState, setInitialState] = useState<string>(
+    dataContext.rows.find((row) => row.isInitial).state
+  );
+  const [finalStates, setFinalStates] = useState<string[]>(
+    dataContext.rows.filter((row) => row.isFinal).map((row) => row.state)
+  );
+
   const updateXarrow = useXarrow();
+
+  useEffect(() => {
+    setInitialState(dataContext.rows.find((row) => row.isInitial).state);
+    setFinalStates(
+      dataContext.rows.filter((row) => row.isFinal).map((row) => row.state)
+    );
+  }, [dataContext]);
 
   useEffect(() => {
     props.setTransitions((transitions) =>
@@ -56,7 +79,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
             className="statesContainer"
             onDragOver={(e) => e.preventDefault()}
           >
-            {props.states.map((state) => (
+            {props.states.map((state, index) => (
               <Draggable bounds="parent" onDrag={updateXarrow}>
                 <Box
                   className="state"
@@ -68,6 +91,27 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
                     top: state.y,
                     background: props?.currentStates?.includes(state.id)
                       ? startingStateColor
+                      : index === 0 &&
+                        state.id
+                          .replaceAll(uniqueWord, "")
+                          .split(", ")
+                          .includes(initialState) &&
+                        state.id
+                          .replaceAll(uniqueWord, "")
+                          .split(", ")
+                          .some((s) => finalStates.includes(s))
+                      ? stateInitialFinalColor
+                      : index === 0 &&
+                        state.id
+                          .replaceAll(uniqueWord, "")
+                          .split(", ")
+                          .includes(initialState)
+                      ? stateInitialColor
+                      : state.id
+                          .replaceAll(uniqueWord, "")
+                          .split(", ")
+                          .some((s) => finalStates.includes(s))
+                      ? stateFinalColor
                       : undefined,
                     position: "absolute",
                     "&:hover": {

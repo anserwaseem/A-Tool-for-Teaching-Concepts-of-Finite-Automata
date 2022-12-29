@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import {
   RowModel,
@@ -29,6 +29,7 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { stateSelectedColor } from "../../../consts/Colors";
+import { DataContext } from "../../../components/Editor";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -39,6 +40,9 @@ let noNewStateFound = 0;
 
 export const ResultantDfa = (props: ResultantDfaProps) => {
   console.log("re rendering ResultantDfa, props", props);
+
+  const dataContext = useContext(DataContext);
+
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -174,8 +178,23 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               a: "",
               b: "",
               nul: "",
-              isInitial: false,
-              isFinal: false,
+              isInitial:
+                resultantDfaRows.length === 0 &&
+                stateToProcess
+                  .replaceAll("ntd", "")
+                  .split(", ")
+                  .includes(
+                    dataContext.rows.find((row) => row.isInitial).state
+                  ),
+              isFinal: stateToProcess
+                .replaceAll("ntd", "")
+                .split(", ")
+                .some((s) =>
+                  dataContext.rows
+                    .filter((row) => row.isFinal)
+                    .map((row) => row.state)
+                    .includes(s)
+                ),
             },
           ]);
 
