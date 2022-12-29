@@ -4,20 +4,13 @@ import {
   Button,
   ButtonGroup,
   CssBaseline,
-  Divider,
-  Drawer,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Snackbar,
-  styled,
-  Toolbar,
-  Typography,
-  useTheme,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
@@ -28,86 +21,22 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
-import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { DataContext } from "../../../components/Editor";
 import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
-import {
-  appBarBackgroundColor,
-  drawerHeaderBoxShadow,
-} from "../../../consts/Colors";
 import { EquivalentStatesStateId } from "../../../consts/StateIdsExtensions";
+import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
+import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
+import { DrawerHeader } from "../../../common/DrawerHeader";
+import { MainContent } from "../../../common/MainContent";
 
-const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
 let numberOfTicks = 0;
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
-  open?: number;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-
-  ...(open === 0 && {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  }),
-  marginLeft: `-${drawerWidth}px`,
-
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.easeOut,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  ...(open === 1 && {
-    marginLeft: 0,
-  }),
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: number;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.easeOut,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  top: "auto",
-  backgroundColor: appBarBackgroundColor,
-  position: "absolute",
-
-  ...(open === 0 && {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  }),
-  ...(open === 1 && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-  }),
-}));
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
 
 export const EquivalentStates = (props: EquivalentStatesProps) => {
   console.log("re rendering EquivalentStates, props: ", props);
@@ -151,26 +80,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [emptyCellsOfPreviousIteration, setEmptyCellsOfPreviousIteration] =
     useState<string[][]>([]);
 
-  const theme = useTheme();
   const [open, setOpen] = useState(1);
-
-  const handleTableOpen = () => {
-    setOpen(1);
-  };
-
-  const handleTableClose = () => {
-    setOpen(0);
-  };
-
-  const handleSnackbarClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-  };
 
   // make DataGrid of props.rows.length by props.rows.length size as soon as props.rows is updated
   useEffect(() => {
@@ -202,6 +112,16 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       return () => clearTimeout(timer);
     }
   }, [equivalentStatesRows, isPlaying, displayStep, lowerTriangularStep]);
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const handleUpdateData = () => {
     console.log("EquivalentStates handleUpdateData: stepNumber: ", displayStep);
@@ -647,6 +567,13 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     columnName: columnName,
   };
 
+  const appBarAndDrawerProps: AppBarAndDrawerProps = {
+    title: "Equivalent States",
+    open,
+    setOpen,
+    transitionTableProps,
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -699,89 +626,11 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           </Snackbar>
         )}
 
-        <AppBar open={open}>
-          <Toolbar>
-            <Grid container>
-              <Grid item xs={5}>
-                <IconButton
-                  color="secondary"
-                  aria-label="open transition table"
-                  onClick={handleTableOpen}
-                  // edge="start"
-                  sx={{ ml: -1, ...(open === 1 && { mr: 2, display: "none" }) }}
-                >
-                  <TableChartOutlinedIcon />
-                </IconButton>
-              </Grid>
-              <Grid item xs={7}>
-                <Typography
-                  noWrap
-                  variant="h5"
-                  fontWeight={"bold"}
-                  color={"black"}
-                  sx={{
-                    ...(open === 0 && { mt: 0.5 }),
-                  }}
-                >
-                  Equivalence States
-                </Typography>
-              </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
+        <AppBarAndDrawer {...appBarAndDrawerProps} />
 
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              position: "relative",
-              width: drawerWidth,
-              boxSizing: "border-box",
-              backgroundColor: "#f5f5f5",
-            },
-          }}
-          variant="persistent"
-          anchor="left"
-          open={open === 1}
-        >
-          <DrawerHeader
-            sx={{
-              justifyContent: "space-evenly",
-              backgroundColor: appBarBackgroundColor,
-              boxShadow: drawerHeaderBoxShadow,
-            }}
-          >
-            <Typography
-              noWrap
-              variant="overline"
-              align="center"
-              fontWeight={"bold"}
-            >
-              Transition Table
-            </Typography>
-            <IconButton onClick={handleTableClose}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <Box
-            sx={{
-              marginTop: "40%",
-            }}
-          >
-            <ToolsTransitionTable {...transitionTableProps} />
-          </Box>
-        </Drawer>
-
-        <Main open={open} sx={{ paddingBottom: 12 }}>
+        <MainContent open={open} sx={{ paddingBottom: 12 }}>
           <DrawerHeader />
           <Grid container>
-            {/* Grid for Add a Row button and Tools */}
             <Grid item alignItems={"center"} xs={12}>
               <ButtonGroup
                 disableElevation
@@ -899,7 +748,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
               </Box>
             </Grid>
           </Grid>
-        </Main>
+        </MainContent>
       </Box>
     </>
   );
