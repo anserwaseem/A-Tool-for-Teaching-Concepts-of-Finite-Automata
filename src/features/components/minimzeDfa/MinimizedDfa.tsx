@@ -105,9 +105,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
-  justifyContent: "space-evenly",
-  backgroundColor: appBarBackgroundColor,
-  boxShadow: drawerHeaderBoxShadow,
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
@@ -589,7 +586,13 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           anchor="left"
           open={open === 1}
         >
-          <DrawerHeader>
+          <DrawerHeader
+            sx={{
+              justifyContent: "space-evenly",
+              backgroundColor: appBarBackgroundColor,
+              boxShadow: drawerHeaderBoxShadow,
+            }}
+          >
             <Typography
               noWrap
               variant="overline"
