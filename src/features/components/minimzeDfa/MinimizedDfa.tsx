@@ -4,20 +4,13 @@ import {
   Button,
   ButtonGroup,
   CssBaseline,
-  Divider,
-  Drawer,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Snackbar,
-  styled,
-  Toolbar,
-  Typography,
-  useTheme,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
@@ -25,12 +18,7 @@ import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValu
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
-import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { DataContext } from "../../../components/Editor";
 import { MinimizedDfaProps } from "./props/MinimizedDfaProps";
 import { ToolsPlayground } from "../tools/Playground";
@@ -41,73 +29,14 @@ import {
   TransitionModel,
 } from "../../../models";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
-import {
-  appBarBackgroundColor,
-  drawerHeaderBoxShadow,
-} from "../../../consts/Colors";
 import { MinimizedDfaStateId } from "../../../consts/StateIdsExtensions";
+import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
+import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
+import { MainContent } from "../../../common/MainContent";
+import { DrawerHeader } from "../../../common/DrawerHeader";
 
-const drawerWidth = 300;
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
 let transitionIndex = 0; // used to keep track of which (transition table's) row's transitions are being animated
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
-  open?: number;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-
-  ...(open === 0 && {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  }),
-  marginLeft: `-${drawerWidth}px`,
-
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.easeOut,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  ...(open === 1 && {
-    marginLeft: 0,
-  }),
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: number;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.easeOut,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  top: "auto",
-  backgroundColor: appBarBackgroundColor,
-  position: "absolute",
-
-  ...(open === 0 && {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  }),
-  ...(open === 1 && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-  }),
-}));
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
 
 export const MinimizedDfa = (props: MinimizedDfaProps) => {
   console.log("re rendering MinimizedDfa, props: ", props);
@@ -144,16 +73,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const theme = useTheme();
   const [open, setOpen] = useState(1);
-
-  const handleTableOpen = () => {
-    setOpen(1);
-  };
-
-  const handleTableClose = () => {
-    setOpen(0);
-  };
 
   const handleSnackbarClose = (
     event: React.SyntheticEvent | Event,
@@ -505,6 +425,13 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     stateSize: props.stateSize,
   };
 
+  const appBarAndDrawerProps: AppBarAndDrawerProps = {
+    title: "Minimized DFA",
+    open,
+    setOpen,
+    transitionTableProps,
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -540,86 +467,9 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           </Alert>
         </Snackbar>
 
-        <AppBar open={open}>
-          <Toolbar>
-            <Grid container>
-              <Grid item xs={5}>
-                <IconButton
-                  color="secondary"
-                  aria-label="open transition table"
-                  onClick={handleTableOpen}
-                  // edge="start"
-                  sx={{ ml: -1, ...(open === 1 && { mr: 2, display: "none" }) }}
-                >
-                  <TableChartOutlinedIcon />
-                </IconButton>
-              </Grid>
-              <Grid item xs={7}>
-                <Typography
-                  noWrap
-                  variant="h5"
-                  fontWeight={"bold"}
-                  color={"black"}
-                  sx={{
-                    ...(open === 0 && { mt: 0.5 }),
-                  }}
-                >
-                  Minimized DFA
-                </Typography>
-              </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
+        <AppBarAndDrawer {...appBarAndDrawerProps} />
 
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              position: "relative",
-              width: drawerWidth,
-              boxSizing: "border-box",
-              backgroundColor: "#f5f5f5",
-            },
-          }}
-          variant="persistent"
-          anchor="left"
-          open={open === 1}
-        >
-          <DrawerHeader
-            sx={{
-              justifyContent: "space-evenly",
-              backgroundColor: appBarBackgroundColor,
-              boxShadow: drawerHeaderBoxShadow,
-            }}
-          >
-            <Typography
-              noWrap
-              variant="overline"
-              align="center"
-              fontWeight={"bold"}
-            >
-              Transition Table
-            </Typography>
-            <IconButton onClick={handleTableClose}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <Box
-            sx={{
-              marginTop: "40%",
-            }}
-          >
-            <ToolsTransitionTable {...transitionTableProps} />
-          </Box>
-        </Drawer>
-
-        <Main open={open}>
+        <MainContent open={open}>
           <DrawerHeader />
           <Grid container>
             {/* Grid for Add a Row button and Tools */}
@@ -675,7 +525,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
               </Grid>
             </Grid>
           </Grid>
-        </Main>
+        </MainContent>
       </Box>
     </>
   );
