@@ -484,6 +484,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   const playgroundProps: ToolsPlaygroundProps = {
     states: resultantDfaStates,
     transitions: resultantDfaTransitions,
+    setTransitions: setResultantDfaTransitions,
     stateSize: props.stateSize,
   };
 

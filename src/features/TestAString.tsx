@@ -258,6 +258,7 @@ const TestAString = (props: TestAStringProps) => {
         end: `${transition.end}ts`,
       };
     }),
+    setTransitions: setTestAStringTransitions,
     currentStates: statesToHighlight.map((state) => `${state}ts`),
     stateSize: dataContext.stateSize,
   };

@@ -6,11 +6,23 @@ import Draggable from "react-draggable";
 import { startingStateColor, stateHoverColor } from "../../../consts/Colors";
 import { XarrowCoreProps } from "../playground/props/XarrowProps";
 import { Box } from "@mui/material";
+import { useEffect } from "react";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   console.log("re rendering ToolsPlayground: props", props);
 
   const updateXarrow = useXarrow();
+
+  useEffect(() => {
+    props.setTransitions((transitions) =>
+      transitions.map((t) => {
+        return {
+          ...t,
+          strokeWidth: props?.stateSize / 10,
+        };
+      })
+    );
+  }, [props?.stateSize]);
 
   const stateToInquire = props.states?.at(0)?.id;
   const uniqueWord = // to ensure that the xarrow is unique
@@ -45,7 +57,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
             onDragOver={(e) => e.preventDefault()}
           >
             {props.states.map((state) => (
-              <Draggable onDrag={updateXarrow}>
+              <Draggable bounds="parent" onDrag={updateXarrow}>
                 <Box
                   className="state"
                   sx={{

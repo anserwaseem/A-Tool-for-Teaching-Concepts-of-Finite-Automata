@@ -492,6 +492,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   const playgroundProps: ToolsPlaygroundProps = {
     states: minimizedDfaStates,
     transitions: minimizedDfaTransitions,
+    setTransitions: setMinimizedDfaTransitions,
     canvasWidth: "150%",
     stateSize: props.stateSize,
   };
