@@ -22,6 +22,7 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { stateSelectedColor } from "../../../consts/Colors";
+import { ModifiedTableStateId } from "../../../consts/StateIdsExtensions";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -207,7 +208,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mtt", ""))
+              .map((tv) => tv.replace(ModifiedTableStateId, ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

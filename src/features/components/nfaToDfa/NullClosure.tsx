@@ -29,6 +29,7 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { stateSelectedColor } from "../../../consts/Colors";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
+import { NullCLosureStateId } from "../../../consts/StateIdsExtensions";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -220,7 +221,7 @@ export const NullClosure = (props: NullClosureProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("nc", ""))
+              .map((tv) => tv.replace(NullCLosureStateId, ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

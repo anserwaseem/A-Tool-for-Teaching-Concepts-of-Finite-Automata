@@ -40,7 +40,11 @@ import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import DataArrayIcon from "@mui/icons-material/DataArray";
-import { appBarBackgroundColor, drawerHeaderBoxShadow } from "../../../consts/Colors";
+import {
+  appBarBackgroundColor,
+  drawerHeaderBoxShadow,
+} from "../../../consts/Colors";
+import { EquivalentStatesStateId } from "../../../consts/StateIdsExtensions";
 
 const drawerWidth = 200;
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
@@ -623,7 +627,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("est", ""))
+              .map((tv) => tv.replace(EquivalentStatesStateId, ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

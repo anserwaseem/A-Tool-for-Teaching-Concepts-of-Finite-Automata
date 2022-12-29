@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { DraggableStateModel, RowModel, TransitionModel } from "../models";
-import { NfaToDfaProps } from "./props/NfaToDfaProps";
 import { NullClosure } from "./components/nfaToDfa/NullClosure";
 import { NullClosureProps } from "./components/nfaToDfa/props/NullClosureProps";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
@@ -9,6 +8,11 @@ import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTablePro
 import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
 import { DataContext } from "../components/Editor";
+import {
+  NullCLosureStateId,
+  ModifiedTableStateId,
+  ResultantDfaStateId,
+} from "../consts/StateIdsExtensions";
 
 export const NfaToDfa = () => {
   console.log("re rendering NfaToDfa");
@@ -45,7 +49,7 @@ export const NfaToDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace(tv, tv + "nc"))
+              .map((tv) => tv.replace(tv, tv + NullCLosureStateId))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -56,7 +60,7 @@ export const NfaToDfa = () => {
     const nullClosureStatesUnique = dataContext.states.map((state) => {
       return {
         ...state,
-        id: `${state.id}nc`,
+        id: state.id + NullCLosureStateId,
       };
     });
     console.log("nullClosureStatesUnique", nullClosureStatesUnique);
@@ -65,8 +69,8 @@ export const NfaToDfa = () => {
       (transition) => {
         return {
           ...transition,
-          start: `${transition.start}nc`,
-          end: `${transition.end}nc`,
+          start: transition.start + NullCLosureStateId,
+          end: transition.end + NullCLosureStateId,
         };
       }
     );
@@ -99,7 +103,7 @@ export const NfaToDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("nc", "mtt"))
+              .map((tv) => tv.replace(NullCLosureStateId, ModifiedTableStateId))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -120,7 +124,9 @@ export const NfaToDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("mtt", "ntd"))
+              .map((tv) =>
+                tv.replace(ModifiedTableStateId, ResultantDfaStateId)
+              )
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

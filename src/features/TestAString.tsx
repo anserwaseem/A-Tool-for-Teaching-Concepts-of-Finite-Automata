@@ -29,6 +29,7 @@ import { DataContext } from "../components/Editor";
 import { startingStateColor, stateSelectedColor } from "../consts/Colors";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { TestStringMaxLength } from "../consts/TestStringMaxLength";
+import { TestStringStateId } from "../consts/StateIdsExtensions";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -68,7 +69,7 @@ const TestAString = (props: TestAStringProps) => {
         dataContext.states.map((state) => {
           return {
             ...state,
-            id: `${state.id}ts`,
+            id: state.id + TestStringStateId,
           };
         })
       );
@@ -185,7 +186,7 @@ const TestAString = (props: TestAStringProps) => {
         dataContext.states.map((state) => {
           return {
             ...state,
-            id: `${state.id}ts`,
+            id: state.id + TestStringStateId,
           };
         })
       );
@@ -254,12 +255,12 @@ const TestAString = (props: TestAStringProps) => {
     transitions: testAStringTransitions.map((transition) => {
       return {
         ...transition,
-        start: `${transition.start}ts`,
-        end: `${transition.end}ts`,
+        start: transition.start + TestStringStateId,
+        end: transition.end + TestStringStateId,
       };
     }),
     setTransitions: setTestAStringTransitions,
-    currentStates: statesToHighlight.map((state) => `${state}ts`),
+    currentStates: statesToHighlight.map((state) => state + TestStringStateId),
     stateSize: dataContext.stateSize,
   };
 

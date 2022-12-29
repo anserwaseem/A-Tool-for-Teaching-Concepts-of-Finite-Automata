@@ -30,6 +30,7 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { stateSelectedColor } from "../../../consts/Colors";
 import { DataContext } from "../../../components/Editor";
+import { ResultantDfaStateId } from "../../../consts/StateIdsExtensions";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -181,13 +182,13 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               isInitial:
                 resultantDfaRows.length === 0 &&
                 stateToProcess
-                  .replaceAll("ntd", "")
+                  .replaceAll(ResultantDfaStateId, "")
                   .split(", ")
                   .includes(
                     dataContext.rows.find((row) => row.isInitial).state
                   ),
               isFinal: stateToProcess
-                .replaceAll("ntd", "")
+                .replaceAll(ResultantDfaStateId, "")
                 .split(", ")
                 .some((s) =>
                   dataContext.rows
@@ -491,7 +492,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace("ntd", ""))
+              .map((tv) => tv.replace(ResultantDfaStateId, ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

@@ -1,14 +1,12 @@
 import { useContext, useState } from "react";
-import { DraggableStateModel, RowModel, TransitionModel } from "../models";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
-import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
-import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
 import { EquivalentStates } from "./components/minimzeDfa/EquivalentStates";
 import { EquivalentStatesProps } from "./components/minimzeDfa/props/EquivalentStatesProps";
 import { DataContext } from "../components/Editor";
 import { EquivalentStatesRowModel } from "../models/minimizeDfa/EquivalentStatesRowModel";
 import { MinimizedDfaProps } from "./components/minimzeDfa/props/MinimizedDfaProps";
 import { MinimizedDfa } from "./components/minimzeDfa/MinimizedDfa";
+import { MinimizedDfaStateId } from "../consts/StateIdsExtensions";
 
 export const MinimizeDfa = () => {
   console.log("re rendering MinimizeDfa");
@@ -39,7 +37,7 @@ export const MinimizeDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace(tv, tv + "md"))
+              .map((tv) => tv.replace(tv, tv + MinimizedDfaStateId))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -48,14 +46,14 @@ export const MinimizeDfa = () => {
     states: dataContext.states.map((state) => {
       return {
         ...state,
-        id: `${state.id}md`,
+        id: state.id + MinimizedDfaStateId,
       };
     }),
     transitions: dataContext.transitions.map((transition) => {
       return {
         ...transition,
-        start: `${transition.start}md`,
-        end: `${transition.end}md`,
+        start: transition.start + MinimizedDfaStateId,
+        end: transition.end + MinimizedDfaStateId,
       };
     }),
     equivalentStatesRows: equivalentStatesRows,

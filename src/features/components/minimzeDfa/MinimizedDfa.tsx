@@ -41,7 +41,11 @@ import {
   TransitionModel,
 } from "../../../models";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
-import { appBarBackgroundColor, drawerHeaderBoxShadow } from "../../../consts/Colors";
+import {
+  appBarBackgroundColor,
+  drawerHeaderBoxShadow,
+} from "../../../consts/Colors";
+import { MinimizedDfaStateId } from "../../../consts/StateIdsExtensions";
 
 const drawerWidth = 300;
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
@@ -180,14 +184,17 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       return () => clearTimeout(timer);
     } else if (mergeStep === 1) {
       const stateToMergeInto = minimizedDfaStates.find(
-        (state) => state.id?.replace("md", "") === stateNamesToMerge[0]
+        (state) =>
+          state.id?.replace(MinimizedDfaStateId, "") === stateNamesToMerge[0]
       );
       const statesToMerge = minimizedDfaStates.filter((state) =>
         stateNamesToMerge
           .filter(
-            (stateName) => stateName?.replace("md", "") !== stateNamesToMerge[0]
+            (stateName) =>
+              stateName?.replace(MinimizedDfaStateId, "") !==
+              stateNamesToMerge[0]
           )
-          .includes(state.id?.replace("md", ""))
+          .includes(state.id?.replace(MinimizedDfaStateId, ""))
       );
 
       // run timer 100 times for duration * 10 time
@@ -289,8 +296,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           {
             labels: <StyledTransitionLabel label={transitionValue} />,
             value: transitionValue,
-            start: row?.state + "md",
-            end: (row?.[transitionValue] as string) + "md",
+            start: row?.state + MinimizedDfaStateId,
+            end: (row?.[transitionValue] as string) + MinimizedDfaStateId,
             animateDrawing: true,
             _extendSVGcanvas: isSelfTransition ? 25 : 0,
             _cpx1Offset: isSelfTransition ? -50 : 0,
@@ -353,17 +360,21 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       return prev
         .filter(
           (state) =>
-            !stateNamesToMerge.slice(1).includes(state.id?.replace("md", ""))
+            !stateNamesToMerge
+              .slice(1)
+              .includes(state.id?.replace(MinimizedDfaStateId, ""))
         )
         .map((state) => {
-          if (state.id?.replace("md", "") === stateNamesToMerge[0]) {
+          if (
+            state.id?.replace(MinimizedDfaStateId, "") === stateNamesToMerge[0]
+          ) {
             return {
               ...state,
               id:
-                state.id?.replace("md", "") +
+                state.id?.replace(MinimizedDfaStateId, "") +
                 " " +
                 stateNamesToMerge.slice(1).join(" ") +
-                "md",
+                MinimizedDfaStateId,
             };
           } else {
             return state;
