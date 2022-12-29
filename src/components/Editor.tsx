@@ -38,7 +38,7 @@ import TestAString from "../features/TestAString";
 import { TestAStringProps } from "../features/props/TestAStringProps";
 import { IsDFA } from "../utils/IsDFA";
 import { IsNFA } from "../utils/IsNFA";
-import { transitionSelectedColor } from "../consts/Colors";
+import { transitionColor, transitionSelectedColor } from "../consts/Colors";
 import {
   StateDefaultSize,
   StateMaxSize,
@@ -156,6 +156,9 @@ export const Editor = () => {
     stateX: 0,
     stateY: 0,
   });
+
+  const [areTransitionsBeingHighlighted, setAreTransitionsBeingHighlighted] =
+    useState(false);
 
   const handleAddRow = (row: RowModel) => {
     if (states.length >= MaxNumberOfStates) {
@@ -546,16 +549,21 @@ export const Editor = () => {
         if (t.value.includes("^")) {
           return {
             ...t,
-            color: transitionSelectedColor,
-            dashness: {
-              animation: 1,
-            },
+            color: areTransitionsBeingHighlighted
+              ? transitionColor
+              : transitionSelectedColor,
+            dashness: areTransitionsBeingHighlighted
+              ? false
+              : {
+                  animation: 1,
+                },
           };
         }
         return t;
       })
     );
 
+    setAreTransitionsBeingHighlighted((v) => !v);
     setToolSelected(null);
   };
 
