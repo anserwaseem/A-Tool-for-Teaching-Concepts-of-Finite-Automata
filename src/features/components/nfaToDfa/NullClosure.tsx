@@ -36,6 +36,7 @@ let index = numberOfColumns;
 
 export const NullClosure = (props: NullClosureProps) => {
   console.log("re rendering NullClosure, props: ", props);
+
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -132,7 +133,14 @@ export const NullClosure = (props: NullClosureProps) => {
             // display null transitions for every row except the last row
             rowIndex - 1 === mapIndex && index % 2 === 0
               ? ""
-              : row.state + (row.nul ? ", " : "") + row.nul,
+              : Array.from(
+                  new Set(
+                    (
+                      row.state +
+                      (row.nul ? ", " + row.nul.split(" ").join(", ") : "")
+                    ).split(", ")
+                  )
+                ).join(", "),
         };
       })
     );
