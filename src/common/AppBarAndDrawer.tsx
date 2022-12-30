@@ -80,7 +80,7 @@ export const AppBarAndDrawer = (props: AppBarAndDrawerProps) => {
                   ...(props.open === 0 && { mt: 0.5 }),
                 }}
               >
-                {props.title}
+                {props.headerTitle}
               </Typography>
             </Grid>
           </Grid>
@@ -115,7 +115,7 @@ export const AppBarAndDrawer = (props: AppBarAndDrawerProps) => {
             align="center"
             fontWeight={"bold"}
           >
-            Transition Table
+            {props?.drawerTitle ?? "Transition Table"}
           </Typography>
           <IconButton
             onClick={() => {

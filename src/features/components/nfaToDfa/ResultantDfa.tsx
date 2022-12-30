@@ -515,12 +515,12 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Resultant DFA",
+    headerTitle: "Resultant DFA",
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext, ResultantDfaStateId),
-      columns: GetDrawerTransitionTableColumns(dataContext, false),
+      rows: GetDrawerTransitionTableRows(dataContext.rows, ResultantDfaStateId),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
     },
   };
 
@@ -538,6 +538,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
             sm: 2,
             md: 3,
           }}
+          pt={1.6}
         >
           {/* Transition table grid */}
           <Grid item xs={12} md={4}>

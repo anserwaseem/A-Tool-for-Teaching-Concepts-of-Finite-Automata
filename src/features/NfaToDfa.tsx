@@ -110,6 +110,7 @@ export const NfaToDfa = () => {
       };
     }),
     setRows: setModifiedRows,
+    nullClosureRows: nullClosureRows,
     setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
   };
 

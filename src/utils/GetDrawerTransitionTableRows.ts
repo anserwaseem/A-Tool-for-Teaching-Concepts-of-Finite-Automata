@@ -1,12 +1,11 @@
-import { AutomataData } from "../components/types/AutomataData";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { RowModel } from "../models";
 
 export const GetDrawerTransitionTableRows = (
-  dataContext: AutomataData,
+  rows: RowModel[],
   stateIdExtension: string
 ): RowModel[] => {
-  return dataContext.rows.map((row) => {
+  return rows.map((row) => {
     return {
       ...row,
       ...Object.fromEntries(

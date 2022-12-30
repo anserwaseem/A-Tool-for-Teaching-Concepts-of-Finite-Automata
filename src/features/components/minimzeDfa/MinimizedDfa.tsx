@@ -426,7 +426,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Minimized DFA",
+    headerTitle: "Minimized DFA",
     open,
     setOpen,
     transitionTableProps,

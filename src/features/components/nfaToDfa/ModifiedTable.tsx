@@ -20,7 +20,10 @@ import { ToolsTransitionTable } from "../tools/TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
-import { ModifiedTableStateId } from "../../../consts/StateIdsExtensions";
+import {
+  ModifiedTableStateId,
+  NullClosureStateId,
+} from "../../../consts/StateIdsExtensions";
 import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
 import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
@@ -37,7 +40,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -73,11 +76,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   const [open, setOpen] = useState(1);
 
   useEffect(() => {
-    console.log(
-      "ModifiedTable useEffect, isPlaying, duration: ",
-      isPlaying,
-      duration
-    );
     if (isPlaying) {
       let timer = setTimeout(() => {
         console.log("inside set timeout, index", index);
@@ -99,12 +97,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   }, [props, modifiedTableRows, isPlaying]);
 
   const handleUpdateData = (rowIndex: number, rows: RowModel[]) => {
-    console.log(
-      "handleUpdateData, rowIndex, index, rows: ",
-      rowIndex,
-      index,
-      rows
-    );
     setModifiedTableRowId(rowIndex);
     setModifiedTableRows(
       rows.map((row, mapIndex) => {
@@ -171,16 +163,10 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
-    console.log(
-      "ModifiedTable handleDurationChange, event.target.value, duration: ",
-      event.target.value,
-      duration
-    );
     setDuration(Number(event.target.value));
   };
 
   const handleAnimation = () => {
-    console.log("ModifiedTable handleAnimation");
     if (isComplete) {
       setIsReady(false);
       setIsComplete(false);
@@ -190,7 +176,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   };
 
   const showNextRow = () => {
-    console.log("ModifiedTable show next row, index: ", index);
     const rowIndex = Math.floor(index / numberOfColumns);
     if (isComplete) {
       setIsReady(true);
@@ -228,12 +213,16 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Modified Transition Table",
+    headerTitle: "Modified Transition Table",
+    drawerTitle: "Null Closure Table",
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext, ModifiedTableStateId),
-      columns: GetDrawerTransitionTableColumns(dataContext, false),
+      rows: GetDrawerTransitionTableRows(
+        props.nullClosureRows,
+        NullClosureStateId
+      ),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["a", "b"]),
     },
   };
 
@@ -252,6 +241,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
               sm: 2,
               md: 3,
             }}
+            pt={1.6}
           >
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>

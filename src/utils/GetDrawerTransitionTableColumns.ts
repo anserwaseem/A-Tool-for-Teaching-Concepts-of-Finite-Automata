@@ -1,24 +1,16 @@
 import { GridColumns } from "@mui/x-data-grid";
-import { AutomataData } from "../components/types/AutomataData";
 
 export const GetDrawerTransitionTableColumns = (
-  dataContext: AutomataData,
-  isNullColumnHidden: boolean
+  columns: GridColumns<any>,
+  columnsToHide: string[]
 ): GridColumns<any> => {
-  return dataContext.columns
+  return columns
     .filter((col) => col.field !== "action" && col.field !== "id")
     .map((col) => {
       return {
         ...col,
         editable: false,
-        hide: col.field === "nul" && isNullColumnHidden,
+        hide: columnsToHide.includes(col.field),
       };
     });
-  // .filter((col) => col.field !== "action" && col.field !== "nul")
-  // .map((col) => {
-  //   return {
-  //     ...col,
-  //     editable: false,
-  //   };
-  // });
 };

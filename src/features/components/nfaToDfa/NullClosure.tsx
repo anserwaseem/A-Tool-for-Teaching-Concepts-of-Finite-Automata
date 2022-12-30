@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  CssBaseline,
   FormControl,
   Grid,
   InputLabel,
@@ -285,12 +286,12 @@ export const NullClosure = (props: NullClosureProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Null Closure",
+    headerTitle: "Null Closure",
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext, NullClosureStateId),
-      columns: GetDrawerTransitionTableColumns(dataContext, false),
+      rows: GetDrawerTransitionTableRows(dataContext.rows, NullClosureStateId),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
     },
   };
 
@@ -319,7 +320,7 @@ export const NullClosure = (props: NullClosureProps) => {
 
         <AppBarAndDrawer {...appBarAndDrawerProps} />
 
-        <MainContent open={open} sx={{ paddingBottom: 12 }}>
+        <MainContent open={open}>
           <DrawerHeader />
           {/* Grid to incorporate Transition table and Playground */}
           <Grid
@@ -329,6 +330,7 @@ export const NullClosure = (props: NullClosureProps) => {
               sm: 2,
               md: 3,
             }}
+            pt={1.6}
           >
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>

@@ -568,7 +568,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Equivalent States",
+    headerTitle: "Equivalent States",
     open,
     setOpen,
     transitionTableProps,

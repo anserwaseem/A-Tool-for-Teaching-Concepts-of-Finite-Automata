@@ -273,12 +273,12 @@ const TestAString = (props: TestAStringProps) => {
   };
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    title: "Test a String",
+    headerTitle: "Test a String",
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext, TestStringStateId),
-      columns: GetDrawerTransitionTableColumns(dataContext, false),
+      rows: GetDrawerTransitionTableRows(dataContext.rows, TestStringStateId),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
     },
   };
 

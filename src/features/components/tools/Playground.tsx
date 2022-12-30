@@ -87,7 +87,7 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
             onDragOver={(e) => e.preventDefault()}
           >
             {props.states.map((state, index) => (
-              <Draggable bounds="parent" onDrag={updateXarrow}>
+              <Draggable bounds="parent" onDrag={updateXarrow} key={state.id}>
                 <Box
                   className="state"
                   sx={{

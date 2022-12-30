@@ -15,7 +15,7 @@ import {
 } from "../../../consts/Colors";
 
 export const State = (props: StateProps) => {
-  console.log("re rendering Box: props", props);
+  console.log("re rendering State: props", props);
 
   const dataContext = useContext(DataContext);
 
