@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -8,6 +9,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Snackbar,
 } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
@@ -75,26 +77,31 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
 
   const [open, setOpen] = useState(1);
 
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   useEffect(() => {
     if (isPlaying) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout, index", index);
-        const rowIndex = Math.floor(index / numberOfColumns);
+        if (!showExplanation) {
+          console.log("inside set timeout, index", index);
+          const rowIndex = Math.floor(index / numberOfColumns);
 
-        handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
+          handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
 
-        // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
-        if (
-          rowIndex === props.rows.length &&
-          index % numberOfColumns === numberOfColumns - 1
-        ) {
-          setIsComplete(true);
-          setIsPlaying(false);
-        } else index++;
+          // stop if all rows have been displayed
+          if (rowIndex > props.rows.length && index % numberOfColumns === 0) {
+            setIsComplete(true);
+            setIsPlaying(false);
+            handleExplanation();
+          }
+          index++;
+        } else handleExplanation();
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [props, modifiedTableRows, isPlaying]);
+  }, [props, modifiedTableRows, isPlaying, showExplanation]);
 
   const handleUpdateData = (rowIndex: number, rows: RowModel[]) => {
     setModifiedTableRowId(rowIndex);
@@ -160,6 +167,72 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
         };
       })
     );
+    setShowExplanation(true);
+  };
+
+  const handleExplanation = () => {
+    let openSnackbar = true;
+    if (index % numberOfColumns === 1)
+      setSnackbarMessage(
+        `Added state ${modifiedTableRows?.[
+          modifiedTableRowId - 1
+        ]?.state?.replaceAll(ModifiedTableStateId, "")}.`
+      );
+    else if (index % numberOfColumns === 2)
+      dataContext?.rows?.[modifiedTableRowId - 1]?.a
+        ? setSnackbarMessage(
+            dataContext?.rows?.[modifiedTableRowId - 1]?.a
+              ? `Updated ${
+                  dataContext?.rows?.[modifiedTableRowId - 1]?.a
+                } with its null closure i.e., {${dataContext?.rows?.[
+                  modifiedTableRowId - 1
+                ]?.a
+                  ?.split(" ")
+                  .map((s) =>
+                    props.nullClosureRows
+                      ?.find(
+                        (r) => r.state.replaceAll(NullClosureStateId, "") === s
+                      )
+                      ?.nul?.replaceAll(NullClosureStateId, "")
+                  )
+                  .join(", ")}}`
+              : ""
+          )
+        : (openSnackbar = false);
+    else
+      dataContext?.rows?.[modifiedTableRowId - 1]?.b
+        ? setSnackbarMessage(
+            dataContext?.rows?.[modifiedTableRowId - 1]?.b
+              ? `Updated ${
+                  dataContext?.rows?.[modifiedTableRowId - 1]?.b
+                } with its null closure i.e., {${dataContext?.rows?.[
+                  modifiedTableRowId - 1
+                ]?.b
+                  ?.split(" ")
+                  .map((s) =>
+                    props.nullClosureRows
+                      ?.find(
+                        (r) => r.state.replaceAll(NullClosureStateId, "") === s
+                      )
+                      ?.nul?.replaceAll(NullClosureStateId, "")
+                  )
+                  .join(", ")}}`
+              : ""
+          )
+        : (openSnackbar = false);
+
+    setOpenSnackbar(openSnackbar);
+    setShowExplanation(false);
+  };
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
@@ -176,20 +249,24 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   };
 
   const showNextRow = () => {
-    const rowIndex = Math.floor(index / numberOfColumns);
-    if (isComplete) {
-      setIsReady(true);
-      props.setRows(modifiedTableRows);
-      props.setIsModifiedTransitionTableComplete(true);
-    }
+    if (!showExplanation) {
+      const rowIndex = Math.floor(index / numberOfColumns);
+      if (isComplete) {
+        setIsReady(true);
+        props.setRows(modifiedTableRows);
+        props.setIsModifiedTransitionTableComplete(true);
+      }
 
-    handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
+      handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
 
-    // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's last column has been displayed
-    if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
-      setIsComplete(true);
-      setIsPlaying(false);
-    } else index++;
+      // stop if all rows have been displayed
+      if (rowIndex > props.rows.length && index % numberOfColumns === 0) {
+        setIsComplete(true);
+        setIsPlaying(false);
+        handleExplanation();
+      }
+      index++;
+    } else handleExplanation();
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
@@ -229,6 +306,26 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   return (
     <>
       <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={
+            isPlaying ? duration * 1000 : duration * 1000 * 1000
+          }
+          onClose={handleSnackbarClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="info"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
         <AppBarAndDrawer {...appBarAndDrawerProps} />
 
         <MainContent open={open} sx={{ paddingBottom: 12 }}>
