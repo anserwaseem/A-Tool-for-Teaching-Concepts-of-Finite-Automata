@@ -75,16 +75,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
 
   const [open, setOpen] = useState(1);
 
-  const handleSnackbarClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-  };
-
   useEffect(() => {
     setMinimizedDfaRows(dataContext?.rows);
     setMinimizedDfaStates(props?.states);
@@ -146,6 +136,16 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       return () => clearTimeout(timer);
     }
   }, [isPlaying, displayStep, mergeStep]);
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const handleUpdateData = () => {
     console.log("MinimizedDfa handleUpdateData: stepNumber: ", displayStep);

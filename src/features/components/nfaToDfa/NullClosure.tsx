@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -8,6 +9,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Snackbar,
 } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
@@ -78,44 +80,81 @@ export const NullClosure = (props: NullClosureProps) => {
 
   const [open, setOpen] = useState(1);
 
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   // populate props rows in null closure table one by one with null closure states and transitions according to specified duration and isPlaying
   useEffect(() => {
-    console.log(
-      "NullClosure useEffect, isPlaying, duration: ",
-      isPlaying,
-      duration
-    );
     if (isPlaying) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout, index", index);
-        const rowIndex = Math.floor(index / numberOfColumns);
-        console.log(
-          "before handleUpdateData: index, rowIndex: ",
-          index,
-          rowIndex,
-          props.rows.length
-        );
+        if (!showExplanation) {
+          const rowIndex = Math.floor(index / numberOfColumns);
 
-        handleUpdateData(
-          rowIndex,
-          props.rows.slice(0, rowIndex),
-          props.states.slice(0, rowIndex),
-          props.transitions
-        );
+          handleUpdateData(
+            rowIndex,
+            props.rows.slice(0, rowIndex),
+            props.states.slice(0, rowIndex),
+            props.transitions
+          );
 
-        // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
-        // index === props.rows.length * numberOfColumns + props.states.length - 1;
-        if (
-          rowIndex === props.rows.length &&
-          index % numberOfColumns === numberOfColumns - 1
-        ) {
-          setIsComplete(true);
-          setIsPlaying(false);
-        } else index++;
+          // stop if all rows have been displayed
+          if (rowIndex > props.rows.length && index % numberOfColumns === 0) {
+            setIsComplete(true);
+            setIsPlaying(false);
+            handleExplanation();
+          }
+          index++;
+        } else handleExplanation();
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [props, nullClosureRows, isPlaying]);
+  }, [props, nullClosureRows, isPlaying, showExplanation]);
+
+  const handleExplanation = () => {
+    if (index % numberOfColumns === 0)
+      setSnackbarMessage(
+        `Added null closure of ${dataContext?.rows?.[
+          nullClosureRowId - 1
+        ]?.state?.replaceAll(
+          NullClosureStateId,
+          ""
+        )} i.e., ${dataContext?.rows?.[nullClosureRowId - 1]?.state?.replaceAll(
+          NullClosureStateId,
+          ""
+        )} itself` +
+          (dataContext?.rows?.[nullClosureRowId - 1]?.nul !== ""
+            ? ` and its null transition ${dataContext?.rows?.[
+                nullClosureRowId - 1
+              ]?.nul
+                ?.split(", ")
+                ?.filter(
+                  (s) => s !== dataContext?.rows?.[nullClosureRowId - 1]?.state
+                )
+                ?.join(", ")
+                ?.replaceAll(NullClosureStateId, "")}.`
+            : " only.")
+      );
+    else
+      setSnackbarMessage(
+        `Added state ${nullClosureRows?.[
+          nullClosureRowId - 1
+        ]?.state?.replaceAll(NullClosureStateId, "")}.`
+      );
+
+    setOpenSnackbar(true);
+    setShowExplanation(false);
+  };
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const handleUpdateData = (
     rowIndex: number,
@@ -123,12 +162,6 @@ export const NullClosure = (props: NullClosureProps) => {
     states: DraggableStateModel[],
     transitions: TransitionModel[]
   ) => {
-    console.log(
-      "handleUpdateData, rowIndex, index, rows: ",
-      rowIndex,
-      index,
-      rows
-    );
     setNullClosureRowId(rowIndex);
     // copy all null transitions for each row and paste them in the null column alongwith state name
     setNullClosureRows(
@@ -172,6 +205,7 @@ export const NullClosure = (props: NullClosureProps) => {
           };
         })
     );
+    setShowExplanation(true);
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
@@ -196,27 +230,31 @@ export const NullClosure = (props: NullClosureProps) => {
 
   const showNextRow = () => {
     console.log("NullClosure show next row, index: ", index);
-    const rowIndex = Math.floor(index / numberOfColumns);
-    if (isComplete) {
-      setIsReady(true);
-      props.setRows(nullClosureRows);
-      props.setStates(nullClosureStates);
-      props.setTransitions(nullClosureTransitions);
-      props.setIsNullClosureTableComplete(true);
-    }
+    if (!showExplanation) {
+      const rowIndex = Math.floor(index / numberOfColumns);
+      if (isComplete) {
+        setIsReady(true);
+        props.setRows(nullClosureRows);
+        props.setStates(nullClosureStates);
+        props.setTransitions(nullClosureTransitions);
+        props.setIsNullClosureTableComplete(true);
+      }
 
-    handleUpdateData(
-      rowIndex,
-      props.rows.slice(0, rowIndex),
-      props.states.slice(0, rowIndex),
-      props.transitions
-    );
+      handleUpdateData(
+        rowIndex,
+        props.rows.slice(0, rowIndex),
+        props.states.slice(0, rowIndex),
+        props.transitions
+      );
 
-    // stop if all rows have been displayed i.e., if rowIndex equals rows length and last row's null column has been displayed
-    if (rowIndex === props.rows.length && index % numberOfColumns !== 0) {
-      setIsComplete(true);
-      setIsPlaying(false);
-    } else index++;
+      // stop if all rows have been displayed
+      if (rowIndex > props.rows.length && index % numberOfColumns === 0) {
+        setIsComplete(true);
+        setIsPlaying(false);
+        handleExplanation();
+      }
+      index++;
+    } else handleExplanation();
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
@@ -259,6 +297,26 @@ export const NullClosure = (props: NullClosureProps) => {
   return (
     <>
       <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={
+            isPlaying ? duration * 1000 : duration * 1000 * 1000
+          }
+          onClose={handleSnackbarClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="info"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
         <AppBarAndDrawer {...appBarAndDrawerProps} />
 
         <MainContent open={open} sx={{ paddingBottom: 12 }}>
