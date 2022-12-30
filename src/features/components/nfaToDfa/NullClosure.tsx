@@ -27,7 +27,7 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
-import { NullCLosureStateId } from "../../../consts/StateIdsExtensions";
+import { NullClosureStateId } from "../../../consts/StateIdsExtensions";
 import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
 import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
 import { DrawerHeader } from "../../../common/DrawerHeader";
@@ -230,7 +230,7 @@ export const NullClosure = (props: NullClosureProps) => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace(NullCLosureStateId, ""))
+              .map((tv) => tv.replace(NullClosureStateId, ""))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -251,7 +251,7 @@ export const NullClosure = (props: NullClosureProps) => {
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext, NullCLosureStateId),
+      rows: GetDrawerTransitionTableRows(dataContext, NullClosureStateId),
       columns: GetDrawerTransitionTableColumns(dataContext, false),
     },
   };

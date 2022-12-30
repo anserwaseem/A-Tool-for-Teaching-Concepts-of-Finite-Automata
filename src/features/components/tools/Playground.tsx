@@ -14,7 +14,13 @@ import { XarrowCoreProps } from "../playground/props/XarrowProps";
 import { Box } from "@mui/material";
 import { useState, useEffect, useContext } from "react";
 import { DataContext } from "../../../components/Editor";
-import { NullCLosureStateId, ResultantDfaStateId, EquivalentStatesStateId, MinimizedDfaStateId, TestStringStateId } from "../../../consts/StateIdsExtensions";
+import {
+  NullClosureStateId,
+  ResultantDfaStateId,
+  EquivalentStatesStateId,
+  MinimizedDfaStateId,
+  TestStringStateId,
+} from "../../../consts/StateIdsExtensions";
 
 export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
   console.log("re rendering ToolsPlayground: props", props);
@@ -50,8 +56,8 @@ export const ToolsPlayground = (props: ToolsPlaygroundProps) => {
 
   const stateToInquire = props.states?.at(0)?.id;
   const uniqueWord = // to ensure that the xarrow is unique
-    stateToInquire?.includes(NullCLosureStateId)
-      ? NullCLosureStateId
+    stateToInquire?.includes(NullClosureStateId)
+      ? NullClosureStateId
       : stateToInquire?.includes(ResultantDfaStateId)
       ? ResultantDfaStateId
       : stateToInquire?.includes(EquivalentStatesStateId)

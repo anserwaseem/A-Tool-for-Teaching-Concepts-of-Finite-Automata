@@ -9,7 +9,7 @@ import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
 import { DataContext } from "../components/Editor";
 import {
-  NullCLosureStateId,
+  NullClosureStateId,
   ModifiedTableStateId,
   ResultantDfaStateId,
 } from "../consts/StateIdsExtensions";
@@ -49,7 +49,7 @@ export const NfaToDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace(tv, tv + NullCLosureStateId))
+              .map((tv) => tv.replace(tv, tv + NullClosureStateId))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
@@ -60,7 +60,7 @@ export const NfaToDfa = () => {
     const nullClosureStatesUnique = dataContext.states.map((state) => {
       return {
         ...state,
-        id: state.id + NullCLosureStateId,
+        id: state.id + NullClosureStateId,
       };
     });
     console.log("nullClosureStatesUnique", nullClosureStatesUnique);
@@ -69,8 +69,8 @@ export const NfaToDfa = () => {
       (transition) => {
         return {
           ...transition,
-          start: transition.start + NullCLosureStateId,
-          end: transition.end + NullCLosureStateId,
+          start: transition.start + NullClosureStateId,
+          end: transition.end + NullClosureStateId,
         };
       }
     );
@@ -103,7 +103,7 @@ export const NfaToDfa = () => {
               .toString()
               .split(" ")
               .filter((key) => key !== "")
-              .map((tv) => tv.replace(NullCLosureStateId, ModifiedTableStateId))
+              .map((tv) => tv.replace(NullClosureStateId, ModifiedTableStateId))
               .join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),

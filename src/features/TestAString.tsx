@@ -30,6 +30,12 @@ import { startingStateColor, stateSelectedColor } from "../consts/Colors";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { TestStringMaxLength } from "../consts/TestStringMaxLength";
 import { TestStringStateId } from "../consts/StateIdsExtensions";
+import { AppBarAndDrawer } from "../common/AppBarAndDrawer";
+import { DrawerHeader } from "../common/DrawerHeader";
+import { MainContent } from "../common/MainContent";
+import { AppBarAndDrawerProps } from "../common/props/AppBarAndDrawerProps";
+import { GetDrawerTransitionTableColumns } from "../utils/GetDrawerTransitionTableColumns";
+import { GetDrawerTransitionTableRows } from "../utils/GetDrawerTransitionTableRows";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -62,6 +68,8 @@ const TestAString = (props: TestAStringProps) => {
     TransitionModel[]
   >([]);
   const [dialogError, setDialogError] = useState("");
+
+  const [open, setOpen] = useState(1);
 
   useEffect(() => {
     if (dataContext) {
@@ -264,6 +272,16 @@ const TestAString = (props: TestAStringProps) => {
     stateSize: dataContext.stateSize,
   };
 
+  const appBarAndDrawerProps: AppBarAndDrawerProps = {
+    title: "Test a String",
+    open,
+    setOpen,
+    transitionTableProps: {
+      rows: GetDrawerTransitionTableRows(dataContext, TestStringStateId),
+      columns: GetDrawerTransitionTableColumns(dataContext, false),
+    },
+  };
+
   return (
     <>
       <Dialog open={props.isTestAStringDialogOpen} onClose={handleClose}>
@@ -293,106 +311,101 @@ const TestAString = (props: TestAStringProps) => {
       </Dialog>
 
       {dialogError === "none" && (
-        <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
-          <Typography
-            variant="h5"
-            component="div"
-            gutterBottom
-            align="center"
-            fontWeight={"bold"}
-            bgcolor={stateSelectedColor}
-          >
-            Test a String
-          </Typography>
+        <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+          <AppBarAndDrawer {...appBarAndDrawerProps} />
 
-          <Grid
-            container
-            columnSpacing={{
-              xs: 1,
-              sm: 2,
-              md: 3,
-            }}
-          >
-            <Grid item xs={12} alignItems={"center"}>
-              <ButtonGroup
-                disableElevation
-                fullWidth
-                variant="outlined"
-                size="large"
-              >
-                {testString
-                  .replaceAll("^", "")
-                  .split("")
-                  .map((char, index) => (
-                    <TextField
-                      key={index}
-                      id={`testString${index}`}
-                      value={char}
-                      variant="standard"
-                      InputProps={{
-                        readOnly: true,
-                        sx: {
-                          textAlignLast: "center",
-                        },
-                      }}
-                      sx={{
-                        backgroundColor:
-                          Math.floor((testStringIndex - 1) / 2) === index
-                            ? startingStateColor
-                            : "inherit",
-                        flexDirection: "inherit",
-                        borderRadius: "20px",
-                        border: `1px solid ${stateSelectedColor}`,
-                        borderWidth: "0 1px 0 1px",
-                      }}
-                    />
-                  ))}
+          <MainContent open={open} sx={{ paddingBottom: 12 }}>
+            <DrawerHeader />
 
-                <FormControl fullWidth>
-                  <InputLabel id="delay-select-label">Delay</InputLabel>
-                  <Select
-                    labelId="delay-select-label"
-                    id="delay-select"
-                    value={duration.toString()}
-                    label="Delay"
-                    onChange={handleDurationChange}
-                  >
-                    {AnimationDurationOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
+            <Grid
+              container
+              columnSpacing={{
+                xs: 1,
+                sm: 2,
+                md: 3,
+              }}
+            >
+              <Grid item xs={12} alignItems={"center"}>
+                <ButtonGroup
+                  disableElevation
+                  fullWidth
+                  variant="outlined"
+                  size="large"
+                >
+                  {testString
+                    .replaceAll("^", "")
+                    .split("")
+                    .map((char, index) => (
+                      <TextField
+                        key={index}
+                        id={`testString${index}`}
+                        value={char}
+                        variant="standard"
+                        InputProps={{
+                          readOnly: true,
+                          sx: {
+                            textAlignLast: "center",
+                          },
+                        }}
+                        sx={{
+                          backgroundColor:
+                            Math.floor((testStringIndex - 1) / 2) === index
+                              ? startingStateColor
+                              : "inherit",
+                          flexDirection: "inherit",
+                          borderRadius: "20px",
+                          border: `1px solid ${stateSelectedColor}`,
+                          borderWidth: "0 1px 0 1px",
+                        }}
+                      />
                     ))}
-                  </Select>
-                </FormControl>
 
-                <Button
-                  onClick={handleAnimation}
-                  startIcon={
-                    isPlaying ? (
-                      <PauseRoundedIcon />
-                    ) : isComplete ? (
-                      <ReplayRoundedIcon />
-                    ) : (
-                      <PlayArrowRoundedIcon />
-                    )
-                  }
-                >
-                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                </Button>
-                <Button
-                  variant={isComplete ? "contained" : "outlined"}
-                  onClick={showNextRow}
-                  disabled={isReady}
-                >
-                  {isComplete ? "Complete" : "Next"}
-                </Button>
-              </ButtonGroup>
+                  <FormControl fullWidth>
+                    <InputLabel id="delay-select-label">Delay</InputLabel>
+                    <Select
+                      labelId="delay-select-label"
+                      id="delay-select"
+                      value={duration.toString()}
+                      label="Delay"
+                      onChange={handleDurationChange}
+                    >
+                      {AnimationDurationOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <Button
+                    onClick={handleAnimation}
+                    startIcon={
+                      isPlaying ? (
+                        <PauseRoundedIcon />
+                      ) : isComplete ? (
+                        <ReplayRoundedIcon />
+                      ) : (
+                        <PlayArrowRoundedIcon />
+                      )
+                    }
+                  >
+                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+                  </Button>
+                  <Button
+                    variant={isComplete ? "contained" : "outlined"}
+                    onClick={showNextRow}
+                    disabled={isReady}
+                  >
+                    {isComplete ? "Complete" : "Next"}
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+              {/* Playground grid */}
+              <Grid item xs={12}>
+                <ToolsPlayground {...playgroundProps} />
+              </Grid>
             </Grid>
-            {/* Playground grid */}
-            <Grid item xs={12}>
-              <ToolsPlayground {...playgroundProps} />
-            </Grid>
-          </Grid>
+          </MainContent>
         </Box>
       )}
     </>

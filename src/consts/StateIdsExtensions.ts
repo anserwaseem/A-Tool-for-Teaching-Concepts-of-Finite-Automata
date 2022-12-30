@@ -2,7 +2,7 @@
 
 // NFA to DFA
 export const ModifiedTableStateId = "mtt";
-export const NullCLosureStateId = "nc";
+export const NullClosureStateId = "nc";
 export const ResultantDfaStateId = "ntd";
 
 // DFA Minimization
