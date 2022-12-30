@@ -313,6 +313,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                       ?.join(", ") ?? ""
                   : ""
                 : row.a;
+
+            if (a === "") a = "Φ";
+
             console.log("a: ", a);
             // insert a value in availableStates object if it is not already present and set isAvailable to true
             if (a !== "" && !availableStates.find((as) => as.name === a)) {
@@ -351,6 +354,10 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                       ?.join(", ") ?? ""
                   : ""
                 : row.b;
+
+            if (index % numberOfColumns === numberOfColumns - 1 && b === "")
+              b = "Φ";
+
             console.log("b: ", b);
             // insert b value in availableStates object if it is not already present and set isAvailable to true
             if (b !== "" && !availableStates.find((as) => as.name === b)) {
