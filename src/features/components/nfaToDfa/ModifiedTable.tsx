@@ -8,10 +8,9 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography,
 } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { RowModel } from "../../../models";
@@ -21,14 +20,23 @@ import { ToolsTransitionTable } from "../tools/TransitionTable";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
-import { stateSelectedColor } from "../../../consts/Colors";
 import { ModifiedTableStateId } from "../../../consts/StateIdsExtensions";
+import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
+import { DrawerHeader } from "../../../common/DrawerHeader";
+import { MainContent } from "../../../common/MainContent";
+import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
+import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
+import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
+import { DataContext } from "../../../components/Editor";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
 
 export const ModifiedTable = (props: ModifiedTableProps) => {
   console.log("re rendering modified table, props: ", props);
+
+  const dataContext = useContext(DataContext);
+
   const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -61,6 +69,8 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       flex: 1,
     },
   ];
+
+  const [open, setOpen] = useState(1);
 
   useEffect(() => {
     console.log(
@@ -217,87 +227,92 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     columns: columns,
   };
 
+  const appBarAndDrawerProps: AppBarAndDrawerProps = {
+    title: "Modified Transition Table",
+    open,
+    setOpen,
+    transitionTableProps: {
+      rows: GetDrawerTransitionTableRows(dataContext, ModifiedTableStateId),
+      columns: GetDrawerTransitionTableColumns(dataContext, false),
+    },
+  };
+
   return (
     <>
-      <Box sx={{ flexGrow: 1, m: 1, mt: 5 }}>
-        <Typography
-          variant="h5"
-          component="div"
-          gutterBottom
-          align="center"
-          fontWeight={"bold"}
-          bgcolor={stateSelectedColor}
-        >
-          Modified Transition Table (replace each state with its null closure)
-        </Typography>
-        {/* Grid to incorporate Transition table and Playground */}
-        <Grid
-          container
-          columnSpacing={{
-            xs: 1,
-            sm: 2,
-            md: 3,
-          }}
-        >
-          {/* Transition table grid */}
-          <Grid item xs={12} md={4}>
-            {/* Grid for Add a Row button and Tools */}
-            <Grid container alignItems={"center"}>
-              <Grid item xs={12}>
-                <ButtonGroup
-                  disableElevation
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                >
-                  <FormControl fullWidth>
-                    <InputLabel id="delay-select-label">Delay</InputLabel>
-                    <Select
-                      labelId="delay-select-label"
-                      id="delay-select"
-                      value={duration.toString()}
-                      label="Delay"
-                      onChange={handleDurationChange}
+      <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+        <AppBarAndDrawer {...appBarAndDrawerProps} />
+
+        <MainContent open={open} sx={{ paddingBottom: 12 }}>
+          <DrawerHeader />
+          {/* Grid to incorporate Transition table and Playground */}
+          <Grid
+            container
+            columnSpacing={{
+              xs: 1,
+              sm: 2,
+              md: 3,
+            }}
+          >
+            {/* Transition table grid */}
+            <Grid item xs={12} md={4}>
+              {/* Grid for Add a Row button and Tools */}
+              <Grid container alignItems={"center"}>
+                <Grid item xs={12}>
+                  <ButtonGroup
+                    disableElevation
+                    fullWidth
+                    variant="outlined"
+                    size="large"
+                  >
+                    <FormControl fullWidth>
+                      <InputLabel id="delay-select-label">Delay</InputLabel>
+                      <Select
+                        labelId="delay-select-label"
+                        id="delay-select"
+                        value={duration.toString()}
+                        label="Delay"
+                        onChange={handleDurationChange}
+                      >
+                        {AnimationDurationOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
+                    <Button
+                      onClick={handleAnimation}
+                      startIcon={
+                        isPlaying ? (
+                          <PauseRoundedIcon />
+                        ) : isComplete ? (
+                          <ReplayRoundedIcon />
+                        ) : (
+                          <PlayArrowRoundedIcon />
+                        )
+                      }
                     >
-                      {AnimationDurationOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
-                  <Button
-                    onClick={handleAnimation}
-                    startIcon={
-                      isPlaying ? (
-                        <PauseRoundedIcon />
-                      ) : isComplete ? (
-                        <ReplayRoundedIcon />
-                      ) : (
-                        <PlayArrowRoundedIcon />
-                      )
-                    }
-                  >
-                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                  </Button>
-                  <Button
-                    variant={isComplete ? "contained" : "outlined"}
-                    onClick={showNextRow}
-                    disabled={isReady}
-                  >
-                    {isComplete ? "Complete" : "Next"}
-                  </Button>
-                </ButtonGroup>
+                      {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
+                    </Button>
+                    <Button
+                      variant={isComplete ? "contained" : "outlined"}
+                      onClick={showNextRow}
+                      disabled={isReady}
+                    >
+                      {isComplete ? "Complete" : "Next"}
+                    </Button>
+                  </ButtonGroup>
+                </Grid>
               </Grid>
+              <ToolsTransitionTable {...transitionTableProps} />
             </Grid>
-            <ToolsTransitionTable {...transitionTableProps} />
+            {/* Playground grid */}
+            <Grid item xs={12} md={8}>
+              {/* <NfaToDfaPlayground {...playgroundProps} /> */}
+            </Grid>
           </Grid>
-          {/* Playground grid */}
-          <Grid item xs={12} md={8}>
-            {/* <NfaToDfaPlayground {...playgroundProps} /> */}
-          </Grid>
-        </Grid>
+        </MainContent>
       </Box>
       {/* {isComplete && <ResultantDfa {...resultantDfaProps} />} */}
     </>
