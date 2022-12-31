@@ -20,7 +20,7 @@ export default (props: XarrowProps) => {
       onMouseLeave: () => setState({ color: transitionColor }),
       onClick: (e: any) => {
         e.stopPropagation(); //so only the click event on the state will fire on not on the container itself
-        console.log("Xarrow onClick props", props);
+        
         props?.core?.setSelected({
           id: {
             start: props.transition.start,

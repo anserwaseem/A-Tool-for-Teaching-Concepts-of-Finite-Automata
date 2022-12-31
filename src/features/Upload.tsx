@@ -9,6 +9,8 @@ import { UploadProps } from "./props/UploadProps";
 import { StateMaxSize, StateMinSize } from "../consts/StateSizes";
 
 export const Upload = (props: UploadProps) => {
+  console.log("re rendering Upload: props", props);
+
   const dataContext = useContext(DataContext);
 
   const handleSetTransitions = (transitions: TransitionModel[]) => {

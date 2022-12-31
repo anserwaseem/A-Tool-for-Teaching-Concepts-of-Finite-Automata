@@ -7,6 +7,8 @@ import { TransitionModel } from "../models";
 import { AutomataData } from "../components/types/AutomataData";
 
 export const Download = (props: DownloadProps) => {
+  console.log("re rendering Download: props", props);
+  
   const dataContext = useContext(DataContext);
 
   return (

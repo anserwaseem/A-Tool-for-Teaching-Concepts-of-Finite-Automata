@@ -31,7 +31,6 @@ const Playground = (props: PlaygroundProps) => {
   const { setPlaygroundSize } = props;
 
   useEffect(() => {
-    console.log("useEffect of playground due to width & height", width, height);
     setPlaygroundSize({ width, height });
   }, [width, height, setPlaygroundSize]);
 

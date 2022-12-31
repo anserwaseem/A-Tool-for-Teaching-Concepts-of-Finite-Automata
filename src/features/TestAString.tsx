@@ -183,9 +183,7 @@ const TestAString = (props: TestAStringProps) => {
   };
 
   const handleAnimation = () => {
-    console.log("TestAString handleAnimation");
     if (isComplete) {
-      console.log("TestAString handleAnimation isComplete");
       // if animation is complete, reset everything i.e., replay
       setIsReady(false);
       setIsComplete(false);
@@ -212,10 +210,7 @@ const TestAString = (props: TestAStringProps) => {
   };
 
   const showNextRow = () => {
-    console.log("TestAString show next row");
-    if (isComplete) {
-      setIsReady(true);
-    }
+    if (isComplete) setIsReady(true);
 
     handleUpdateData();
 

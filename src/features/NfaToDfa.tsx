@@ -54,7 +54,6 @@ export const NfaToDfa = () => {
         ),
       };
     });
-    console.log("nullClosureRowsUnique", nullClosureRowsUnique);
 
     const nullClosureStatesUnique = dataContext.states.map((state) => {
       return {
@@ -62,7 +61,6 @@ export const NfaToDfa = () => {
         id: state.id + NullClosureStateId,
       };
     });
-    console.log("nullClosureStatesUnique", nullClosureStatesUnique);
 
     const nullClosureTransitionsUnique = dataContext.transitions.map(
       (transition) => {
@@ -73,7 +71,6 @@ export const NfaToDfa = () => {
         };
       }
     );
-    console.log("nullClosureTransitionsUnique", nullClosureTransitionsUnique);
 
     setNullClosureRows(nullClosureRowsUnique);
     setNullClosureStates(nullClosureStatesUnique);

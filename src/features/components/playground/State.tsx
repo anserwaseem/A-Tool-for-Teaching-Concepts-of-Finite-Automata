@@ -23,12 +23,8 @@ export const State = (props: StateProps) => {
   const handleClick = (e: any) => {
     e.stopPropagation(); // so that click/touch event will be fired on the state only and not on the container itself
 
-    if (props?.core?.actionState === "Normal") {
-      console.log("Box handleClick Normal", props);
-      props?.core?.handleSelect(e);
-    } else if (props?.core?.actionState === "Add Transition") {
-      console.log("Box handleClick Add Transition", props);
-
+    if (props?.core?.actionState === "Normal") props?.core?.handleSelect(e);
+    else if (props?.core?.actionState === "Add Transition") {
       // restrict adding of new transition between states where a transition already exists
       if (
         !dataContext?.transitions.find(
@@ -37,8 +33,8 @@ export const State = (props: StateProps) => {
             transition.end === props.state.id
         )
       ) {
-        console.log("Box handleClick Add Transition setTransitions", props);
         const isSelfTransition = props?.core?.selected?.id === props.state.id;
+
         dataContext?.setTransitions((transitions: TransitionModel[]) => [
           ...transitions,
           new TransitionModel({
@@ -56,8 +52,7 @@ export const State = (props: StateProps) => {
           }),
         ]);
       }
-    } else if (props?.core?.actionState === "Remove Transitions") {
-      console.log("Box handleClick Remove Transitions", props);
+    } else if (props?.core?.actionState === "Remove Transitions")
       dataContext?.setTransitions((transitions: TransitionModel[]) =>
         transitions.filter(
           (transition) =>
@@ -67,10 +62,8 @@ export const State = (props: StateProps) => {
             )
         )
       );
-    }
   };
 
-  console.log("changing background color now", props?.core?.actionState);
   let background = null;
   if (props?.core?.selected && props?.core?.selected?.id === props.state.id) {
     background = stateSelectedColor;
