@@ -31,7 +31,7 @@ export function NavBar() {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
@@ -40,7 +40,6 @@ export function NavBar() {
             component={RouterLink}
             to={process.env.PUBLIC_URL}
             sx={{
-              m: 1,
               mr: 7,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
@@ -86,17 +85,22 @@ export function NavBar() {
               {pages.map((page) => (
                 <Link
                   component={RouterLink}
-                  to={`${process.env.PUBLIC_URL}/${
-                    Object.keys(Pages)[Object.values(Pages).indexOf(page)]
-                  }`}
+                  to={`${process.env.PUBLIC_URL}/${page}`}
                   underline="none"
                   key={page}
                 >
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center" variant="h6">
-                      {page}
-                    </Typography>
-                  </MenuItem>
+                  <Button
+                    key={page}
+                    onClick={handleCloseNavMenu}
+                    sx={{
+                      paddingRight: 5,
+                      display: "block",
+                      textTransform: "capitalize",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    {page}
+                  </Button>
                 </Link>
               ))}
             </Menu>
@@ -109,7 +113,6 @@ export function NavBar() {
             component={RouterLink}
             to={process.env.PUBLIC_URL}
             sx={{
-              m: 1,
               mr: 7,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
@@ -128,15 +131,19 @@ export function NavBar() {
             {pages.map((page) => (
               <Link
                 component={RouterLink}
-                to={`${process.env.PUBLIC_URL}/${
-                  Object.keys(Pages)[Object.values(Pages).indexOf(page)]
-                }`}
+                to={`${process.env.PUBLIC_URL}/${page}`}
                 key={page}
               >
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
+                  sx={{
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                    textTransform: "capitalize",
+                    fontSize: "1rem",
+                  }}
                 >
                   {page}
                 </Button>
