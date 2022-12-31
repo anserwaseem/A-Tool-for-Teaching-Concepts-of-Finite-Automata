@@ -32,14 +32,17 @@ import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { DataContext } from "../../../components/Editor";
 import {
   ModifiedTableStateId,
+  NullClosureStateId,
   ResultantDfaStateId,
 } from "../../../consts/StateIdsExtensions";
-import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
 import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
-import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
 import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
 import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
+import { CustomAppBar } from "../../../common/CustomAppBar";
+import { CustomDrawer } from "../../../common/CustomDrawer";
+import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -562,17 +565,38 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     stateSize: props.stateSize,
   };
 
-  const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    headerTitle: "Resultant DFA",
-    drawerTitle: "Modified Table",
+  const customAppBarProps: CustomAppBarProps = {
+    showRightIcon: true,
     open,
     setOpen,
+    title: "Resultant DFA",
+  };
+
+  const leftDrawerProps: CustomDrawerProps = {
+    isLeft: true,
+    open,
+    setOpen,
+    title: "Modified Table",
     transitionTableProps: {
       rows: GetDrawerTransitionTableRows(
         dataContext.modifiedTableRows,
         ModifiedTableStateId
       ),
       columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
+    },
+  };
+
+  const rightDrawerProps: CustomDrawerProps = {
+    isLeft: false,
+    open,
+    setOpen,
+    title: "Null Closure Table",
+    transitionTableProps: {
+      rows: GetDrawerTransitionTableRows(
+        dataContext.nullClosureRows,
+        NullClosureStateId
+      ),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["a", "b"]),
     },
   };
 
@@ -596,7 +620,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
         </Alert>
       </Snackbar>
 
-      <AppBarAndDrawer {...appBarAndDrawerProps} />
+      <CustomAppBar {...customAppBarProps} />
+
+      <CustomDrawer {...leftDrawerProps} />
 
       <MainContent open={open}>
         <DrawerHeader />
@@ -671,6 +697,8 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           </Grid>
         </Grid>
       </MainContent>
+
+      <CustomDrawer {...rightDrawerProps} />
     </Box>
   );
 };

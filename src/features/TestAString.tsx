@@ -30,12 +30,14 @@ import { startingStateColor, stateSelectedColor } from "../consts/Colors";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { TestStringMaxLength } from "../consts/TestStringMaxLength";
 import { TestStringStateId } from "../consts/StateIdsExtensions";
-import { AppBarAndDrawer } from "../common/AppBarAndDrawer";
 import { DrawerHeader } from "../common/DrawerHeader";
 import { MainContent } from "../common/MainContent";
-import { AppBarAndDrawerProps } from "../common/props/AppBarAndDrawerProps";
 import { GetDrawerTransitionTableColumns } from "../utils/GetDrawerTransitionTableColumns";
 import { GetDrawerTransitionTableRows } from "../utils/GetDrawerTransitionTableRows";
+import { CustomAppBar } from "../common/CustomAppBar";
+import { CustomDrawer } from "../common/CustomDrawer";
+import { CustomAppBarProps } from "../common/props/CustomAppBarProps";
+import { CustomDrawerProps } from "../common/props/CustomDrawerProps";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -272,12 +274,20 @@ const TestAString = (props: TestAStringProps) => {
     stateSize: dataContext.stateSize,
   };
 
-  const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    headerTitle: "Test a String",
+  const customAppBarProps: CustomAppBarProps = {
+    showRightIcon: false,
     open,
     setOpen,
+    title: "Test a String",
+  };
+
+  const customDrawerProps: CustomDrawerProps = {
+    isLeft: true,
+    open,
+    setOpen,
+    title: "Transition Table",
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext.rows, TestStringStateId),
+      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
       columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
     },
   };
@@ -312,7 +322,9 @@ const TestAString = (props: TestAStringProps) => {
 
       {dialogError === "none" && (
         <Box sx={{ display: "flex", m: 1, mt: 5 }}>
-          <AppBarAndDrawer {...appBarAndDrawerProps} />
+          <CustomAppBar {...customAppBarProps} />
+
+          <CustomDrawer {...customDrawerProps} />
 
           <MainContent open={open} sx={{ paddingBottom: 12 }}>
             <DrawerHeader />

@@ -30,13 +30,15 @@ import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { NullClosureStateId } from "../../../consts/StateIdsExtensions";
-import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
-import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
 import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
 import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
 import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
 import { DataContext } from "../../../components/Editor";
+import { CustomAppBar } from "../../../common/CustomAppBar";
+import { CustomDrawer } from "../../../common/CustomDrawer";
+import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -166,7 +168,6 @@ export const NullClosure = (props: NullClosureProps) => {
     // copy all null transitions for each row and paste them in the null column alongwith state name
     setNullClosureRows(
       rows.map((row, mapIndex) => {
-        console.log("index, rowIndex, mapIndex: ", index, rowIndex, mapIndex);
         return {
           ...row,
           a: row.a.replaceAll(" ", ", "),
@@ -213,7 +214,6 @@ export const NullClosure = (props: NullClosureProps) => {
   };
 
   const handleAnimation = () => {
-    console.log("NullClosure handleAnimation");
     if (isComplete) {
       // if animation is complete, reset everything i.e., replay
       setIsReady(false);
@@ -224,7 +224,6 @@ export const NullClosure = (props: NullClosureProps) => {
   };
 
   const showNextRow = () => {
-    console.log("NullClosure show next row, index: ", index);
     if (!showExplanation) {
       const rowIndex = Math.floor(index / numberOfColumns);
       if (isComplete) {
@@ -280,13 +279,24 @@ export const NullClosure = (props: NullClosureProps) => {
     stateSize: props.stateSize,
   };
 
-  const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    headerTitle: "Null Closure",
+  const customAppBarProps: CustomAppBarProps = {
+    showRightIcon: false,
     open,
     setOpen,
+    title: "Null Closure",
+  };
+
+  const customDrawerProps: CustomDrawerProps = {
+    isLeft: true,
+    open,
+    setOpen,
+    title: "Transition Table",
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext.rows, NullClosureStateId),
-      columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
+      rows: GetDrawerTransitionTableRows(
+        dataContext.rows,
+        ""
+      ),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
     },
   };
 
@@ -313,7 +323,9 @@ export const NullClosure = (props: NullClosureProps) => {
           </Alert>
         </Snackbar>
 
-        <AppBarAndDrawer {...appBarAndDrawerProps} />
+        <CustomAppBar {...customAppBarProps} />
+
+        <CustomDrawer {...customDrawerProps} />
 
         <MainContent open={open}>
           <DrawerHeader />

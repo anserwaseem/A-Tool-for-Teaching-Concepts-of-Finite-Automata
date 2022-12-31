@@ -1,11 +1,14 @@
 import { styled } from "@mui/material";
 import { DrawerWidth } from "../consts/DrawerWidth";
 
-export const MainContent = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+export const MainContent = styled("main", {
+  shouldForwardProp: (prop) => prop !== "open",
+})<{
   open?: number;
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
+  marginLeft: `-${DrawerWidth}px`,
 
   ...(open === 0 && {
     transition: theme.transitions.create("margin", {
@@ -13,7 +16,6 @@ export const MainContent = styled("main", { shouldForwardProp: (prop) => prop !=
       duration: theme.transitions.duration.leavingScreen,
     }),
   }),
-  marginLeft: `-${DrawerWidth}px`,
 
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeOut,
@@ -21,5 +23,8 @@ export const MainContent = styled("main", { shouldForwardProp: (prop) => prop !=
   }),
   ...(open === 1 && {
     marginLeft: 0,
+  }),
+  ...(open === 2 && {
+    marginRight: 0,
   }),
 }));

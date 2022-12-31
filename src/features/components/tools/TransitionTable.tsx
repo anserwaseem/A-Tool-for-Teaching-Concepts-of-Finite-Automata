@@ -54,9 +54,8 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
         hideFooter
         pageSize={MaxNumberOfStates}
         disableSelectionOnClick
-        getCellClassName={(params) => {
-          console.log("getCellClassName params", params);
-          return `super-app-theme--${
+        getCellClassName={(params) =>
+          `super-app-theme--${
             params.field !== "state"
               ? params.field === props?.columnName && // restrict to only given column name
                 props?.statesToHighlight?.some(
@@ -69,8 +68,8 @@ export const ToolsTransitionTable = (props: ToolsTransitionTableProps) => {
               : params?.row?.isInitial
               ? "Initial"
               : params?.row?.isFinal && "Final"
-          }`;
-        }}
+          }`
+        }
       ></DataGrid>
     </Box>
   );

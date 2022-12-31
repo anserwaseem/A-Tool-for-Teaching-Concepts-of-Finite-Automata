@@ -26,13 +26,15 @@ import {
   ModifiedTableStateId,
   NullClosureStateId,
 } from "../../../consts/StateIdsExtensions";
-import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
 import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
-import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
 import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
 import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
 import { DataContext } from "../../../components/Editor";
+import { CustomAppBar } from "../../../common/CustomAppBar";
+import { CustomDrawer } from "../../../common/CustomDrawer";
+import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -301,11 +303,18 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     columns: columns,
   };
 
-  const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    headerTitle: "Modified Transition Table",
-    drawerTitle: "Null Closure Table",
+  const customAppBarProps: CustomAppBarProps = {
+    showRightIcon: true,
     open,
     setOpen,
+    title: "Modified Transition Table",
+  };
+
+  const leftDrawerProps: CustomDrawerProps = {
+    isLeft: true,
+    open,
+    setOpen,
+    title: "Null Closure Table",
     transitionTableProps: {
       rows: GetDrawerTransitionTableRows(
         dataContext.nullClosureRows,
@@ -315,9 +324,20 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     },
   };
 
+  const rightDrawerProps: CustomDrawerProps = {
+    isLeft: false,
+    open,
+    setOpen,
+    title: "Transition Table",
+    transitionTableProps: {
+      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
+    },
+  };
+
   return (
     <>
-      <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+      <Box sx={{ display: "flex", mt: 5 }}>
         <Snackbar
           open={openSnackbar}
           autoHideDuration={
@@ -338,7 +358,9 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
           </Alert>
         </Snackbar>
 
-        <AppBarAndDrawer {...appBarAndDrawerProps} />
+        <CustomAppBar {...customAppBarProps} />
+
+        <CustomDrawer {...leftDrawerProps} />
 
         <MainContent open={open} sx={{ paddingBottom: 12 }}>
           <DrawerHeader />
@@ -412,6 +434,8 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
             </Grid>
           </Grid>
         </MainContent>
+
+        <CustomDrawer {...rightDrawerProps} />
       </Box>
       {/* {isComplete && <ResultantDfa {...resultantDfaProps} />} */}
     </>

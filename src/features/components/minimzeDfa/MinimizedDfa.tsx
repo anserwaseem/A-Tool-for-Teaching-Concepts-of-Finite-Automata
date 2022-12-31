@@ -30,10 +30,14 @@ import {
 } from "../../../models";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { MinimizedDfaStateId } from "../../../consts/StateIdsExtensions";
-import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
-import { AppBarAndDrawerProps } from "../../../common/props/AppBarAndDrawerProps";
 import { MainContent } from "../../../common/MainContent";
 import { DrawerHeader } from "../../../common/DrawerHeader";
+import { CustomAppBar } from "../../../common/CustomAppBar";
+import { CustomDrawer } from "../../../common/CustomDrawer";
+import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
+import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
+import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
 
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
 let transitionIndex = 0; // used to keep track of which (transition table's) row's transitions are being animated
@@ -84,8 +88,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   useEffect(() => {
     if (isPlaying && mergeStep !== 1) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout");
-
         handleUpdateData();
       }, duration * 1000);
       return () => clearTimeout(timer);
@@ -130,8 +132,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         });
         setMinimizedDfaStates(newStates);
         i++;
-
-        console.log("setInterval i: ", i);
       }, duration * 10);
       return () => clearTimeout(timer);
     }
@@ -148,7 +148,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   };
 
   const handleUpdateData = () => {
-    console.log("MinimizedDfa handleUpdateData: stepNumber: ", displayStep);
     if (displayStep === 0) {
       setSnackbarMessage(
         "This is the original transition table and the original DFA."
@@ -164,9 +163,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       setDisplayStep(3);
     } else if (displayStep === 3) {
       const stateNames = getStateNamesToBeMerged();
-      if (stateNames?.length === 0) {
-        setDisplayStep(5);
-      } else {
+      if (stateNames?.length === 0) setDisplayStep(5);
+      else {
         setStateNamesToMerge(stateNames);
         setMergeStep(1);
       }
@@ -250,6 +248,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
       // if any two columns of row have ✓, then save those column names
       let tickNumber = 0;
       let previousKey = "";
+
       Object.keys(row).forEach((key) => {
         if (row[key] === "✓") {
           tickNumber++;
@@ -268,7 +267,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         );
       }
     }
-    console.log("getStatesToBeMerged: ", stateNames);
     return stateNames;
   };
 
@@ -284,7 +282,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         .map((state) => {
           if (
             state.id?.replace(MinimizedDfaStateId, "") === stateNamesToMerge[0]
-          ) {
+          )
             return {
               ...state,
               id:
@@ -293,12 +291,9 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
                 stateNamesToMerge.slice(1).join(" ") +
                 MinimizedDfaStateId,
             };
-          } else {
-            return state;
-          }
+          else return state;
         });
     });
-    console.log("done mergeStates");
   };
 
   const mergeRows = () => {
@@ -360,16 +355,10 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
-    console.log(
-      "EquivalentStates handleDurationChange, event.target.value, duration: ",
-      event.target.value,
-      duration
-    );
     setDuration(Number(event.target.value));
   };
 
   const handleAnimation = () => {
-    console.log("MinimizedDfa handleAnimation");
     if (isComplete) {
       // if animation is complete, reset everything i.e., replay
       setIsReady(false);
@@ -388,7 +377,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   };
 
   const showNextStep = () => {
-    console.log("MinimizedDfa showNextStep");
     if (isComplete) {
       setIsReady(true);
       props.setIsMinimizedDfaComplete(true);
@@ -425,11 +413,22 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     stateSize: props.stateSize,
   };
 
-  const appBarAndDrawerProps: AppBarAndDrawerProps = {
-    headerTitle: "Minimized DFA",
+  const customAppBarProps: CustomAppBarProps = {
+    showRightIcon: false,
     open,
     setOpen,
-    transitionTableProps,
+    title: "Minimized DFA",
+  };
+
+  const customDrawerProps: CustomDrawerProps = {
+    isLeft: true,
+    open,
+    setOpen,
+    title: "Transition Table",
+    transitionTableProps: {
+      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
+      columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
+    },
   };
 
   return (
@@ -467,7 +466,9 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           </Alert>
         </Snackbar>
 
-        <AppBarAndDrawer {...appBarAndDrawerProps} />
+        <CustomAppBar {...customAppBarProps} />
+
+        <CustomDrawer {...customDrawerProps} />
 
         <MainContent open={open}>
           <DrawerHeader />
