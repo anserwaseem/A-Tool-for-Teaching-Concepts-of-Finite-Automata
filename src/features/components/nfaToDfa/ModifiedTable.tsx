@@ -42,7 +42,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -265,8 +265,8 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       const rowIndex = Math.floor(index / numberOfColumns);
       if (isComplete) {
         setIsReady(true);
-        props.setRows(modifiedTableRows);
         props.setIsModifiedTransitionTableComplete(true);
+        dataContext.setModifiedTableRows(modifiedTableRows);
       }
 
       handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));

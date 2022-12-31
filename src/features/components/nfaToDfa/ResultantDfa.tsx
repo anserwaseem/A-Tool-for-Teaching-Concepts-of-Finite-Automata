@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -8,6 +9,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Snackbar,
 } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
@@ -28,7 +30,10 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { DataContext } from "../../../components/Editor";
-import { ResultantDfaStateId } from "../../../consts/StateIdsExtensions";
+import {
+  ModifiedTableStateId,
+  ResultantDfaStateId,
+} from "../../../consts/StateIdsExtensions";
 import { AppBarAndDrawer } from "../../../common/AppBarAndDrawer";
 import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
@@ -38,7 +43,7 @@ import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransition
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
-// increase this value by 1 by 1 when all states in availableStates object become False continuously otherwise rest it to 0,
+// increase this value by 1 by 1 when all states in availableStates object become False continuously (numberOfColumns times) otherwise reset it to 0,
 // and set isComplete to true when this value becomes equal to the numberOfColumns
 // indicating that all states in availableStates object have been processed
 let noNewStateFound = 0;
@@ -48,7 +53,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[3]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -87,8 +92,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     TransitionModel[]
   >([]);
 
-  const [open, setOpen] = useState(1);
-
   // set initial states's null closure as the first state to process in DFA table
   const [availableStates, setAvailableStates] = useState([
     {
@@ -102,61 +105,39 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
   const [pendingTransitions, setPendingTransitions] = useState<string[]>([]);
 
+  const [open, setOpen] = useState(1);
+
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   useEffect(() => {
-    console.log(
-      "ResultantDfa useEffect, isPlaying, duration: ",
-      isPlaying,
-      duration
-    );
     if (isPlaying) {
       let timer = setTimeout(() => {
-        console.log("inside set timeout, index", index);
+        // if (!showExplanation) {
         const rowIndex = Math.floor(index / numberOfColumns);
 
-        console.log(
-          "before handleUpdateData: index, rowIndex: ",
-          index,
-          rowIndex
-        );
-
         handleUpdateData(rowIndex);
-        console.log("pendingTransitions", pendingTransitions);
 
-        console.log(
-          "after handleUpdateData complete, noNewStateFound: ",
-          noNewStateFound
-        );
-
-        // stop if all rows have been displayed i.e., if no new state has to be added in resultantDfaRows for consecutive numberOfColumns times
+        // stop if all rows have been displayed
         if (noNewStateFound === numberOfColumns) {
           setIsComplete(true);
           setIsPlaying(false);
-        } else index++;
+          // handleExplanation();
+        }
+        index++;
+        // } else handleExplanation();
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
-  }, [props, resultantDfaRows, isPlaying]);
+  }, [props, resultantDfaRows, isPlaying, showExplanation]);
 
   const handleUpdateData = (rowIndex: number) => {
-    console.log(
-      "ResultantDfa handleUpdateData, index, rowIndex, props.rows: ",
-      index,
-      rowIndex,
-      props.rows
-    );
     setResultantDfaRowId(rowIndex);
 
     if (availableStates.every((state) => !state.isAvailable))
       noNewStateFound += 1;
     else noNewStateFound = 0;
-    console.log(
-      "inside handleUpdateData complete, noNewStateFound: ",
-      noNewStateFound,
-      "availableStates: ",
-      availableStates,
-      "\navailableStates.every((state) => !state.isAvailable): ",
-      availableStates.every((state) => !state.isAvailable)
-    );
 
     if (noNewStateFound !== numberOfColumns) {
       // add new row to resultantDfaRows
@@ -165,7 +146,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
         const stateToProcess = availableStates.find(
           (state) => state.isAvailable
         )?.name;
-        console.log("stateToProcess: ", stateToProcess);
+
         if (stateToProcess) {
           // set state as unavailable
           setAvailableStates(
@@ -176,7 +157,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
             )
           );
 
-          console.log("adding new row in resultantDfaRows");
           setResultantDfaRows((resultantDfaRows) => [
             ...resultantDfaRows,
             {
@@ -217,8 +197,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
           // add new transitions to resultantDfaTransitions
           if (pendingTransitions.includes(stateToProcess)) {
-            console.log("adding new transition in resultantDfaTransitions");
-
             // find all rows that have stateToProcess as their value
             const rowsHavingPendingTransitions = resultantDfaRows.filter(
               (row) =>
@@ -226,17 +204,12 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                   (k) => row[k] === stateToProcess
                 )
             );
-            console.log(
-              "rowsHavingPendingTransitions: ",
-              rowsHavingPendingTransitions
-            );
 
             const newTransitions: TransitionModel[] = [];
 
             rowsHavingPendingTransitions.forEach((row) => {
               PossibleTransitionValues.filter((k) => k !== "^").forEach((k) => {
                 if (row[k].toString() === stateToProcess) {
-                  console.log("row[k]: ", row[k]);
                   const isSelfTransition = row.state === stateToProcess;
                   newTransitions.push({
                     labels: <StyledTransitionLabel label={k} />,
@@ -271,15 +244,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
       // update resultantDfaRows
       else {
         let state: string, a: string, b: string;
+
         setResultantDfaRows((rows) =>
           rows.map((row, mapIndex) => {
-            console.log(
-              "ResultantDfa index, rowIndex, mapIndex: ",
-              index,
-              rowIndex,
-              mapIndex
-            );
-
             state = row.state;
 
             a =
@@ -314,18 +281,19 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                   : ""
                 : row.a;
 
-            if (a === "") a = "Φ";
+            if (
+              rowIndex - 1 === mapIndex && // is last row?
+              a === ""
+            )
+              a = "Φ";
 
-            console.log("a: ", a);
             // insert a value in availableStates object if it is not already present and set isAvailable to true
-            if (a !== "" && !availableStates.find((as) => as.name === a)) {
-              console.log("inside setAvailableStates a: ", a, availableStates);
+            if (a !== "" && !availableStates.find((as) => as.name === a))
               setAvailableStates((availableStates) => {
                 const newAvailableStates = [...availableStates];
                 newAvailableStates.push({ name: a, isAvailable: true });
                 return newAvailableStates;
               });
-            }
 
             b =
               rowIndex - 1 === mapIndex // is last row?
@@ -355,23 +323,20 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                   : ""
                 : row.b;
 
-            if (index % numberOfColumns === numberOfColumns - 1 && b === "")
+            if (
+              rowIndex - 1 === mapIndex && // is last row?
+              index % numberOfColumns === numberOfColumns - 1 && // is it turn of b column to be filled?
+              b === ""
+            )
               b = "Φ";
 
-            console.log("b: ", b);
             // insert b value in availableStates object if it is not already present and set isAvailable to true
-            if (b !== "" && !availableStates.find((as) => as.name === b)) {
+            if (b !== "" && !availableStates.find((as) => as.name === b))
               setAvailableStates((availableStates) => {
-                console.log(
-                  "inside setAvailableStates b: ",
-                  b,
-                  availableStates
-                );
                 const newAvailableStates = [...availableStates];
                 newAvailableStates.push({ name: b, isAvailable: true });
                 return newAvailableStates;
               });
-            }
 
             return {
               ...row,
@@ -386,17 +351,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           (index - 1) / numberOfColumns === rowIndex ? "a" : "b"; // check which column has just been updated
         const updatedValue = (index - 1) / numberOfColumns === rowIndex ? a : b; // check either a or b is added in rows, and use that value to update transitions
 
+        // check if updatedValue is present as a state in any row
         if (
-          resultantDfaRows
-            ?.map((row) => row?.state) // check if updatedValue is present as a state in any row
-            ?.includes(updatedValue)
+          resultantDfaRows?.map((row) => row?.state)?.includes(updatedValue)
         ) {
           // if transition already exits, append its value
           if (
             resultantDfaTransitions.find(
               (t) => t.start === state && t.end === updatedValue
             )
-          ) {
+          )
             setResultantDfaTransitions((transitions) =>
               transitions.map((t) => {
                 if (t.start === state && t.end === updatedValue) {
@@ -410,7 +374,6 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                 } else return t;
               })
             );
-          }
           // else, add new transition
           else {
             let isSelfTransition = false;
@@ -431,36 +394,111 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
               },
             ]);
           }
-        } else {
-          // check if updatedValue is already present in dfaResultantRows states, if not, add it to pendingTransitions
-          if (
-            !resultantDfaRows.map((row) => row?.state).includes(updatedValue)
-          ) {
-            setPendingTransitions([...pendingTransitions, updatedValue]);
-          }
         }
+        // check if updatedValue is already present in dfaResultantRows states, if not, add it to pendingTransitions
+        else if (
+          !resultantDfaRows.map((row) => row?.state).includes(updatedValue)
+        )
+          setPendingTransitions([...pendingTransitions, updatedValue]);
       }
     }
+
+    // setShowExplanation(true);
+  };
+
+  const handleExplanation = () => {
+    if (index % numberOfColumns === 1)
+      setSnackbarMessage(
+        index - numberOfColumns === 1
+          ? `Null closure of initial state becomes the initial state of resultant DFA i.e., ${dataContext.modifiedTableRows?.[0]?.nul?.replaceAll(
+              ModifiedTableStateId,
+              ""
+            )} `
+          : `Added state ${resultantDfaRows?.[
+              resultantDfaRowId - 1
+            ]?.state?.replaceAll(ResultantDfaStateId, "")}.`
+      );
+    else if (index % numberOfColumns === 2)
+      setSnackbarMessage(
+        resultantDfaRows?.[resultantDfaRowId - 1]?.a !== "Φ"
+          ? "Taken " +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "union of "
+                : "") +
+              "[a] transitions of state" +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "s"
+                : "") +
+              ` ${resultantDfaRows?.[resultantDfaRowId - 1]?.state?.replaceAll(
+                ResultantDfaStateId,
+                ""
+              )} from Modified Table.`
+          : "Added phi transition as no [a] transition is available for state" +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "s"
+                : "") +
+              ` ${resultantDfaRows?.[resultantDfaRowId - 1]?.state?.replaceAll(
+                ResultantDfaStateId,
+                ""
+              )} in Modified Table.`
+      );
+    else
+      setSnackbarMessage(
+        resultantDfaRows?.[resultantDfaRowId - 1]?.b !== "Φ"
+          ? "Taken " +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "union of "
+                : "") +
+              "[b] transitions of state" +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "s"
+                : "") +
+              ` ${resultantDfaRows?.[resultantDfaRowId - 1]?.state?.replaceAll(
+                ResultantDfaStateId,
+                ""
+              )} from Modified Table.`
+          : "Added phi transition as no [b] transition is available for state" +
+              (resultantDfaRows?.[resultantDfaRowId - 1]?.state?.split(", ")
+                ?.length > 1
+                ? "s"
+                : "") +
+              ` ${resultantDfaRows?.[resultantDfaRowId - 1]?.state?.replaceAll(
+                ResultantDfaStateId,
+                ""
+              )} in Modified Table.`
+      );
+
+    setOpenSnackbar(true);
+    setShowExplanation(false);
+  };
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
-    console.log(
-      "ResultantDfa handleDurationChange, event.target.value, duration: ",
-      event.target.value,
-      duration
-    );
     setDuration(Number(event.target.value));
   };
 
   const handleAnimation = () => {
-    console.log("ResultantDfa handleAnimation");
     if (isComplete) {
-      console.log("ResultantDfa handleAnimation isComplete");
       // if animation is complete, reset everything i.e., replay
       setIsReady(false);
       setIsComplete(false);
       index = numberOfColumns;
       setIsPlaying(true);
+      setResultantDfaRowId(0);
       setResultantDfaRows([]);
       setResultantDfaStates([]);
       setResultantDfaTransitions([]);
@@ -478,7 +516,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   };
 
   const showNextRow = () => {
-    console.log("ResultantDfa show next row, index: ", index);
+    // if (!showExplanation) {
     const rowIndex = Math.floor(index / numberOfColumns);
     if (isComplete) {
       setIsReady(true);
@@ -487,11 +525,14 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
     handleUpdateData(rowIndex);
 
-    // stop if all rows have been displayed i.e., if no new state has to be added in resultantDfaRows for consecutive numberOfColumns times
+    // stop if all rows have been displayed
     if (noNewStateFound === numberOfColumns) {
       setIsComplete(true);
       setIsPlaying(false);
-    } else index++;
+      // handleExplanation();
+    }
+    index++;
+    // } else handleExplanation();
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
@@ -523,19 +564,41 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
   const appBarAndDrawerProps: AppBarAndDrawerProps = {
     headerTitle: "Resultant DFA",
+    drawerTitle: "Modified Table",
     open,
     setOpen,
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext.rows, ResultantDfaStateId),
+      rows: GetDrawerTransitionTableRows(
+        dataContext.modifiedTableRows,
+        ModifiedTableStateId
+      ),
       columns: GetDrawerTransitionTableColumns(dataContext.columns, ["nul"]),
     },
   };
 
   return (
     <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={isPlaying ? duration * 1000 : duration * 1000 * 1000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
       <AppBarAndDrawer {...appBarAndDrawerProps} />
 
-      <MainContent open={open} sx={{ paddingBottom: 12 }}>
+      <MainContent open={open}>
         <DrawerHeader />
         {/* Grid to incorporate Transition table and Playground */}
         <Grid
@@ -574,7 +637,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
                       ))}
                     </Select>
                   </FormControl>
-                  {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
+
                   <Button
                     onClick={handleAnimation}
                     startIcon={

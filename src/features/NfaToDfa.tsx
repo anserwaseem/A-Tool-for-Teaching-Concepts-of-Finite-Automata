@@ -33,7 +33,6 @@ export const NfaToDfa = () => {
     isModifiedTransitionTableComplete,
     setIsModifiedTransitionTableComplete,
   ] = useState(false);
-  const [modifiedRows, setModifiedRows] = useState<RowModel[]>([]);
 
   const [isResultantDfaComplete, setIsResultantDfaComplete] = useState(false);
 
@@ -109,12 +108,11 @@ export const NfaToDfa = () => {
         ),
       };
     }),
-    setRows: setModifiedRows,
     setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
   };
 
   let resultantDfaProps: ResultantDfaProps = {
-    rows: modifiedRows.map((row) => {
+    rows: dataContext.modifiedTableRows.map((row) => {
       return {
         ...row,
         ...Object.fromEntries(
@@ -132,7 +130,6 @@ export const NfaToDfa = () => {
         ),
       };
     }),
-    modifiedTableRows: modifiedRows,
     setIsResultantDfaComplete: setIsResultantDfaComplete,
     playgroundSize: dataContext.playgroundSize,
     stateSize: dataContext.stateSize,
