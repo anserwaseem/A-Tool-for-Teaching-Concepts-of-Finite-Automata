@@ -233,6 +233,7 @@ export const NullClosure = (props: NullClosureProps) => {
         props.setStates(nullClosureStates);
         props.setTransitions(nullClosureTransitions);
         props.setIsNullClosureTableComplete(true);
+        dataContext.setNullClosureRows(nullClosureRows);
       }
 
       handleUpdateData(

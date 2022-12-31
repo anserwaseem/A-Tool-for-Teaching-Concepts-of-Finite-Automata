@@ -127,6 +127,9 @@ export const Editor = () => {
   ];
   const [states, setStates] = useState<DraggableStateModel[]>([]);
   const [transitions, setTransitions] = useState<TransitionModel[]>([]);
+  
+  const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
+  const [modifiedTableRows, setModifiedTableRows] = useState<RowModel[]>([]);
 
   const [selected, setSelected] = useState<SelectedElementType | null>(null);
   const [actionState, setActionState] = useState("Normal");
@@ -672,6 +675,10 @@ export const Editor = () => {
         playgroundSize,
         stateSize,
         setStateSize,
+        nullClosureRows,
+        setNullClosureRows,
+        modifiedTableRows,
+        setModifiedTableRows,
       }}
     >
       <>

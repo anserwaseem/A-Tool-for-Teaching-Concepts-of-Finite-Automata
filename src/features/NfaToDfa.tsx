@@ -93,7 +93,7 @@ export const NfaToDfa = () => {
   };
 
   let modifiedTableProps: ModifiedTableProps = {
-    rows: nullClosureRows.map((row) => {
+    rows: dataContext.nullClosureRows.map((row) => {
       return {
         ...row,
         ...Object.fromEntries(
@@ -110,7 +110,6 @@ export const NfaToDfa = () => {
       };
     }),
     setRows: setModifiedRows,
-    nullClosureRows: nullClosureRows,
     setIsModifiedTransitionTableComplete: setIsModifiedTransitionTableComplete,
   };
 

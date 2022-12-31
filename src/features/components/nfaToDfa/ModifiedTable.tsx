@@ -187,7 +187,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                     dataContext?.rows?.[modifiedTableRowId - 1]?.a
                       ?.split(" ")
                       ?.map((s) =>
-                        props.nullClosureRows
+                        dataContext.nullClosureRows
                           ?.find(
                             (r) =>
                               r.state.replaceAll(NullClosureStateId, "") === s
@@ -214,7 +214,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                     dataContext?.rows?.[modifiedTableRowId - 1]?.b
                       ?.split(" ")
                       ?.map((s) =>
-                        props.nullClosureRows
+                        dataContext.nullClosureRows
                           ?.find(
                             (r) =>
                               r.state.replaceAll(NullClosureStateId, "") === s
@@ -308,7 +308,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     setOpen,
     transitionTableProps: {
       rows: GetDrawerTransitionTableRows(
-        props.nullClosureRows,
+        dataContext.nullClosureRows,
         NullClosureStateId
       ),
       columns: GetDrawerTransitionTableColumns(dataContext.columns, ["a", "b"]),

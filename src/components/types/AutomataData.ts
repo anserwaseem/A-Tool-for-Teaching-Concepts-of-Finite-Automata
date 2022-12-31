@@ -16,4 +16,8 @@ export type AutomataData = {
   playgroundSize: PlaygroundSize;
   stateSize: number;
   setStateSize: React.Dispatch<React.SetStateAction<number>>;
+  nullClosureRows: RowModel[];
+  setNullClosureRows: React.Dispatch<React.SetStateAction<RowModel[]>>;
+  modifiedTableRows: RowModel[];
+  setModifiedTableRows: React.Dispatch<React.SetStateAction<RowModel[]>>;
 };
