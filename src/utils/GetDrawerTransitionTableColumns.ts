@@ -5,12 +5,12 @@ export const GetDrawerTransitionTableColumns = (
   columnsToHide: string[]
 ): GridColumns<any> => {
   return columns
-    .filter((col) => col.field !== "action" && col.field !== "id")
-    .map((col) => {
+    ?.filter((col) => col.field !== "action" && col.field !== "id")
+    ?.map((col) => {
       return {
         ...col,
         editable: false,
-        hide: columnsToHide.includes(col.field),
+        hide: columnsToHide?.includes(col.field),
       };
     });
 };

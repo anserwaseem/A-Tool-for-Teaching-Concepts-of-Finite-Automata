@@ -85,7 +85,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     if (isPlaying) {
       let timer = setTimeout(() => {
         if (!showExplanation) {
-          console.log("inside set timeout, index", index);
           const rowIndex = Math.floor(index / numberOfColumns);
 
           handleUpdateData(rowIndex, props.rows.slice(0, rowIndex));
@@ -104,34 +103,23 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
   }, [props, modifiedTableRows, isPlaying, showExplanation]);
 
   const handleUpdateData = (rowIndex: number, rows: RowModel[]) => {
-    setModifiedTableRowId(rowIndex);
-    setModifiedTableRows(
-      rows.map((row, mapIndex) => {
-        console.log("rowIndex, index, mapIndex: ", rowIndex, index, mapIndex);
-        return {
-          ...row,
-          // ...Object.fromEntries(
-          //   PossibleTransitionValues.filter(
-          //     (transition) => transition !== "^"
-          //   ).map((key, tvIndex) => [
-          //     key,
-          //     row[key] // for each Possible Transition Value except ^, replace each value with its corresponding nul closure
-          //       .toString()
-          //       .split(", ")
-          //       .map((tv) => tv.replace(tv, row.nul))
-          //       .join(", "),
-          //   ])
-          // ),
-          a:
-            rowIndex - 1 === mapIndex
-              ? ((index - 1) % rowIndex === 0 && index !== 3 && index !== 6) ||
-                // b condition
-                index === 5 ||
-                ((index - 1) % rowIndex === 1 &&
-                  index !== 3 &&
-                  index !== 4 &&
-                  index !== 6)
-                ? row.a // replace each state name with its corresponding nul closure
+    if (rowIndex <= rows.length) {
+      setModifiedTableRowId(rowIndex);
+
+      let updatedRow = rows?.at(-1);
+      updatedRow = {
+        ...updatedRow,
+        a:
+          ((index - 1) % rowIndex === 0 && index !== 3 && index !== 6) ||
+          // b condition
+          index === 5 ||
+          ((index - 1) % rowIndex === 1 &&
+            index !== 3 &&
+            index !== 4 &&
+            index !== 6)
+            ? Array.from(
+                new Set(
+                  updatedRow.a // replace each state name with its corresponding nul closure
                     ?.split(", ")
                     ?.filter((tv) => tv !== "")
                     ?.map((tv) =>
@@ -140,18 +128,21 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                         props.rows.find((r) => r.state === tv)?.nul ?? tv
                       )
                     )
-                    ?.filter((tv) => tv !== "")
-                    ?.join(", ") ?? ""
-                : ""
-              : row.a,
-          b:
-            rowIndex - 1 === mapIndex
-              ? index === 5 ||
-                ((index - 1) % rowIndex === 1 &&
-                  index !== 3 &&
-                  index !== 4 &&
-                  index !== 6)
-                ? row.b // replace each state name with its corresponding nul closure
+                    ?.join(", ")
+                    ?.split(", ")
+                    ?.sort()
+                )
+              )?.join(", ") ?? ""
+            : "",
+        b:
+          index === 5 ||
+          ((index - 1) % rowIndex === 1 &&
+            index !== 3 &&
+            index !== 4 &&
+            index !== 6)
+            ? Array.from(
+                new Set(
+                  updatedRow.b // replace each state name with its corresponding nul closure
                     ?.split(", ")
                     ?.filter((tv) => tv !== "")
                     ?.map((tv) =>
@@ -160,14 +151,21 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                         props.rows.find((r) => r.state === tv)?.nul ?? tv
                       )
                     )
-                    ?.filter((tv) => tv !== "")
-                    ?.join(", ") ?? ""
-                : ""
-              : row.b,
-        };
-      })
-    );
-    setShowExplanation(true);
+                    ?.join(", ")
+                    ?.split(", ")
+                    ?.sort()
+                )
+              )?.join(", ") ?? ""
+            : "",
+      };
+
+      setModifiedTableRows((mtRows) => {
+        mtRows[rowIndex - 1] = updatedRow;
+        return mtRows;
+      });
+
+      setShowExplanation(true);
+    }
   };
 
   const handleExplanation = () => {
@@ -184,18 +182,24 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
             dataContext?.rows?.[modifiedTableRowId - 1]?.a
               ? `Updated ${
                   dataContext?.rows?.[modifiedTableRowId - 1]?.a
-                } with its null closure i.e., {${dataContext?.rows?.[
-                  modifiedTableRowId - 1
-                ]?.a
-                  ?.split(" ")
-                  .map((s) =>
-                    props.nullClosureRows
-                      ?.find(
-                        (r) => r.state.replaceAll(NullClosureStateId, "") === s
+                } with its null closure i.e., {${Array.from(
+                  new Set(
+                    dataContext?.rows?.[modifiedTableRowId - 1]?.a
+                      ?.split(" ")
+                      ?.map((s) =>
+                        props.nullClosureRows
+                          ?.find(
+                            (r) =>
+                              r.state.replaceAll(NullClosureStateId, "") === s
+                          )
+                          ?.nul?.replaceAll(NullClosureStateId, "")
                       )
-                      ?.nul?.replaceAll(NullClosureStateId, "")
+                      ?.filter((s) => s?.replaceAll(",", ""))
+                      ?.join(", ")
+                      ?.split(", ")
+                      ?.sort()
                   )
-                  .join(", ")}}`
+                )?.join(", ")}}`
               : ""
           )
         : (openSnackbar = false);
@@ -205,18 +209,24 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
             dataContext?.rows?.[modifiedTableRowId - 1]?.b
               ? `Updated ${
                   dataContext?.rows?.[modifiedTableRowId - 1]?.b
-                } with its null closure i.e., {${dataContext?.rows?.[
-                  modifiedTableRowId - 1
-                ]?.b
-                  ?.split(" ")
-                  .map((s) =>
-                    props.nullClosureRows
-                      ?.find(
-                        (r) => r.state.replaceAll(NullClosureStateId, "") === s
+                } with its null closure i.e., {${Array.from(
+                  new Set(
+                    dataContext?.rows?.[modifiedTableRowId - 1]?.b
+                      ?.split(" ")
+                      ?.map((s) =>
+                        props.nullClosureRows
+                          ?.find(
+                            (r) =>
+                              r.state.replaceAll(NullClosureStateId, "") === s
+                          )
+                          ?.nul?.replaceAll(NullClosureStateId, "")
                       )
-                      ?.nul?.replaceAll(NullClosureStateId, "")
+                      ?.filter((s) => s?.replaceAll(",", ""))
+                      ?.join(", ")
+                      ?.split(", ")
+                      ?.sort()
                   )
-                  .join(", ")}}`
+                )?.join(", ")}}`
               : ""
           )
         : (openSnackbar = false);
@@ -243,8 +253,10 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     if (isComplete) {
       setIsReady(false);
       setIsComplete(false);
-      index = 1;
+      index = numberOfColumns;
       setIsPlaying(true);
+      setModifiedTableRowId(0);
+      setModifiedTableRows([]);
     } else setIsPlaying((v) => !v);
   };
 
@@ -277,11 +289,11 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
           PossibleTransitionValues.concat("state").map((key) => [
             key === "^" ? "nul" : key,
             row[key === "^" ? "nul" : key]
-              .toString()
-              .split(" ")
-              .filter((key) => key !== "")
-              .map((tv) => tv.replace(ModifiedTableStateId, ""))
-              .join(" ") ?? row[key === "^" ? "nul" : key],
+              ?.toString()
+              ?.split(" ")
+              ?.filter((key) => key !== "")
+              ?.map((tv) => tv?.replace(ModifiedTableStateId, ""))
+              ?.join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
@@ -367,7 +379,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
                         ))}
                       </Select>
                     </FormControl>
-                    {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
+
                     <Button
                       onClick={handleAnimation}
                       startIcon={

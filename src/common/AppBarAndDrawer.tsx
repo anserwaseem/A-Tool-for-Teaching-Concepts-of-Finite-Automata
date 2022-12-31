@@ -9,7 +9,6 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
 import { appBarBackgroundColor, drawerHeaderBoxShadow } from "../consts/Colors";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { ToolsTransitionTable } from "../features/components/tools/TransitionTable";
@@ -48,6 +47,8 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export const AppBarAndDrawer = (props: AppBarAndDrawerProps) => {
+  console.log("re rendering AppBarAndDrawer, props: ", props);
+
   const theme = useTheme();
 
   return (

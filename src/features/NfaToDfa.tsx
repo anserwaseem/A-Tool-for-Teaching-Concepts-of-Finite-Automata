@@ -122,17 +122,18 @@ export const NfaToDfa = () => {
           PossibleTransitionValues.concat("state").map((key) => [
             key === "^" ? "nul" : key,
             row[key === "^" ? "nul" : key]
-              .toString()
-              .split(" ")
-              .filter((key) => key !== "")
-              .map((tv) =>
-                tv.replace(ModifiedTableStateId, ResultantDfaStateId)
+              ?.toString()
+              ?.split(" ")
+              ?.filter((key) => key !== "")
+              ?.map((tv) =>
+                tv?.replace(ModifiedTableStateId, ResultantDfaStateId)
               )
-              .join(" ") ?? row[key === "^" ? "nul" : key],
+              ?.join(" ") ?? row[key === "^" ? "nul" : key],
           ])
         ),
       };
     }),
+    modifiedTableRows: modifiedRows,
     setIsResultantDfaComplete: setIsResultantDfaComplete,
     playgroundSize: dataContext.playgroundSize,
     stateSize: dataContext.stateSize,

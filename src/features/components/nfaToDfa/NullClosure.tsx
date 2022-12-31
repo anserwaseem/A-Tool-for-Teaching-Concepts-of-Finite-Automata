@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  CssBaseline,
   FormControl,
   Grid,
   InputLabel,
@@ -53,7 +52,7 @@ export const NullClosure = (props: NullClosureProps) => {
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
   const [isReady, setIsReady] = useState(false); // set to true when animation is completed and user clicks on "Complete" button i.e., when user is ready to move on to next step
 
-  const [nullClosureRowId, setNullClosureRowId] = useState(0); // TODO why is this needed?
+  const [nullClosureRowId, setNullClosureRowId] = useState(0);
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const columns: GridColumns = [
     { field: "id", hide: true, hideable: false },
@@ -210,11 +209,6 @@ export const NullClosure = (props: NullClosureProps) => {
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
-    console.log(
-      "NullClosure handleDurationChange, event.target.value, duration: ",
-      event.target.value,
-      duration
-    );
     setDuration(Number(event.target.value));
   };
 
@@ -358,7 +352,7 @@ export const NullClosure = (props: NullClosureProps) => {
                       ))}
                     </Select>
                   </FormControl>
-                  {/* <Button onClick={handleAnimationPause}>Pause</Button> */}
+
                   <Button
                     onClick={handleAnimation}
                     startIcon={

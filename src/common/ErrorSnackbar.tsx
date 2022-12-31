@@ -2,6 +2,8 @@ import { Snackbar, Alert, AlertTitle } from "@mui/material";
 import { ErrorSnackbarProps } from "./props/ErrorSnackbarProps";
 
 export const ErrorSnackbar = (props: ErrorSnackbarProps) => {
+  console.log("re rendering ErrorSnackbar, props: ", props);
+
   return (
     <Snackbar
       open={true}
