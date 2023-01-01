@@ -127,7 +127,7 @@ export const Editor = () => {
   ];
   const [states, setStates] = useState<DraggableStateModel[]>([]);
   const [transitions, setTransitions] = useState<TransitionModel[]>([]);
-  
+
   const [nullClosureRows, setNullClosureRows] = useState<RowModel[]>([]);
   const [modifiedTableRows, setModifiedTableRows] = useState<RowModel[]>([]);
 
@@ -535,8 +535,8 @@ export const Editor = () => {
     let stateX: number, stateY: number;
     // check if event has touch data (mobile) or mouse data (desktop)
     if (e.touches) {
-      stateX = e.touches[0].clientX - rect.x;
-      stateY = e.touches[0].clientY - rect.y;
+      stateX = Math.floor(Math.random() * playgroundSize.width);
+      stateY = Math.floor(Math.random() * playgroundSize.height);
     } else {
       stateX = e.clientX - rect.x;
       stateY = e.clientY - rect.y;
