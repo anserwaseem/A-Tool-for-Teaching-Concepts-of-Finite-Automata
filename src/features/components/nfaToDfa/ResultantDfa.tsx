@@ -43,6 +43,7 @@ import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
+import { GenerateXYCoordinatesForNewState } from "../../../utils/GenerateXYCoordinatesForNewState";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -189,12 +190,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           ]);
 
           // add new state to resultantDfaStates
+          const { x, y } = GenerateXYCoordinatesForNewState(
+            resultantDfaStates,
+            props.playgroundSize
+          );
           setResultantDfaStates((resultantDfaStates) => [
             ...resultantDfaStates,
             {
               id: stateToProcess,
-              x: Math.floor(Math.random() * props.playgroundSize.width),
-              y: Math.floor(Math.random() * props.playgroundSize.height),
+              x: x,
+              y: y,
             },
           ]);
 

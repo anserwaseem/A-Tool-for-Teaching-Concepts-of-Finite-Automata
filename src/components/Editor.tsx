@@ -45,6 +45,7 @@ import {
   StateMinSize,
 } from "../consts/StateSizes";
 import { ErrorSnackbar } from "../common/ErrorSnackbar";
+import { GenerateXYCoordinatesForNewState } from "../utils/GenerateXYCoordinatesForNewState";
 
 export const DataContext = createContext<AutomataData>({} as AutomataData);
 
@@ -173,11 +174,8 @@ export const Editor = () => {
 
     setRowId((prev) => prev + 1);
 
-    const newState = new DraggableStateModel(
-      row.state,
-      Math.floor(Math.random() * playgroundSize.width),
-      Math.floor(Math.random() * playgroundSize.height)
-    );
+    const { x, y } = GenerateXYCoordinatesForNewState(states, playgroundSize);
+    const newState = new DraggableStateModel(row.state, x, y);
 
     setStates((prev) => [...prev, newState]);
   };
@@ -535,8 +533,9 @@ export const Editor = () => {
     let stateX: number, stateY: number;
     // check if event has touch data (mobile) or mouse data (desktop)
     if (e.touches) {
-      stateX = Math.floor(Math.random() * playgroundSize.width);
-      stateY = Math.floor(Math.random() * playgroundSize.height);
+      const { x, y } = GenerateXYCoordinatesForNewState(states, playgroundSize);
+      stateX = x;
+      stateY = y;
     } else {
       stateX = e.clientX - rect.x;
       stateY = e.clientY - rect.y;
