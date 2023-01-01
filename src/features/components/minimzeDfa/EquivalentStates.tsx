@@ -34,9 +34,7 @@ import { MainContent } from "../../../common/MainContent";
 import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
-import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
-import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
-import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps"; 
 
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
@@ -497,10 +495,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     open,
     setOpen,
     title: "Transition Table",
-    transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
-      columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
-    },
+    transitionTableProps: transitionTableProps,
   };
 
   return (
