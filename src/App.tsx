@@ -4,6 +4,7 @@ import { Automadeasy } from "./components/Automadeasy";
 import { NavBar } from "./components/Navbar";
 import { Editor } from "./components/Editor";
 import { Pages } from "./enums/Pages";
+import { Help } from "./components/Help";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path={process.env.PUBLIC_URL} element={<Automadeasy />} />
         <Route path={`${process.env.PUBLIC_URL}/${Pages.Editor}`} element={<Editor />} />
+        <Route path={`${process.env.PUBLIC_URL}/${Pages.Help}`} element={<Help />} />
       </Routes>
     </Router>
   );
