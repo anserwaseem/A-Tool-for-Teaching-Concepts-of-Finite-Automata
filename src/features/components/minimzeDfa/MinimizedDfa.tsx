@@ -425,10 +425,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     open,
     setOpen,
     title: "Transition Table",
-    transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
-      columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
-    },
+    transitionTableProps,
   };
 
   return (
