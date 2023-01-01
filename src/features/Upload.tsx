@@ -7,6 +7,7 @@ import { TransitionModel } from "../models";
 import { StyledTransitionLabel } from "./components/playground/StyledTransitionLabel";
 import { UploadProps } from "./props/UploadProps";
 import { StateMaxSize, StateMinSize } from "../consts/StateSizes";
+import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 
 export const Upload = (props: UploadProps) => {
   console.log("re rendering Upload: props", props);
@@ -65,12 +66,32 @@ export const Upload = (props: UploadProps) => {
           return;
         }
 
-        dataContext?.setRowId(data.rowId);
-        dataContext?.setRows(data.rows);
-        dataContext?.setStates(data.states);
-        handleSetTransitions(data.transitions);
-        dataContext?.setTransitions(data.transitions);
-        dataContext?.setStateSize(data.stateSize);
+        data?.rows?.forEach((row) => {
+          PossibleTransitionValues?.concat("state")?.forEach((value) => {
+            row[value === "^" ? "nul" : value] = row[
+              value === "^" ? "nul" : value
+            ]
+              ?.toString()
+              ?.trim();
+          });
+        });
+
+        data?.states?.forEach((state) => {
+          state.id = state?.id?.toString()?.trim();
+        });
+
+        data?.transitions?.forEach((transition) => {
+          transition.start = transition?.start?.toString()?.trim();
+          transition.end = transition?.end?.toString()?.trim();
+          transition.value = transition?.value?.toString()?.trim();
+        });
+
+        dataContext?.setRowId(data?.rowId);
+        dataContext?.setRows(data?.rows);
+        dataContext?.setStates(data?.states);
+        handleSetTransitions(data?.transitions);
+        dataContext?.setTransitions(data?.transitions);
+        dataContext?.setStateSize(data?.stateSize);
         console.log("Successfuly uploaded data.");
       };
       reader.readAsText(newFile);

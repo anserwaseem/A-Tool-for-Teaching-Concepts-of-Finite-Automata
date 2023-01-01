@@ -241,11 +241,12 @@ export const Editor = () => {
         (row[key === "^" ? "nul" : key] = Array.from(
           new Set(
             row[key === "^" ? "nul" : key]
-              .toString()
-              .split(" ")
-              .filter((s) => s !== "")
+              ?.toString()
+              ?.trim()
+              ?.split(" ")
+              ?.filter((s) => s !== "")
           )
-        ).join(" "))
+        )?.join(" "))
     );
 
     if (!oldRow) {
