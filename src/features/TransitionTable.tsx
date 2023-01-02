@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TransitionTableProps } from "./props/TransitionTableProps";
 import { MaxNumberOfStates } from "../consts/MaxNumberOfStates";
 import { GetBackgroundColor } from "../utils/GetBackgroundColor";
-import NoRowsOverlay from "./components/transitionTable/NoRowsOverlay";
+import { NoRowsOverlay } from "./components/transitionTable/NoRowsOverlay";
 
 const TransitionTable = (props: TransitionTableProps) => {
   console.log("re rendering TransitionTable: props", props);

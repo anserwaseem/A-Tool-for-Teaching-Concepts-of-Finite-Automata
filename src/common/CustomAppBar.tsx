@@ -73,7 +73,6 @@ export const CustomAppBar = (props: CustomAppBarProps) => {
                   props.setOpen(2);
                 }}
                 sx={{
-                  display: { xs: "none", md: "none", lg: "block" },
                   marginTop: { lg: "8px" },
                   ...(props.open === 2 && { display: "none" }),
                 }}

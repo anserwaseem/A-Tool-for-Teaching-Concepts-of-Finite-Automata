@@ -428,10 +428,6 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
               </Grid>
               <ToolsTransitionTable {...transitionTableProps} />
             </Grid>
-            {/* Playground grid */}
-            <Grid item xs={12} md={8}>
-              {/* <NfaToDfaPlayground {...playgroundProps} /> */}
-            </Grid>
           </Grid>
         </MainContent>
 
