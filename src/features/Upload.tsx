@@ -3,7 +3,7 @@ import { Button, MenuItem } from "@mui/material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { AutomataData } from "../components/types/AutomataData";
 import { DataContext } from "../components/Editor";
-import { TransitionModel } from "../models";
+import { RowModel, TransitionModel } from "../models";
 import { StyledTransitionLabel } from "./components/playground/StyledTransitionLabel";
 import { UploadProps } from "./props/UploadProps";
 import { StateMaxSize, StateMinSize } from "../consts/StateSizes";
@@ -66,6 +66,38 @@ export const Upload = (props: UploadProps) => {
           return;
         }
 
+        const stateIds = data?.states?.map((state) => state?.id);
+        if (new Set(stateIds)?.size !== stateIds?.length) {
+          props.setAlertMessage("State ids are not unique. Data is corrupted.");
+          return;
+        }
+
+        const rowIds = data?.rows?.map((row) => row?.id);
+        if (new Set(rowIds)?.size !== rowIds?.length) {
+          props.setAlertMessage("Row ids are not unique. Data is corrupted.");
+          return;
+        }
+
+        const transitionValues = data?.transitions?.map(
+          (transition) => transition?.value
+        );
+        if (
+          !transitionValues?.every(
+            (value) =>
+              // there should be no empty values
+              value !== "" &&
+              // there should be no values that are not in the PossibleTransitionValues
+              value
+                ?.split("")
+                ?.every((val) => PossibleTransitionValues?.includes(val))
+          )
+        ) {
+          props.setAlertMessage(
+            "Transition values are not valid. Data is corrupted."
+          );
+          return;
+        }
+
         data?.rows?.forEach((row) => {
           PossibleTransitionValues?.concat("state")?.forEach((value) => {
             row[value === "^" ? "nul" : value] = row[
@@ -78,6 +110,8 @@ export const Upload = (props: UploadProps) => {
 
         data?.states?.forEach((state) => {
           state.id = state?.id?.toString()?.trim();
+          state.x = Math.abs(state?.x);
+          state.y = Math.abs(state?.y);
         });
 
         data?.transitions?.forEach((transition) => {
