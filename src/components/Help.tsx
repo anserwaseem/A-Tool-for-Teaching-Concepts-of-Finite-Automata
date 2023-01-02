@@ -28,13 +28,13 @@ export const Help = () => {
     <div>
       {headers.map((header, index) => (
         <Accordion
+          key={header}
           expanded={expanded === header}
           onChange={handleChange(header)}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls={`${header}-content`}
-            id={`${header}-header`}
+            id={header}
             sx={{
               "& .MuiAccordionSummary-content": {
                 marginRight: 5,

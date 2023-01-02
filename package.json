@@ -5,7 +5,8 @@
   "homepage": "https://automadeasy.com/",
   "dependencies": {
     "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.12",
+    "@mui/lab": "^5.0.0-alpha.114",
+    "@mui/material": "^5.11.2",
     "@mui/x-data-grid": "^5.17.10",
     "@react-hook/resize-observer": "^1.2.6",
     "@testing-library/jest-dom": "^5.16.5",

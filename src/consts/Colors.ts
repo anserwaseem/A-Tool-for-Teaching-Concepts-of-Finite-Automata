@@ -1,3 +1,5 @@
+export const homeBackgroundColor = "#F5F5F5";
+
 // link for these color names and codes: https://mui.com/material-ui/customization/palette/
 export const stateInitialColor = "#ffb74d"; // mui theme.palette.warning.light
 export const stateFinalColor = "#81c784"; // mui theme.palette.success.light;
