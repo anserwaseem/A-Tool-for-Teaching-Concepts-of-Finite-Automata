@@ -6,5 +6,5 @@ export enum Pages {
   // Request_A_Feature = "request",
   // Report_A_Problem = "report",
   Help = "help",
-  About = "about",
+  Contact = "contact",
 }
