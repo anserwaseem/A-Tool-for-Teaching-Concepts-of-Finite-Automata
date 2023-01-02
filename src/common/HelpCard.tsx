@@ -4,12 +4,6 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { HelpCardProps } from "./props/HelpCardProps";
 
-const testWebm =
-  "https://github.com/anserwaseem/automadeasy-videos/raw/main/help/video-webm.webm";
-
-const testMp4 =
-  "https://github.com/anserwaseem/automadeasy-videos/raw/main/help/video-mp4.mp4";
-
 export const HelpCard = (props: HelpCardProps) => {
   return (
     <Card>

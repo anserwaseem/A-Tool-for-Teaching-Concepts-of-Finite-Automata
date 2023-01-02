@@ -81,13 +81,4 @@ export const Help = () => {
       ))}
     </div>
   );
-
-  //   return (
-  //     <>
-  //       <video controls loop autoPlay={true} muted playsInline>
-  //         <source src={testMp4} type="video/mp4" />
-  //         Sorry, your browser doesn't support embedded videos.
-  //       </video>
-  //     </>
-  //   );
 };

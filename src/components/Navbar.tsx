@@ -7,7 +7,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import AdbIcon from "@mui/icons-material/Adb";
 import { Pages } from "../enums/Pages";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";

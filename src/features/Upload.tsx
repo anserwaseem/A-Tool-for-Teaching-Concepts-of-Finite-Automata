@@ -3,7 +3,7 @@ import { Button, MenuItem } from "@mui/material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { AutomataData } from "../components/types/AutomataData";
 import { DataContext } from "../components/Editor";
-import { RowModel, TransitionModel } from "../models";
+import { TransitionModel } from "../models";
 import { StyledTransitionLabel } from "./components/playground/StyledTransitionLabel";
 import { UploadProps } from "./props/UploadProps";
 import { StateMaxSize, StateMinSize } from "../consts/StateSizes";

@@ -36,8 +36,6 @@ import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
-import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
-import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
 
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
 let transitionIndex = 0; // used to keep track of which (transition table's) row's transitions are being animated

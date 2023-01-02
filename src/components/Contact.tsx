@@ -33,8 +33,6 @@ export const Contact = () => {
         Contact Us
       </Typography>
       <FormControl fullWidth onSubmit={handleSubmit}>
-        {/* <Grid container direction={"column"}>
-          <Grid item> */}
         <TextField
           id="subject"
           label="Subject"
@@ -42,8 +40,6 @@ export const Contact = () => {
           onChange={(e) => setSubject(e?.target?.value || "")}
           sx={{ pb: "1rem" }}
         />
-        {/* </Grid>
-          <Grid item> */}
         <TextField
           id="email"
           label="Email"
@@ -52,13 +48,6 @@ export const Contact = () => {
           onChange={(e) => setEmail(e?.target?.value || "")}
           sx={{ pb: "1rem" }}
         />
-        {/* <InputLabel htmlFor="email">Email address</InputLabel>
-          <Input id="email" aria-describedby="email" />
-          <FormHelperText id="email">
-            We'll never share your email.
-          </FormHelperText> */}
-        {/* </Grid>
-          <Grid item> */}
         <TextField
           id="message"
           label="Message"
@@ -67,8 +56,6 @@ export const Contact = () => {
           onChange={(e) => setMessage(e?.target?.value || "")}
           sx={{ pb: "1rem" }}
         />
-        {/* </Grid>
-        </Grid> */}
         <Button variant="contained" type="submit" onClick={handleSubmit}>
           Submit
         </Button>
