@@ -6,7 +6,7 @@ export const ErrorSnackbar = (props: ErrorSnackbarProps) => {
 
   return (
     <Snackbar
-      open={true}
+      open={props?.open ?? true}
       autoHideDuration={6000}
       onClose={props.handleErrorSnackbarClose}
       anchorOrigin={{
