@@ -62,7 +62,19 @@ const Playground = (props: PlaygroundProps) => {
         <div
           className="canvasStyle"
           id="canvas"
-          onClick={() => props.handleSelect(null)}
+          onClick={(event) => {
+            console.log("canvas clicked", event);
+            // reset selected state if clicked outside topbarDialog 
+            if (
+              !(
+                (event.target as any)?.id?.includes("topbarDialog") ||
+                (event.target as any)?.nextElementSibling?.id?.includes(
+                  "topbarDialog"
+                )
+              )
+            )
+              props.handleSelect(null);
+          }}
         >
           <div
             id="statesContainer"

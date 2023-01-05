@@ -464,16 +464,19 @@ export const TopBar = (props: TopBarProps) => {
   return (
     <>
       <Dialog
+        id="topbarDialog"
         open={isTopbarDialogOpen}
         onClose={() => setIsTopbarDialogOpen(false)}
       >
-        <DialogTitle>
+        <DialogTitle id="topbarDialogTitle">
           {dialogType
             ? "Enter new Transition label(s)"
             : "Enter New State Name"}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText>{topbarDialogError}</DialogContentText>
+        <DialogContent id="topbarDialogContent">
+          <DialogContentText id="topbarDialogContentText">
+            {topbarDialogError}
+          </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -482,6 +485,7 @@ export const TopBar = (props: TopBarProps) => {
             type="text"
             fullWidth
             variant="standard"
+            autoComplete="off"
             value={topbarDialogValue}
             onChange={(e) =>
               setTopbarDialogValue(
@@ -494,7 +498,7 @@ export const TopBar = (props: TopBarProps) => {
             }
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions id="topbarDialogActions">
           <Button onClick={() => setIsTopbarDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={() => {
