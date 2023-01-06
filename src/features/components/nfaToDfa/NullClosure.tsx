@@ -48,7 +48,7 @@ export const NullClosure = (props: NullClosureProps) => {
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[0]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[5]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
