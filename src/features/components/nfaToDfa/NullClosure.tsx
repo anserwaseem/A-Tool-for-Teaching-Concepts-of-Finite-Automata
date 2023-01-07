@@ -34,7 +34,7 @@ import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
 import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
 import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
@@ -292,10 +292,7 @@ export const NullClosure = (props: NullClosureProps) => {
     setOpen,
     title: "Transition Table",
     transitionTableProps: {
-      rows: GetDrawerTransitionTableRows(
-        dataContext.rows,
-        ""
-      ),
+      rows: GetDrawerTransitionTableRows(dataContext.rows, ""),
       columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
     },
   };

@@ -7,7 +7,7 @@ import { ModifiedTable } from "./components/nfaToDfa/ModifiedTable";
 import { ModifiedTableProps } from "./components/nfaToDfa/props/ModifiedTableProps";
 import { ResultantDfa } from "./components/nfaToDfa/ResultantDfa";
 import { ResultantDfaProps } from "./components/nfaToDfa/props/ResultantDfaProps";
-import { DataContext } from "../components/Editor";
+import { DataContext } from "../pages/Editor";
 import {
   NullClosureStateId,
   ModifiedTableStateId,

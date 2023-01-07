@@ -9,7 +9,7 @@ import { TopBarActions } from "../../../consts/TopBarActions";
 import { TransitionValuesSeparator } from "../../../consts/TransitionValuesSeparator";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "./StyledTransitionLabel";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { useContext, useState } from "react";
 import {
   Dialog,

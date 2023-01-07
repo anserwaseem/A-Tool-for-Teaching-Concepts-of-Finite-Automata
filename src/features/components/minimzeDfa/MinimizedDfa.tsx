@@ -19,7 +19,7 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { MinimizedDfaProps } from "./props/MinimizedDfaProps";
 import { ToolsPlayground } from "../tools/Playground";
 import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";

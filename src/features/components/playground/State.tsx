@@ -1,7 +1,7 @@
 import Draggable from "react-draggable";
 import { useXarrow } from "react-xarrows";
 import { RowModel, TransitionModel } from "../../../models";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { useContext } from "react";
 import { StateProps } from "./props/StateProps";
 import { Box } from "@mui/material";

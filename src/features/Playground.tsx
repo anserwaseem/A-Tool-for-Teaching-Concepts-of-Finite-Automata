@@ -9,7 +9,7 @@ import Xarrow from "./components/playground/Xarrow";
 import useElementSize from "./hooks/useElementSize";
 import { useEffect } from "react";
 import { XarrowCoreProps } from "./components/playground/props/XarrowProps";
-import { DataContext } from "../components/Editor";
+import { DataContext } from "../pages/Editor";
 import { useContext } from "react";
 import { Box, Grid } from "@mui/material";
 import {
@@ -64,7 +64,7 @@ const Playground = (props: PlaygroundProps) => {
           id="canvas"
           onClick={(event) => {
             console.log("canvas clicked", event);
-            // reset selected state if clicked outside topbarDialog 
+            // reset selected state if clicked outside topbarDialog
             if (
               !(
                 (event.target as any)?.id?.includes("topbarDialog") ||

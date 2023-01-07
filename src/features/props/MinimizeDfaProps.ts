@@ -1,5 +1,5 @@
 import { GridColumns } from "@mui/x-data-grid";
-import { PlaygroundSize } from "../../components/types/PlaygroundSize";
+import { PlaygroundSize } from "../../pages/types/PlaygroundSize";
 import { RowModel, DraggableStateModel, TransitionModel } from "../../models";
 
 export type MinimizeDfaProps = {

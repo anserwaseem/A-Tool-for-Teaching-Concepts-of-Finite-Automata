@@ -13,7 +13,7 @@ import {
 import { XarrowCoreProps } from "../playground/props/XarrowProps";
 import { Box } from "@mui/material";
 import { useState, useEffect, useContext } from "react";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import {
   NullClosureStateId,
   ResultantDfaStateId,

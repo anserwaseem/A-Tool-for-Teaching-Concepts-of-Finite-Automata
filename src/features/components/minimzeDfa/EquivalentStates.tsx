@@ -22,7 +22,7 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { GetBackgroundColor } from "../../../utils/GetBackgroundColor";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -34,7 +34,7 @@ import { MainContent } from "../../../common/MainContent";
 import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
-import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps"; 
+import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;

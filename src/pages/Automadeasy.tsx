@@ -210,12 +210,13 @@ export const Automadeasy = () => {
 
       <Container
         maxWidth={false}
+        component="footer"
         sx={{
           py: "1rem",
           backgroundColor: homeBackgroundColor,
         }}
       >
-        <Typography variant="subtitle1" color={"black"} align={"center"}>
+        <Typography variant="subtitle1" color={"black"} align={"center"} fontWeight={"bold"}>
           Copyright © {new Date().getFullYear()} Automadeasy
         </Typography>
       </Container>

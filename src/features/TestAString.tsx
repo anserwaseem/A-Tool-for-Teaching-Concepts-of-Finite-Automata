@@ -24,7 +24,7 @@ import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
-import { DataContext } from "../components/Editor";
+import { DataContext } from "../pages/Editor";
 import { startingStateColor, stateSelectedColor } from "../consts/Colors";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { TestStringMaxLength } from "../consts/TestStringMaxLength";

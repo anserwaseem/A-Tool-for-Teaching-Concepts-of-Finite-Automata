@@ -1,14 +1,14 @@
 import { Button, MenuItem } from "@mui/material";
 import { useContext } from "react";
-import { DataContext } from "../components/Editor";
+import { DataContext } from "../pages/Editor";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import { DownloadProps } from "./props/DownloadProps";
 import { TransitionModel } from "../models";
-import { AutomataData } from "../components/types/AutomataData";
+import { AutomataData } from "../pages/types/AutomataData";
 
 export const Download = (props: DownloadProps) => {
   console.log("re rendering Download: props", props);
-  
+
   const dataContext = useContext(DataContext);
 
   return (

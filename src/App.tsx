@@ -1,11 +1,11 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Automadeasy } from "./components/Automadeasy";
-import { NavBar } from "./components/Navbar";
-import { Editor } from "./components/Editor";
+import { Automadeasy } from "./pages/Automadeasy";
+import { NavBar } from "./pages/Navbar";
+import { Editor } from "./pages/Editor";
 import { Pages } from "./enums/Pages";
-import { Help } from "./components/Help";
-import { Contact } from "./components/Contact";
+import { Help } from "./pages/Help";
+import { Contact } from "./pages/Contact";
 
 function App() {
   return (

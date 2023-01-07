@@ -30,7 +30,7 @@ import { DrawerHeader } from "../../../common/DrawerHeader";
 import { MainContent } from "../../../common/MainContent";
 import { GetDrawerTransitionTableColumns } from "../../../utils/GetDrawerTransitionTableColumns";
 import { GetDrawerTransitionTableRows } from "../../../utils/GetDrawerTransitionTableRows";
-import { DataContext } from "../../../components/Editor";
+import { DataContext } from "../../../pages/Editor";
 import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";

@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { EquivalentStates } from "./components/minimzeDfa/EquivalentStates";
 import { EquivalentStatesProps } from "./components/minimzeDfa/props/EquivalentStatesProps";
-import { DataContext } from "../components/Editor";
+import { DataContext } from "../pages/Editor";
 import { EquivalentStatesRowModel } from "../models/minimizeDfa/EquivalentStatesRowModel";
 import { MinimizedDfaProps } from "./components/minimzeDfa/props/MinimizedDfaProps";
 import { MinimizedDfa } from "./components/minimzeDfa/MinimizedDfa";
