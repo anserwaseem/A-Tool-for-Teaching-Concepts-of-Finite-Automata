@@ -1,11 +1,11 @@
 import { Box, Menu, Button, MenuItem } from "@mui/material";
 import { useState } from "react";
-import { Download } from "../features/Download";
-import { DownloadProps } from "../features/props/DownloadProps";
-import { UploadProps } from "../features/props/UploadProps";
-import { Upload } from "../features/Upload";
+import { Download } from "../../features/Download";
+import { DownloadProps } from "../../features/props/DownloadProps";
+import { UploadProps } from "../../features/props/UploadProps";
+import { Upload } from "../../features/Upload";
 import { ToolsProps } from "./props/ToolsProps";
-import * as AvailableTools from "./types/AvailableTools";
+import * as AvailableTools from "../../consts/AvailableTools";
 
 export const Tools = (props: ToolsProps) => {
   console.log("re rendering Tools: props");

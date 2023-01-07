@@ -1,4 +1,4 @@
-export interface PlaygroundSize {
+export type PlaygroundSize = {
   width: number;
   height: number;
 }

@@ -4,7 +4,7 @@ import { DataContext } from "../pages/Editor";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import { DownloadProps } from "./props/DownloadProps";
 import { TransitionModel } from "../models";
-import { AutomataData } from "../pages/types/AutomataData";
+import { AutomataData } from "../common/types/AutomataData";
 
 export const Download = (props: DownloadProps) => {
   console.log("re rendering Download: props", props);

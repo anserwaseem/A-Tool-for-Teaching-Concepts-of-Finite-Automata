@@ -1,4 +1,4 @@
-import { PlaygroundSize } from "../../pages/types/PlaygroundSize";
+import { PlaygroundSize } from "../../common/types/PlaygroundSize";
 import { DraggableStateModel, RowModel, TransitionModel } from "../../models";
 import { SelectedElementType } from "./SelectedElementType";
 

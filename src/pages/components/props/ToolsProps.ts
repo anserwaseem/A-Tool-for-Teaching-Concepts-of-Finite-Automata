@@ -1,4 +1,4 @@
-import * as AvailableTools from "../types/AvailableTools";
+import * as AvailableTools from "../../../consts/AvailableTools";
 
 export type ToolsProps = {
   setToolSelected: React.Dispatch<

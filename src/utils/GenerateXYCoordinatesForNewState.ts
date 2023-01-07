@@ -1,4 +1,4 @@
-import { PlaygroundSize } from "../pages/types/PlaygroundSize";
+import { PlaygroundSize } from "../common/types/PlaygroundSize";
 import { StateDefaultSize } from "../consts/StateSizes";
 import { DraggableStateModel } from "../models";
 
