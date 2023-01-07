@@ -243,6 +243,7 @@ export const Editor = () => {
               ?.trim()
               ?.split(" ")
               ?.filter((s) => s !== "")
+              ?.sort()
           )
         )?.join(" "))
     );
@@ -286,20 +287,20 @@ export const Editor = () => {
     let errorWhileSavingRow = false;
     setRows((prev) => {
       let availableStateValues = prev
-        .map((r) => r.state)
-        .filter((v) => v !== "");
+        ?.map((r) => r.state)
+        ?.filter((v) => v !== "");
 
-      if (!availableStateValues.includes(row.state))
-        availableStateValues.push(row.state);
+      if (!availableStateValues?.includes(row.state))
+        availableStateValues?.push(row.state);
 
-      const areTransitionValuesInvalid = nulPossibleTransitionValues.some(
+      const areTransitionValuesInvalid = nulPossibleTransitionValues?.some(
         (key) => {
           const transitionValues = row[key]
-            .toString()
-            .split(" ")
-            .filter((v) => v !== "");
-          return transitionValues.some(
-            (v) => !availableStateValues.includes(v)
+            ?.toString()
+            ?.split(" ")
+            ?.filter((v) => v !== "");
+          return transitionValues?.some(
+            (v) => !availableStateValues?.includes(v)
           );
         }
       );
@@ -339,11 +340,11 @@ export const Editor = () => {
                 PossibleTransitionValues.map((key) => [
                   key === "^" ? "nul" : key,
                   row[key === "^" ? "nul" : key]
-                    .toString()
-                    .includes(oldRow.state)
+                    ?.toString()
+                    ?.includes(oldRow.state)
                     ? row[key === "^" ? "nul" : key]
-                        .toString()
-                        .replace(oldRow.state, row.state)
+                        ?.toString()
+                        ?.replace(oldRow.state, row.state)
                     : row[key === "^" ? "nul" : key],
                 ])
               ),
@@ -353,10 +354,10 @@ export const Editor = () => {
               ...Object.fromEntries(
                 PossibleTransitionValues.map((key) => [
                   key === "^" ? "nul" : key,
-                  r[key === "^" ? "nul" : key].toString().includes(oldRow.state)
+                  r[key === "^" ? "nul" : key]?.toString()?.includes(oldRow.state)
                     ? r[key === "^" ? "nul" : key]
-                        .toString()
-                        .replace(oldRow.state, row.state)
+                        ?.toString()
+                        ?.replace(oldRow.state, row.state)
                     : r[key === "^" ? "nul" : key],
                 ])
               ),
