@@ -1,0 +1,30 @@
+.navbar {
+  height: 64px;
+  clip-path: ellipse(700px 85px at 20% -40%);
+  -webkit-clip-path: ellipse(700px 85px at 20% -40%);
+}
+
+@media (min-width: 1440px) {
+  .navbar {
+    clip-path: ellipse(1400px 85px at -10% -20%);
+    -webkit-clip-path: ellipse(1400px 85px at -10% -20%);
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar-mobile-title {
+    font-size: 1.25rem !important;
+  }
+  .navbar-mobile-logo {
+    width: 1.5rem !important;
+  }
+}
+
+@media (max-width: 300px) {
+  .navbar-mobile-title {
+    font-size: 1rem !important;
+  }
+  .navbar-mobile-logo {
+    width: 1.25rem !important;
+  }
+}

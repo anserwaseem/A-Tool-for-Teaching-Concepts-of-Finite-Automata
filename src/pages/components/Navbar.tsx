@@ -1,16 +1,19 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  Box,
+  Typography,
+  IconButton,
+  Menu,
+  Button,
+  Link,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import { Pages } from "../../enums/Pages";
 import { Link as RouterLink } from "react-router-dom";
-import Link from "@mui/material/Link";
 import { useState } from "react";
+import "./css/Navbar.css";
 
 const pages = Object.values(Pages);
 
@@ -28,7 +31,13 @@ export function NavBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      className="navbar"
+      sx={{
+        bgcolor: "secondary.main",
+      }}
+    >
       <Container maxWidth={false}>
         <Toolbar disableGutters>
           <Box
@@ -115,6 +124,7 @@ export function NavBar() {
             alt="logo"
             src="/logo192.png"
             maxWidth={"30px"}
+            className="navbar-mobile-logo"
             sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
           />
           <Typography
@@ -122,6 +132,7 @@ export function NavBar() {
             noWrap
             component={RouterLink}
             to={process.env.PUBLIC_URL}
+            className="navbar-mobile-title"
             sx={{
               mr: 7,
               display: { xs: "flex", md: "none" },

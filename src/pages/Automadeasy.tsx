@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Grid, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, Typography } from "@mui/material";
 import {
   StyledGridOverlay,
   StyledSvg,
@@ -10,25 +10,24 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Box } from "@mui/system";
 import { homeBackgroundColor } from "../consts/Colors";
-
-let x: { width: number; height: number };
-x = { width: 100, height: 200 };
+import "./css/Automadeasy.css";
 
 export const Automadeasy = () => {
   console.log("re rendering Automadeasy");
+
   return (
     <>
       <Grid
         container
         direction="row"
         justifyContent="space-evenly"
+        className="hero-section-1"
+        columnSpacing={10}
         alignItems="center"
-        padding={"7rem"}
+        p={"7rem"}
         sx={{
           backgroundColor: homeBackgroundColor,
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 80%)",
         }}
       >
         <Grid item sm={3}>
@@ -55,21 +54,19 @@ export const Automadeasy = () => {
         container
         direction="row"
         justifyContent="space-evenly"
+        className="hero-section-2"
+        columnSpacing={10}
+        rowSpacing={{
+          xs: 5,
+          sm: 0,
+        }}
         alignItems="center"
-        p={"7rem"}
+        p={"8rem"}
         sx={{
           backgroundColor: homeBackgroundColor,
-          // make this clipPath reverse of the one above
-          clipPath: "polygon(0 20%, 100% 0, 100% 100%, 0 100%)",
         }}
       >
-        <Grid
-          item
-          sm
-          sx={{
-            width: "50%",
-          }}
-        >
+        <Grid item sm>
           <Typography
             variant="h4"
             fontWeight={"bold"}
@@ -112,7 +109,15 @@ export const Automadeasy = () => {
         </Grid>
       </Grid>
 
-      <Grid container direction="row" justifyContent="space-evenly" py={"7rem"}>
+      <Grid
+        container
+        direction={{
+          xs: "column",
+          md: "row",
+        }}
+        justifyContent="space-evenly"
+        paddingTop={"7rem"}
+      >
         <Grid item xs>
           <Typography variant="h6" color={"black"} align={"center"}>
             Creating Automaton
@@ -207,19 +212,6 @@ export const Automadeasy = () => {
           </Timeline>
         </Grid>
       </Grid>
-
-      <Container
-        maxWidth={false}
-        component="footer"
-        sx={{
-          py: "1rem",
-          backgroundColor: homeBackgroundColor,
-        }}
-      >
-        <Typography variant="subtitle1" color={"black"} align={"center"} fontWeight={"bold"}>
-          Copyright © {new Date().getFullYear()} Automadeasy
-        </Typography>
-      </Container>
     </>
   );
 };

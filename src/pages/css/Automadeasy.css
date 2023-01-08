@@ -1,0 +1,42 @@
+.hero-section-1 {
+  clip-path: ellipse(1200px 150px at 25% 50%);
+  -webkit-clip-path: ellipse(1200px 150px at 25% 50%);
+}
+
+.hero-section-2 {
+  clip-path: ellipse(1050px 200px at 60% 50%);
+  -webkit-clip-path: ellipse(1050px 200px at 60% 50%);
+}
+
+@media (max-width: 900px) {
+  .hero-section-1 {
+    clip-path: ellipse(750px 200px at 35% 50%);
+    -webkit-clip-path: ellipse(750px 200px at 35% 50%);
+  }
+  .hero-section-2 {
+    clip-path: ellipse(800px 200px at 75% 50%);
+    -webkit-clip-path: ellipse(800px 200px at 75% 50%);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-section-1 {
+    clip-path: ellipse(750px 250px at 35% 50%);
+    -webkit-clip-path: ellipse(750px 250px at 35% 50%);
+  }
+  .hero-section-2 {
+    clip-path: ellipse(1000px 300px at 80% 55%);
+    -webkit-clip-path: ellipse(1000px 300px at 80% 55%);
+  }
+}
+
+@media (max-width: 450px) {
+  .hero-section-1 {
+    clip-path: ellipse(750px 250px at 35% 50%);
+    -webkit-clip-path: ellipse(750px 250px at 35% 50%);
+  }
+  .hero-section-2 {
+    clip-path: ellipse(800px 350px at 80% 55%);
+    -webkit-clip-path: ellipse(800px 350px at 80% 55%);
+  }
+}
