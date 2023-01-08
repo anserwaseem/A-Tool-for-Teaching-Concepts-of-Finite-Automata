@@ -9,6 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HelpHeaders } from "../enums/HelpHeaders";
 import { HelpDetails } from "../enums/HelpDetails";
 import { HelpCard } from "../common/HelpCard";
+import { homeBackgroundColor } from "../consts/Colors";
 
 const videoSrc =
   "https://github.com/anserwaseem/automadeasy-videos/raw/main/help/";
@@ -31,6 +32,20 @@ export const Help = () => {
           key={header}
           expanded={expanded === header}
           onChange={handleChange(header)}
+          sx={{
+            backgroundColor: homeBackgroundColor,
+            boxShadow: "0px 0px 10px 0px rgba(0.5,0,0,0.1)",
+            borderRadius: "50px !important",
+            borderBottom: "11px solid #e0e0e0",
+            marginTop: "0.25rem",
+            "&.MuiAccordion-root:before": {
+              backgroundColor: "white",
+            },
+            "&.MuiPaper-root .MuiCard-root": {
+              borderRadius: "50px !important",
+              borderBottom: "11px solid #e0e0e0",
+            },
+          }}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
