@@ -32,8 +32,8 @@
 
 @media (max-width: 450px) {
   .hero-section-1 {
-    clip-path: ellipse(750px 250px at 35% 50%);
-    -webkit-clip-path: ellipse(750px 250px at 35% 50%);
+    clip-path: ellipse(750px 275px at 35% 50%);
+    -webkit-clip-path: ellipse(750px 275px at 35% 50%);
   }
   .hero-section-2 {
     clip-path: ellipse(800px 350px at 80% 55%);

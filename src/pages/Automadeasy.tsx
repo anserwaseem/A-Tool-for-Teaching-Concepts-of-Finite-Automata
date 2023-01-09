@@ -61,7 +61,7 @@ export const Automadeasy = () => {
           sm: 0,
         }}
         alignItems="center"
-        p={"8rem"}
+        p={"7rem"}
         sx={{
           backgroundColor: homeBackgroundColor,
         }}
@@ -72,6 +72,7 @@ export const Automadeasy = () => {
             fontWeight={"bold"}
             color={"black"}
             textAlign={"right"}
+            py={"2rem"}
           >
             Start learning
           </Typography>
