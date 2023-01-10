@@ -14,7 +14,7 @@ export const ErrorSnackbar = (props: ErrorSnackbarProps) => {
         horizontal: "center",
       }}
     >
-      <Alert severity="error">
+      <Alert severity={props?.severity ?? "error"}>
         <AlertTitle>{props?.titleMessage}</AlertTitle>
         {props?.bodyMessage}
       </Alert>
