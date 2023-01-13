@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Typography,
   AccordionDetails,
+  Container,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HelpHeaders } from "../enums/HelpHeaders";
@@ -26,7 +27,7 @@ export const Help = () => {
     };
 
   return (
-    <div>
+    <Container maxWidth={"md"}>
       {headers.map((header, index) => (
         <Accordion
           key={header}
@@ -37,7 +38,7 @@ export const Help = () => {
             boxShadow: "0px 0px 10px 0px rgba(0.5,0,0,0.1)",
             borderRadius: "50px !important",
             borderBottom: "11px solid #e0e0e0",
-            marginTop: "0.25rem",
+            marginTop: "1.75rem",
             "&.MuiAccordion-root:before": {
               backgroundColor: "white",
             },
@@ -52,7 +53,7 @@ export const Help = () => {
             id={header}
             sx={{
               "& .MuiAccordionSummary-content": {
-                marginRight: 5,
+                // marginRight: 5,
               },
             }}
           >
@@ -94,6 +95,6 @@ export const Help = () => {
           </AccordionDetails>
         </Accordion>
       ))}
-    </div>
+    </Container>
   );
 };
