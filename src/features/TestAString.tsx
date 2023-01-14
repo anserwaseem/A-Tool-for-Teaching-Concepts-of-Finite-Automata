@@ -1,27 +1,19 @@
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import { useContext, useEffect, useState } from "react";
 import { TestAStringProps } from "./props/TestAStringProps";
 import {
   Box,
   Grid,
-  ButtonGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   SelectChangeEvent,
   DialogContentText,
+  Dialog,
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
 } from "@mui/material";
 import { AnimationDurationOptions } from "../consts/AnimationDurationOptions";
 import { ToolsPlayground } from "./components/tools/Playground";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
-import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../pages/Editor";
@@ -37,6 +29,9 @@ import { CustomAppBar } from "../common/CustomAppBar";
 import { CustomDrawer } from "../common/CustomDrawer";
 import { CustomAppBarProps } from "../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../common/props/CustomDrawerProps";
+import { AnimationControlsProps } from "../common/props/AnimationControlsProps";
+import { AnimationControls } from "../common/AnimationControls";
+import { GetTestStringTextFields } from "./components/testAString/GetTestStringTextFields";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -286,6 +281,17 @@ const TestAString = (props: TestAStringProps) => {
     },
   };
 
+  const animationControlsProps: AnimationControlsProps = {
+    duration,
+    isPlaying,
+    isComplete,
+    isReady,
+    handleAnimation,
+    showNextStep: showNextRow,
+    handleDurationChange,
+    testStringTextFields: GetTestStringTextFields(testString, testStringIndex),
+  };
+
   return (
     <>
       <Dialog open={props.isTestAStringDialogOpen} onClose={handleClose}>
@@ -332,79 +338,7 @@ const TestAString = (props: TestAStringProps) => {
               }}
             >
               <Grid item xs={12} alignItems={"center"}>
-                <ButtonGroup
-                  disableElevation
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                >
-                  {testString
-                    .replaceAll("^", "")
-                    .split("")
-                    .map((char, index) => (
-                      <TextField
-                        key={index}
-                        id={`testString${index}`}
-                        value={char}
-                        variant="standard"
-                        InputProps={{
-                          readOnly: true,
-                          sx: {
-                            textAlignLast: "center",
-                          },
-                        }}
-                        sx={{
-                          backgroundColor:
-                            Math.floor((testStringIndex - 1) / 2) === index
-                              ? startingStateColor
-                              : "inherit",
-                          flexDirection: "inherit",
-                          borderRadius: "20px",
-                          border: `1px solid ${stateSelectedColor}`,
-                          borderWidth: "0 1px 0 1px",
-                        }}
-                      />
-                    ))}
-
-                  <FormControl fullWidth>
-                    <InputLabel id="delay-select-label">Delay</InputLabel>
-                    <Select
-                      labelId="delay-select-label"
-                      id="delay-select"
-                      value={duration.toString()}
-                      label="Delay"
-                      onChange={handleDurationChange}
-                    >
-                      {AnimationDurationOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <Button
-                    onClick={handleAnimation}
-                    startIcon={
-                      isPlaying ? (
-                        <PauseRoundedIcon />
-                      ) : isComplete ? (
-                        <ReplayRoundedIcon />
-                      ) : (
-                        <PlayArrowRoundedIcon />
-                      )
-                    }
-                  >
-                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                  </Button>
-                  <Button
-                    variant={isComplete ? "contained" : "outlined"}
-                    onClick={showNextRow}
-                    disabled={isReady}
-                  >
-                    {isComplete ? "Complete" : "Next"}
-                  </Button>
-                </ButtonGroup>
+                <AnimationControls {...animationControlsProps} />
               </Grid>
               {/* Playground grid */}
               <Grid item xs={12}>

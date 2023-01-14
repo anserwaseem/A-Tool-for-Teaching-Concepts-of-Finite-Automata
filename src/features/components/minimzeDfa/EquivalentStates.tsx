@@ -1,14 +1,8 @@
 import {
   Alert,
   Box,
-  Button,
-  ButtonGroup,
   CssBaseline,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
@@ -17,9 +11,6 @@ import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { EquivalentStatesProps } from "./props/EquivalentStatesProps";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
-import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { MaxNumberOfStates } from "../../../consts/MaxNumberOfStates";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { DataContext } from "../../../pages/Editor";
@@ -35,6 +26,8 @@ import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
+import { AnimationControls } from "../../../common/AnimationControls";
+import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
 
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
@@ -498,6 +491,16 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
     transitionTableProps: transitionTableProps,
   };
 
+  const animationControlsProps: AnimationControlsProps = {
+    duration,
+    isPlaying,
+    isComplete,
+    isReady,
+    handleAnimation,
+    showNextStep,
+    handleDurationChange,
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -558,50 +561,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           <DrawerHeader />
           <Grid container>
             <Grid item alignItems={"center"} xs={12}>
-              <ButtonGroup
-                disableElevation
-                fullWidth
-                variant="outlined"
-                size="large"
-              >
-                <FormControl fullWidth>
-                  <InputLabel id="delay-select-label">Delay</InputLabel>
-                  <Select
-                    labelId="delay-select-label"
-                    id="delay-select"
-                    value={duration.toString()}
-                    label="Delay"
-                    onChange={handleDurationChange}
-                  >
-                    {AnimationDurationOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Button
-                  onClick={handleAnimation}
-                  startIcon={
-                    isPlaying ? (
-                      <PauseRoundedIcon />
-                    ) : isComplete ? (
-                      <ReplayRoundedIcon />
-                    ) : (
-                      <PlayArrowRoundedIcon />
-                    )
-                  }
-                >
-                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                </Button>
-                <Button
-                  variant={isComplete ? "contained" : "outlined"}
-                  onClick={showNextStep}
-                  disabled={isReady}
-                >
-                  {isComplete ? "Complete" : "Next"}
-                </Button>
-              </ButtonGroup>
+              <AnimationControls {...animationControlsProps} />
             </Grid>
             <Grid item xs={12}>
               <Box

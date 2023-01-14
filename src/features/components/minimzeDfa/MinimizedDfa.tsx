@@ -1,23 +1,14 @@
 import {
   Alert,
   Box,
-  Button,
-  ButtonGroup,
   CssBaseline,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
-import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { DataContext } from "../../../pages/Editor";
 import { MinimizedDfaProps } from "./props/MinimizedDfaProps";
@@ -36,6 +27,8 @@ import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
+import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
+import { AnimationControls } from "../../../common/AnimationControls";
 
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
 let transitionIndex = 0; // used to keep track of which (transition table's) row's transitions are being animated
@@ -426,6 +419,16 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     transitionTableProps,
   };
 
+  const animationControlsProps: AnimationControlsProps = {
+    duration,
+    isPlaying,
+    isComplete,
+    isReady,
+    handleAnimation,
+    showNextStep,
+    handleDurationChange,
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -468,52 +471,8 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
         <MainContent open={open}>
           <DrawerHeader />
           <Grid container>
-            {/* Grid for Add a Row button and Tools */}
             <Grid item alignItems={"center"} xs={12}>
-              <ButtonGroup
-                disableElevation
-                fullWidth
-                variant="outlined"
-                size="large"
-              >
-                <FormControl fullWidth>
-                  <InputLabel id="delay-select-label">Delay</InputLabel>
-                  <Select
-                    labelId="delay-select-label"
-                    id="delay-select"
-                    value={duration.toString()}
-                    label="Delay"
-                    onChange={handleDurationChange}
-                  >
-                    {AnimationDurationOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Button
-                  onClick={handleAnimation}
-                  startIcon={
-                    isPlaying ? (
-                      <PauseRoundedIcon />
-                    ) : isComplete ? (
-                      <ReplayRoundedIcon />
-                    ) : (
-                      <PlayArrowRoundedIcon />
-                    )
-                  }
-                >
-                  {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                </Button>
-                <Button
-                  variant={isComplete ? "contained" : "outlined"}
-                  onClick={showNextStep}
-                  disabled={isReady}
-                >
-                  {isComplete ? "Complete" : "Next"}
-                </Button>
-              </ButtonGroup>
+              <AnimationControls {...animationControlsProps} />
             </Grid>
             <Grid item xs={12}>
               <Grid item xs={12} md={8}>

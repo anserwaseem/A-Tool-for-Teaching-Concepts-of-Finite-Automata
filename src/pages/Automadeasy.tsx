@@ -1,14 +1,16 @@
 import { Box, Button, Divider, Grid, Typography } from "@mui/material";
 import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineDot,
+  TimelineConnector,
+  TimelineContent,
+} from "@mui/lab";
+import {
   StyledGridOverlay,
   StyledSvg,
 } from "../features/components/transitionTable/NoRowsOverlay";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { homeBackgroundColor } from "../consts/Colors";
 import "./css/Automadeasy.css";

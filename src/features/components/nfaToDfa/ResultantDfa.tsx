@@ -1,13 +1,7 @@
 import {
   Alert,
   Box,
-  Button,
-  ButtonGroup,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
@@ -25,9 +19,6 @@ import { ResultantDfaProps } from "./props/ResultantDfaProps";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { ToolsTransitionTable } from "../tools/TransitionTable";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
-import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { DataContext } from "../../../pages/Editor";
 import {
@@ -44,6 +35,8 @@ import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { GenerateXYCoordinatesForNewState } from "../../../utils/GenerateXYCoordinatesForNewState";
+import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
+import { AnimationControls } from "../../../common/AnimationControls";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -605,6 +598,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     },
   };
 
+  const animationControlsProps: AnimationControlsProps = {
+    duration,
+    isPlaying,
+    isComplete,
+    isReady,
+    handleAnimation,
+    showNextStep: showNextRow,
+    handleDurationChange,
+  };
+
   return (
     <Box sx={{ display: "flex", m: 1, mt: 5 }}>
       <Snackbar
@@ -643,55 +646,9 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
         >
           {/* Transition table grid */}
           <Grid item xs={12} md={4}>
-            {/* Grid for Add a Row button and Tools */}
             <Grid container alignItems={"center"}>
               <Grid item xs={12}>
-                <ButtonGroup
-                  disableElevation
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                >
-                  <FormControl fullWidth>
-                    <InputLabel id="delay-select-label">Delay</InputLabel>
-                    <Select
-                      labelId="delay-select-label"
-                      id="delay-select"
-                      value={duration.toString()}
-                      label="Delay"
-                      onChange={handleDurationChange}
-                    >
-                      {AnimationDurationOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <Button
-                    onClick={handleAnimation}
-                    startIcon={
-                      isPlaying ? (
-                        <PauseRoundedIcon />
-                      ) : isComplete ? (
-                        <ReplayRoundedIcon />
-                      ) : (
-                        <PlayArrowRoundedIcon />
-                      )
-                    }
-                  >
-                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                  </Button>
-                  <Button
-                    variant={isComplete ? "contained" : "outlined"}
-                    onClick={showNextRow}
-                    disabled={isReady}
-                  >
-                    {isComplete ? "Complete" : "Next"}
-                  </Button>
-                </ButtonGroup>
-                {/* <AnimationController {...animationControllerProps} /> */}
+                <AnimationControls {...animationControlsProps} />
               </Grid>
             </Grid>
             <ToolsTransitionTable {...transitionTableProps} />

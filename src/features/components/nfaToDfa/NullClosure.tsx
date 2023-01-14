@@ -1,13 +1,7 @@
 import {
   Alert,
   Box,
-  Button,
-  ButtonGroup,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
@@ -24,9 +18,6 @@ import { NullClosureProps } from "./props/NullClosureProps";
 import { ToolsPlaygroundProps } from "../tools/props/PlaygroundProps";
 import { ToolsTransitionTableProps } from "../tools/props/TransitionTableProps";
 import { ToolsTransitionTable } from "../tools/TransitionTable";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
-import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import { PossibleTransitionValues } from "../../../consts/PossibleTransitionValues";
 import { StyledTransitionLabel } from "../playground/StyledTransitionLabel";
 import { NullClosureStateId } from "../../../consts/StateIdsExtensions";
@@ -39,6 +30,8 @@ import { CustomAppBar } from "../../../common/CustomAppBar";
 import { CustomDrawer } from "../../../common/CustomDrawer";
 import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
+import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
+import { AnimationControls } from "../../../common/AnimationControls";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -297,6 +290,16 @@ export const NullClosure = (props: NullClosureProps) => {
     },
   };
 
+  const animationControlsProps: AnimationControlsProps = {
+    duration,
+    isPlaying,
+    isComplete,
+    isReady,
+    handleAnimation,
+    showNextStep: showNextRow,
+    handleDurationChange,
+  };
+
   return (
     <>
       <Box sx={{ display: "flex", m: 1, mt: 5 }}>
@@ -338,54 +341,8 @@ export const NullClosure = (props: NullClosureProps) => {
           >
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
-              {/* Grid for Add a Row button and Tools */}
               <Grid container item xs={12} alignItems={"center"}>
-                <ButtonGroup
-                  disableElevation
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                >
-                  <FormControl fullWidth>
-                    <InputLabel id="delay-select-label">Delay</InputLabel>
-                    <Select
-                      labelId="delay-select-label"
-                      id="delay-select"
-                      value={duration.toString()}
-                      label="Delay"
-                      onChange={handleDurationChange}
-                    >
-                      {AnimationDurationOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <Button
-                    onClick={handleAnimation}
-                    startIcon={
-                      isPlaying ? (
-                        <PauseRoundedIcon />
-                      ) : isComplete ? (
-                        <ReplayRoundedIcon />
-                      ) : (
-                        <PlayArrowRoundedIcon />
-                      )
-                    }
-                  >
-                    {isPlaying ? "Pause" : isComplete ? "Replay" : "Play"}
-                  </Button>
-                  <Button
-                    variant={isComplete ? "contained" : "outlined"}
-                    onClick={showNextRow}
-                    disabled={isReady}
-                  >
-                    {isComplete ? "Complete" : "Next"}
-                  </Button>
-                </ButtonGroup>
-                {/* <AnimationController {...animationControllerProps} /> */}
+                <AnimationControls {...animationControlsProps} />
               </Grid>
               <ToolsTransitionTable {...transitionTableProps} />
             </Grid>
