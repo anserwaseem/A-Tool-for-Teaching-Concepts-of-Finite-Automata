@@ -12,6 +12,7 @@ import { ToolsTransitionTable } from "../features/components/tools/TransitionTab
 import { DrawerHeader } from "./DrawerHeader";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { CustomDrawerProps } from "./props/CustomDrawerProps";
 
 export const CustomDrawer = (props: CustomDrawerProps) => {
@@ -20,17 +21,31 @@ export const CustomDrawer = (props: CustomDrawerProps) => {
   return (
     <Drawer
       sx={{
-        width: props.isLeft || props.open === 2 ? DrawerWidth : 0,
+        width:
+          window.innerWidth <= 525
+            ? window.innerWidth
+            : props.isLeft || props.open === 2
+            ? DrawerWidth
+            : 0,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           position: "relative",
-          width: props.isLeft || props.open === 2 ? DrawerWidth : 0,
+          marginTop: window.innerWidth <= 525 ? "72px" : 0,
+          mx: window.innerWidth <= 525 ? 1 : 0,
+          width:
+            window.innerWidth <= 525
+              ? window.innerWidth - 16
+              : props.isLeft || props.open === 2
+              ? DrawerWidth
+              : 0,
           boxSizing: "border-box",
           backgroundColor: "#f5f5f5",
         },
       }}
       variant="persistent"
-      anchor={props.isLeft ? "left" : "right"}
+      anchor={
+        window.innerWidth <= 525 ? "top" : props.isLeft ? "left" : "right"
+      }
       open={props.isLeft ? props.open === 1 : props.open === 2}
     >
       <DrawerHeader
@@ -38,6 +53,7 @@ export const CustomDrawer = (props: CustomDrawerProps) => {
           justifyContent: "space-evenly",
           backgroundColor: appBarBackgroundColor,
           boxShadow: drawerHeaderBoxShadow,
+          minHeight: window.innerWidth <= 525 && "40px !important",
         }}
       >
         <Grid container justifyContent="space-around" alignItems="center">
@@ -57,7 +73,13 @@ export const CustomDrawer = (props: CustomDrawerProps) => {
                 props.setOpen(0);
               }}
             >
-              {props.isLeft ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              {window.innerWidth <= 525 ? (
+                <ExpandLessIcon />
+              ) : props.isLeft ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
             </IconButton>
           </Grid>
         </Grid>
@@ -65,7 +87,7 @@ export const CustomDrawer = (props: CustomDrawerProps) => {
       <Divider />
       <Box
         sx={{
-          marginTop: "40%",
+          marginTop: window.innerWidth <= 525 ? "16px" : "35%",
         }}
       >
         <ToolsTransitionTable {...props.transitionTableProps} />

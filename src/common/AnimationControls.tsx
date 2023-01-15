@@ -14,7 +14,12 @@ import { AnimationControlsProps } from "./props/AnimationControlsProps";
 
 export const AnimationControls = (props: AnimationControlsProps) => {
   return (
-    <ButtonGroup disableElevation fullWidth variant="outlined" size="large">
+    <ButtonGroup
+      disableElevation
+      fullWidth
+      variant="outlined"
+      size={window.innerWidth <= 525 ? "small" : "large"}
+    >
       {props?.testStringTextFields}
 
       <FormControl fullWidth>
@@ -48,7 +53,7 @@ export const AnimationControls = (props: AnimationControlsProps) => {
       >
         {props.isPlaying ? "Pause" : props.isComplete ? "Replay" : "Play"}
       </Button>
-      
+
       <Button
         variant={props.isComplete ? "contained" : "outlined"}
         onClick={props.showNextStep}

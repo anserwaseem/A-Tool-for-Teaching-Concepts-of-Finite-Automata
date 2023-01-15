@@ -27,11 +27,11 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
   ...(open === 1 && {
-    width: `calc(100% - ${DrawerWidth}px)`,
+    width: window.innerWidth <= 525 ? "100%" : `calc(100% - ${DrawerWidth}px)`,
     marginLeft: DrawerWidth,
   }),
   ...(open === 2 && {
-    width: `calc(100% - ${DrawerWidth}px)`,
+    width: window.innerWidth <= 525 ? "100%" : `calc(100% - ${DrawerWidth}px)`,
     marginRight: DrawerWidth,
   }),
 }));

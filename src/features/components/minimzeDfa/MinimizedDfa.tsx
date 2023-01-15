@@ -29,6 +29,7 @@ import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
 import { AnimationControls } from "../../../common/AnimationControls";
+import { MainContentStyles } from "../../../common/styles/MainContentStyles";
 
 let sliceIndex = 0; // index of such row (of Equivalence table) is saved where more than one Ticks are present
 let transitionIndex = 0; // used to keep track of which (transition table's) row's transitions are being animated
@@ -68,7 +69,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(0);
 
   useEffect(() => {
     setMinimizedDfaRows(dataContext?.rows);
@@ -400,7 +401,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
     states: minimizedDfaStates,
     transitions: minimizedDfaTransitions,
     setTransitions: setMinimizedDfaTransitions,
-    canvasWidth: "150%",
+    canvasWidth: window.innerWidth >= 900 ? "150%" : "100%",
     stateSize: props.stateSize,
   };
 
@@ -431,7 +432,7 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", mt: 3 }}>
         <CssBaseline />
         <Snackbar
           open={openSnackbar}
@@ -447,7 +448,6 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
           <Alert
             onClose={handleSnackbarClose}
             severity="info"
-            sx={{ width: "100%" }}
             // icon={
             //   snackbarMessage?.at(-1) === "✓" ? (
             //     <CheckIcon fontSize="medium" />
@@ -468,7 +468,10 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
 
         <CustomDrawer {...customDrawerProps} />
 
-        <MainContent open={open}>
+        <MainContent
+          open={open}
+          sx={MainContentStyles(open, dataContext?.rows?.length)}
+        >
           <DrawerHeader />
           <Grid container>
             <Grid item alignItems={"center"} xs={12}>

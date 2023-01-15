@@ -8,7 +8,7 @@ import { ToolsProps } from "./props/ToolsProps";
 import * as AvailableTools from "../../consts/AvailableTools";
 
 export const Tools = (props: ToolsProps) => {
-  console.log("re rendering Tools: props");
+  console.log("re rendering Tools: props", props);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 

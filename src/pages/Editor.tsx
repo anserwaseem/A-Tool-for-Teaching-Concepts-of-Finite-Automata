@@ -354,7 +354,9 @@ export const Editor = () => {
               ...Object.fromEntries(
                 PossibleTransitionValues.map((key) => [
                   key === "^" ? "nul" : key,
-                  r[key === "^" ? "nul" : key]?.toString()?.includes(oldRow.state)
+                  r[key === "^" ? "nul" : key]
+                    ?.toString()
+                    ?.includes(oldRow.state)
                     ? r[key === "^" ? "nul" : key]
                         ?.toString()
                         ?.replace(oldRow.state, row.state)
@@ -732,6 +734,10 @@ export const Editor = () => {
               sm: 2,
               md: 3,
             }}
+            rowSpacing={{
+              xs: 3,
+              sm: 6,
+            }}
           >
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
@@ -780,7 +786,7 @@ export const Editor = () => {
                 aria-label="Default"
                 valueLabelDisplay="auto"
                 sx={{
-                  marginBottom: "-3px",
+                  m: "-7px 0 -10px",
                 }}
               />
               <Playground {...playgroundProps} />

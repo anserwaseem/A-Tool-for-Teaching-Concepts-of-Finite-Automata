@@ -28,17 +28,22 @@ import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { AnimationControls } from "../../../common/AnimationControls";
 import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
+import { MainContentStyles } from "../../../common/styles/MainContentStyles";
 
 const columnNames = PossibleTransitionValues.filter((value) => value !== "^");
 let columnIndex = 0;
 let numberOfTicks = 0;
 
 export const EquivalentStates = (props: EquivalentStatesProps) => {
-  console.log("re rendering EquivalentStates, props: ", props);
+  console.log(
+    "re rendering EquivalentStates, props: ",
+    props,
+    window.innerWidth
+  );
 
   const dataContext = useContext(DataContext);
 
-  const [duration, setDuration] = useState(AnimationDurationOptions[5]);
+  const [duration, setDuration] = useState(AnimationDurationOptions[1]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [isComplete, setIsComplete] = useState(false); // set to true when data is completely displayed
@@ -75,7 +80,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
   const [emptyCellsOfPreviousIteration, setEmptyCellsOfPreviousIteration] =
     useState<string[][]>([]);
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(0);
 
   // make DataGrid of props.rows.length by props.rows.length size as soon as props.rows is updated
   useEffect(() => {
@@ -503,7 +508,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", mt: 3 }}>
         <CssBaseline />
         <Snackbar
           open={openSnackbar}
@@ -519,7 +524,6 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
           <Alert
             onClose={handleSnackbarClose}
             severity="info"
-            sx={{ width: "100%" }}
             icon={
               snackbarMessage?.at(-1) === "✓" ? (
                 <CheckIcon fontSize="medium" />
@@ -535,6 +539,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
             {snackbarMessage.slice(0, -1)}
           </Alert>
         </Snackbar>
+
         {isIterationComplete && (
           <Snackbar
             open={openSnackbar}
@@ -547,7 +552,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
               horizontal: "right",
             }}
           >
-            <Alert onClose={handleSnackbarClose} sx={{ width: "100%" }}>
+            <Alert onClose={handleSnackbarClose}>
               {`Iteration ${iteration} completed.`}
             </Alert>
           </Snackbar>
@@ -557,7 +562,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
         <CustomDrawer {...customDrawerProps} />
 
-        <MainContent open={open} sx={{ paddingBottom: 12 }}>
+        <MainContent
+          open={open}
+          sx={MainContentStyles(open, dataContext?.rows?.length)}
+        >
           <DrawerHeader />
           <Grid container>
             <Grid item alignItems={"center"} xs={12}>

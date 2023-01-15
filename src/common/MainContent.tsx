@@ -1,5 +1,4 @@
 import { styled } from "@mui/material";
-import { DrawerWidth } from "../consts/DrawerWidth";
 
 export const MainContent = styled("main", {
   shouldForwardProp: (prop) => prop !== "open",
@@ -7,8 +6,8 @@ export const MainContent = styled("main", {
   open?: number;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
-  marginLeft: `-${DrawerWidth}px`,
+  overflow: "hidden",
+  padding: theme.spacing(1),
 
   ...(open === 0 && {
     transition: theme.transitions.create("margin", {
