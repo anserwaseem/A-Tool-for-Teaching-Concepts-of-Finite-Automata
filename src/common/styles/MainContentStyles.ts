@@ -1,14 +1,33 @@
 import { DrawerWidth } from "../../consts/DrawerWidth";
 
-export const MainContentStyles = (open: number, rowsLength: number) => ({
+export const MainContentStyles = (
+  open: number,
+  rowsLength: number,
+  rightDrawerExists?: boolean
+) => ({
+  //   ...(window.innerWidth <= 525 && {
   marginLeft:
     "-" +
     (window.innerWidth <= 525
       ? window.innerWidth
-      : open !== 0
+      : open === 1
       ? 0
       : DrawerWidth) +
     "px !important",
+  //   }),
+
+  ...(rightDrawerExists &&
+    window.innerWidth <= 525 && {
+      marginRight:
+        "-" +
+        (window.innerWidth <= 525
+          ? window.innerWidth
+          : open !== 0
+          ? 0
+          : DrawerWidth) +
+        "px !important",
+    }),
+
   paddingTop:
     window.innerWidth <= 525 && open !== 0
       ? (rowsLength + 1) * 48 + // table row height (+1 for the header row)

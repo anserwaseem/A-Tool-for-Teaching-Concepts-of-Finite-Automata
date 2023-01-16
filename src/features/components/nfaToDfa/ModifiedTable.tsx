@@ -1,10 +1,4 @@
-import {
-  Alert,
-  Box,
-  Grid,
-  SelectChangeEvent,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Box, Grid, SelectChangeEvent, Snackbar } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
@@ -28,6 +22,7 @@ import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
 import { AnimationControls } from "../../../common/AnimationControls";
+import { MainContentStyles } from "../../../common/styles/MainContentStyles";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -70,7 +65,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     },
   ];
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(0);
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -260,6 +255,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       const rowIndex = Math.floor(index / numberOfColumns);
       if (isComplete) {
         setIsReady(true);
+        setOpenSnackbar(false);
         props.setIsModifiedTransitionTableComplete(true);
         dataContext.setModifiedTableRows(modifiedTableRows);
       }
@@ -300,7 +296,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
     showRightIcon: true,
     open,
     setOpen,
-    title: "Modified Transition Table",
+    title: "Modified Table",
   };
 
   const leftDrawerProps: CustomDrawerProps = {
@@ -327,7 +323,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
       columns: GetDrawerTransitionTableColumns(dataContext.columns, []),
     },
   };
-  
+
   const animationControlsProps: AnimationControlsProps = {
     duration,
     isPlaying,
@@ -340,7 +336,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
 
   return (
     <>
-      <Box sx={{ display: "flex", mt: 5 }}>
+      <Box sx={{ display: "flex", mt: 3 }}>
         <Snackbar
           open={openSnackbar}
           autoHideDuration={
@@ -352,11 +348,7 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
             horizontal: "center",
           }}
         >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity="info"
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={handleSnackbarClose} severity="info">
             {snackbarMessage}
           </Alert>
         </Snackbar>
@@ -365,18 +357,13 @@ export const ModifiedTable = (props: ModifiedTableProps) => {
 
         <CustomDrawer {...leftDrawerProps} />
 
-        <MainContent open={open} sx={{ paddingBottom: 12 }}>
+        <MainContent
+          open={open}
+          sx={MainContentStyles(open, dataContext?.rows?.length, true)}
+        >
           <DrawerHeader />
           {/* Grid to incorporate Transition table and Playground */}
-          <Grid
-            container
-            columnSpacing={{
-              xs: 1,
-              sm: 2,
-              md: 3,
-            }}
-            pt={1.6}
-          >
+          <Grid container spacing={1}>
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
               <Grid container alignItems={"center"}>

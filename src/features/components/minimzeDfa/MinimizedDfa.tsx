@@ -371,10 +371,9 @@ export const MinimizedDfa = (props: MinimizedDfaProps) => {
   const showNextStep = () => {
     if (isComplete) {
       setIsReady(true);
+      setOpenSnackbar(false);
       props.setIsMinimizedDfaComplete(true);
-    }
-
-    handleUpdateData();
+    } else handleUpdateData();
 
     if (transitionIndex === minimizedDfaRows.length) {
       setIsComplete(true);

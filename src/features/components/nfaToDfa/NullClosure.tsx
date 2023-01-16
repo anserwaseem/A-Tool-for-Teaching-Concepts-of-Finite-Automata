@@ -1,12 +1,6 @@
-import {
-  Alert,
-  Box,
-  Grid,
-  SelectChangeEvent,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Box, Grid, SelectChangeEvent, Snackbar } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
 import {
   RowModel,
@@ -32,6 +26,7 @@ import { CustomAppBarProps } from "../../../common/props/CustomAppBarProps";
 import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
 import { AnimationControls } from "../../../common/AnimationControls";
+import { MainContentStyles } from "../../../common/styles/MainContentStyles";
 
 const numberOfColumns = 2; // one for state and one for null
 let index = numberOfColumns;
@@ -73,7 +68,7 @@ export const NullClosure = (props: NullClosureProps) => {
     TransitionModel[]
   >([]);
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(0);
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -221,6 +216,7 @@ export const NullClosure = (props: NullClosureProps) => {
       const rowIndex = Math.floor(index / numberOfColumns);
       if (isComplete) {
         setIsReady(true);
+        setOpenSnackbar(false);
         props.setRows(nullClosureRows);
         props.setStates(nullClosureStates);
         props.setTransitions(nullClosureTransitions);
@@ -302,7 +298,7 @@ export const NullClosure = (props: NullClosureProps) => {
 
   return (
     <>
-      <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+      <Box sx={{ display: "flex", mt: 3 }}>
         <Snackbar
           open={openSnackbar}
           autoHideDuration={
@@ -314,11 +310,7 @@ export const NullClosure = (props: NullClosureProps) => {
             horizontal: "center",
           }}
         >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity="info"
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={handleSnackbarClose} severity="info">
             {snackbarMessage}
           </Alert>
         </Snackbar>
@@ -327,18 +319,13 @@ export const NullClosure = (props: NullClosureProps) => {
 
         <CustomDrawer {...customDrawerProps} />
 
-        <MainContent open={open}>
+        <MainContent
+          open={open}
+          sx={MainContentStyles(open, dataContext?.rows?.length)}
+        >
           <DrawerHeader />
           {/* Grid to incorporate Transition table and Playground */}
-          <Grid
-            container
-            columnSpacing={{
-              xs: 1,
-              sm: 2,
-              md: 3,
-            }}
-            pt={1.6}
-          >
+          <Grid container spacing={1}>
             {/* Transition table grid */}
             <Grid item xs={12} md={4}>
               <Grid container item xs={12} alignItems={"center"}>

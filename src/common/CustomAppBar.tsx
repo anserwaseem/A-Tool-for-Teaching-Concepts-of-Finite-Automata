@@ -32,7 +32,7 @@ const AppBar = styled(MuiAppBar, {
   }),
   ...(open === 2 && {
     width: window.innerWidth <= 525 ? "100%" : `calc(100% - ${DrawerWidth}px)`,
-    marginRight: DrawerWidth,
+    marginRight: window.innerWidth <= 525 ? 0 : DrawerWidth,
   }),
 }));
 

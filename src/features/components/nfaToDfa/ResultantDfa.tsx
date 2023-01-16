@@ -1,10 +1,4 @@
-import {
-  Alert,
-  Box,
-  Grid,
-  SelectChangeEvent,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Box, Grid, SelectChangeEvent, Snackbar } from "@mui/material";
 import { GridColumns } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { AnimationDurationOptions } from "../../../consts/AnimationDurationOptions";
@@ -37,6 +31,7 @@ import { CustomDrawerProps } from "../../../common/props/CustomDrawerProps";
 import { GenerateXYCoordinatesForNewState } from "../../../utils/GenerateXYCoordinatesForNewState";
 import { AnimationControlsProps } from "../../../common/props/AnimationControlsProps";
 import { AnimationControls } from "../../../common/AnimationControls";
+import { MainContentStyles } from "../../../common/styles/MainContentStyles";
 
 const numberOfColumns = 3; // one for state, one for a and one for b
 let index = numberOfColumns;
@@ -102,7 +97,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
   const [pendingTransitions, setPendingTransitions] = useState<string[]>([]);
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(0);
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -521,6 +516,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
     const rowIndex = Math.floor(index / numberOfColumns);
     if (isComplete) {
       setIsReady(true);
+      setOpenSnackbar(false);
       props.setIsResultantDfaComplete(true);
     }
 
@@ -609,7 +605,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   };
 
   return (
-    <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+    <Box sx={{ display: "flex", mt: 3 }}>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={isPlaying ? duration * 1000 : duration * 1000 * 1000}
@@ -619,11 +615,7 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
           horizontal: "center",
         }}
       >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity="info"
-          sx={{ width: "100%" }}
-        >
+        <Alert onClose={handleSnackbarClose} severity="info">
           {snackbarMessage}
         </Alert>
       </Snackbar>
@@ -632,24 +624,17 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
 
       <CustomDrawer {...leftDrawerProps} />
 
-      <MainContent open={open}>
+      <MainContent
+        open={open}
+        sx={MainContentStyles(open, dataContext?.rows?.length, true)}
+      >
         <DrawerHeader />
         {/* Grid to incorporate Transition table and Playground */}
-        <Grid
-          container
-          columnSpacing={{
-            xs: 1,
-            sm: 2,
-            md: 3,
-          }}
-          pt={1.6}
-        >
+        <Grid container spacing={1}>
           {/* Transition table grid */}
           <Grid item xs={12} md={4}>
-            <Grid container alignItems={"center"}>
-              <Grid item xs={12}>
-                <AnimationControls {...animationControlsProps} />
-              </Grid>
+            <Grid container item xs={12} alignItems={"center"}>
+              <AnimationControls {...animationControlsProps} />
             </Grid>
             <ToolsTransitionTable {...transitionTableProps} />
           </Grid>
