@@ -30,7 +30,7 @@ export const CustomDrawer = (props: CustomDrawerProps) => {
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           position: "relative",
-          marginTop: window.innerWidth <= 525 ? "72px" : 0,
+          marginTop: window.innerWidth <= 525 ? "64px" : 0,
           mx: window.innerWidth <= 525 ? 1 : 0,
           width:
             window.innerWidth <= 525

@@ -11,13 +11,15 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { AnimationDurationOptions } from "../consts/AnimationDurationOptions";
 import { ToolsPlayground } from "./components/tools/Playground";
 import { ToolsPlaygroundProps } from "./components/tools/props/PlaygroundProps";
 import { DraggableStateModel, TransitionModel } from "../models";
 import { DataContext } from "../pages/Editor";
-import { startingStateColor, stateSelectedColor } from "../consts/Colors";
+import { startingStateColor } from "../consts/Colors";
 import { PossibleTransitionValues } from "../consts/PossibleTransitionValues";
 import { TestStringMaxLength } from "../consts/TestStringMaxLength";
 import { TestStringStateId } from "../consts/StateIdsExtensions";
@@ -32,6 +34,7 @@ import { CustomDrawerProps } from "../common/props/CustomDrawerProps";
 import { AnimationControlsProps } from "../common/props/AnimationControlsProps";
 import { AnimationControls } from "../common/AnimationControls";
 import { GetTestStringTextFields } from "./components/testAString/GetTestStringTextFields";
+import { MainContentStyles } from "../common/styles/MainContentStyles";
 
 const TestAString = (props: TestAStringProps) => {
   console.log("re rendering TestAString: props");
@@ -321,22 +324,18 @@ const TestAString = (props: TestAStringProps) => {
       </Dialog>
 
       {dialogError === "none" && (
-        <Box sx={{ display: "flex", m: 1, mt: 5 }}>
+        <Box sx={{ display: "flex", mt: 3 }}>
           <CustomAppBar {...customAppBarProps} />
 
           <CustomDrawer {...customDrawerProps} />
 
-          <MainContent open={open} sx={{ paddingBottom: 12 }}>
+          <MainContent
+            open={open}
+            sx={MainContentStyles(open, dataContext?.rows?.length)}
+          >
             <DrawerHeader />
 
-            <Grid
-              container
-              columnSpacing={{
-                xs: 1,
-                sm: 2,
-                md: 3,
-              }}
-            >
+            <Grid container spacing={1}>
               <Grid item xs={12} alignItems={"center"}>
                 <AnimationControls {...animationControlsProps} />
               </Grid>
