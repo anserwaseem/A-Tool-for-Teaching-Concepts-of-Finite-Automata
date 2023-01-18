@@ -786,7 +786,7 @@ export const Editor = () => {
                 aria-label="Default"
                 valueLabelDisplay="auto"
                 sx={{
-                  m: "-7px 0 -10px",
+                  mb: "-10px",
                 }}
               />
               <Playground {...playgroundProps} />

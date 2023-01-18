@@ -10,6 +10,7 @@
   height: var(--canvasHeightVh);
   background: white;
   color: black;
+  margin-top: 7px;
 }
 
 .toolboxMenu {
@@ -43,9 +44,3 @@
   justify-content: center;
   align-items: center;
 }
-
-/* @media (min-width: 900px) {
-  .canvasStyle {
-    width: 150% !important;
-  }
-} */

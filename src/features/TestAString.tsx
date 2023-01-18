@@ -69,7 +69,7 @@ const TestAString = (props: TestAStringProps) => {
   const [dialogError, setDialogError] = useState("");
 
   const [open, setOpen] = useState(1);
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   useEffect(() => {
     if (dataContext) {
       setTestAStringStates(
@@ -92,7 +92,7 @@ const TestAString = (props: TestAStringProps) => {
       let timer = setTimeout(() => {
         handleUpdateData();
 
-        if (testStringIndex === testString.length) {
+        if (testStringIndex === testString.length + 1) {
           setIsComplete(true);
           setIsPlaying(false);
         }
@@ -171,8 +171,26 @@ const TestAString = (props: TestAStringProps) => {
         return transitions;
       });
 
+      if (testStringIndex === testString.length) {
+        setDisplayStep(2);
+      } else setDisplayStep(0);
+    }
+
+    if (displayStep === 2) {
+      // setStatesToHighlight(currentStates);
+      setOpenSnackbar(true);
       setDisplayStep(0);
     }
+  };
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   const handleDurationChange = (event: SelectChangeEvent) => {
@@ -207,11 +225,14 @@ const TestAString = (props: TestAStringProps) => {
   };
 
   const showNextRow = () => {
-    if (isComplete) setIsReady(true);
+    if (isComplete) {
+      setIsReady(true);
+      setOpenSnackbar(false);
+    }
 
     handleUpdateData();
 
-    if (testStringIndex === testString.length) {
+    if (testStringIndex === testString.length + 1) {
       setIsComplete(true);
       setIsPlaying(false);
     }
@@ -325,6 +346,32 @@ const TestAString = (props: TestAStringProps) => {
 
       {dialogError === "none" && (
         <Box sx={{ display: "flex", mt: 3 }}>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={
+              isPlaying ? duration * 1000 : duration * 1000 * 1000
+            }
+            onClose={handleSnackbarClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+          >
+            <Alert
+              onClose={handleSnackbarClose}
+              severity="info"
+              sx={{ width: "100%" }}
+            >
+              {`String ${testString.replaceAll("^", "")} is ${
+                previousStates?.includes(
+                  dataContext?.rows?.find((r) => r.isFinal)?.state
+                )
+                  ? ""
+                  : "not "
+              }accepted.`}
+            </Alert>
+          </Snackbar>
+
           <CustomAppBar {...customAppBarProps} />
 
           <CustomDrawer {...customDrawerProps} />
