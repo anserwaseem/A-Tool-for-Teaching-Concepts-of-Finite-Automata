@@ -31,9 +31,11 @@ export const TopBar = (props: TopBarProps) => {
   const [isTopbarDialogOpen, setIsTopbarDialogOpen] = useState(false);
   const [topbarDialogValue, setTopbarDialogValue] = useState("");
   const [topbarDialogError, setTopbarDialogError] = useState("");
-  // false means operate State Name dialog
-  // true means operate Transition Value dialog
-  const [dialogType, setDialogType] = useState(false);
+  // 0 means operate Edit State Name dialog
+  // 1 means operate Edit label (Transition Value) dialog
+  // 2 means operate Remove Transitions dialog
+  // 3 means operate Delete State dialog
+  const [dialogType, setDialogType] = useState(0);
   // to keep note that which state was originally selected when dialog was opened
   const [stateSelected, setStateSelected] =
     useState<SelectedElementType | null>(null);
@@ -42,7 +44,7 @@ export const TopBar = (props: TopBarProps) => {
     switch (action) {
       case "Edit Name":
         setTopbarDialogValue(props.selected?.id as string);
-        setDialogType(false);
+        setDialogType(0);
         setIsTopbarDialogOpen(true);
         break;
 
@@ -51,106 +53,16 @@ export const TopBar = (props: TopBarProps) => {
         break;
 
       case "Remove Transitions":
-        if (
-          props.selected &&
-          window.confirm(
-            `Are you sure you want to remove all transitions of ${props.selected?.id}?`
-          )
-        ) {
-          dataContext?.setTransitions((transitions) =>
-            transitions.filter(
-              (transition) =>
-                !(
-                  props.selected &&
-                  (transition.start === props.selected?.id ||
-                    transition.end === props.selected?.id)
-                )
-            )
-          );
-
-          dataContext?.setRows((rows) =>
-            rows.map((row) =>
-              props.selected && row.state === props.selected?.id
-                ? // if row found, remove all its transition values
-                  {
-                    ...row,
-                    ...Object.fromEntries(
-                      PossibleTransitionValues.map((key) => [
-                        key === "^" ? "nul" : key,
-                        "",
-                      ])
-                    ),
-                  }
-                : // else, check if any of its transition values are pointing to other states and remove them
-                  {
-                    ...row,
-                    ...Object.fromEntries(
-                      PossibleTransitionValues.map((key) => [
-                        key === "^" ? "nul" : key,
-                        Array.from(
-                          // convert to array to use filter
-                          new Set( // remove duplicates
-                            row[key === "^" ? "nul" : key].toString().split(" ") // split values on space
-                          )
-                        )
-                          .filter((val) => val !== "") // remove empty values
-                          .includes(props.selected?.id as string) // check if transition value is included in the selected state's transition values
-                          ? row[key === "^" ? "nul" : key] // if yes, remove it
-                              .toString()
-                              .replace(props.selected?.id as string, "")
-                          : row[key === "^" ? "nul" : key], // if no, keep original value
-                      ])
-                    ),
-                  }
-            )
-          );
+        if (props.selected) {
+          setDialogType(2);
+          setIsTopbarDialogOpen(true);
         }
-
-        props.handleSelect(null);
         break;
 
       case "Delete":
-        if (
-          props.selected &&
-          window.confirm(
-            `are you sure you want to delete ${props.selected?.id}?`
-          )
-        ) {
-          // first remove any transitions connected to the state.
-          dataContext?.setTransitions((transitions) =>
-            transitions.filter(
-              (transition) =>
-                !(
-                  props.selected &&
-                  (transition.start === props.selected?.id ||
-                    transition.end === props.selected?.id)
-                )
-            )
-          );
-
-          // then remove that state.
-          if (
-            props.selected &&
-            dataContext?.states
-              .map((state) => state.id)
-              .includes(props.selected?.id as string)
-          ) {
-            dataContext?.setStates((states) =>
-              states.filter(
-                (state) => props.selected && !(state.id === props.selected?.id)
-              )
-            );
-          }
-
-          // then remove that state from the transition table.
-          if (props.selected) {
-            props.handleDeleteRow(
-              dataContext?.rows.find(
-                (row) => row.state === (props.selected?.id as string)
-              ) as RowModel
-            );
-          }
-          props.handleSelect(null);
+        if (props.selected) {
+          setDialogType(3);
+          setIsTopbarDialogOpen(true);
         }
         break;
 
@@ -223,7 +135,7 @@ export const TopBar = (props: TopBarProps) => {
         setTopbarDialogValue(
           (props.selected?.id as SelectedElementTypeId).value
         );
-        setDialogType(true);
+        setDialogType(1);
         setIsTopbarDialogOpen(true);
         break;
       default:
@@ -423,6 +335,99 @@ export const TopBar = (props: TopBarProps) => {
     setStateSelected(props.selected);
   };
 
+  const handleRemoveTransitions = () => {
+    setIsTopbarDialogOpen(false);
+    dataContext?.setTransitions((transitions) =>
+      transitions.filter(
+        (transition) =>
+          !(
+            props.selected &&
+            (transition.start === props.selected?.id ||
+              transition.end === props.selected?.id)
+          )
+      )
+    );
+
+    dataContext?.setRows((rows) =>
+      rows.map((row) =>
+        props.selected && row.state === props.selected?.id
+          ? // if row found, remove all its transition values
+            {
+              ...row,
+              ...Object.fromEntries(
+                PossibleTransitionValues.map((key) => [
+                  key === "^" ? "nul" : key,
+                  "",
+                ])
+              ),
+            }
+          : // else, check if any of its transition values are pointing to other states and remove them
+            {
+              ...row,
+              ...Object.fromEntries(
+                PossibleTransitionValues.map((key) => [
+                  key === "^" ? "nul" : key,
+                  Array.from(
+                    // convert to array to use filter
+                    new Set( // remove duplicates
+                      row[key === "^" ? "nul" : key].toString().split(" ") // split values on space
+                    )
+                  )
+                    .filter((val) => val !== "") // remove empty values
+                    .includes(props.selected?.id as string) // check if transition value is included in the selected state's transition values
+                    ? row[key === "^" ? "nul" : key] // if yes, remove it
+                        .toString()
+                        .replace(props.selected?.id as string, "")
+                    : row[key === "^" ? "nul" : key], // if no, keep original value
+                ])
+              ),
+            }
+      )
+    );
+
+    props.handleSelect(null);
+  };
+
+  const handleDeleteState = () => {
+    setIsTopbarDialogOpen(false);
+
+    dataContext?.setTransitions((transitions) =>
+      transitions.filter(
+        (transition) =>
+          !(
+            props.selected &&
+            (transition.start === props.selected?.id ||
+              transition.end === props.selected?.id)
+          )
+      )
+    );
+
+    // then remove that state.
+    if (
+      props.selected &&
+      dataContext?.states
+        .map((state) => state.id)
+        .includes(props.selected?.id as string)
+    ) {
+      dataContext?.setStates((states) =>
+        states.filter(
+          (state) => props.selected && !(state.id === props.selected?.id)
+        )
+      );
+    }
+
+    // then remove that state from the transition table.
+    if (props.selected) {
+      props.handleDeleteRow(
+        dataContext?.rows.find(
+          (row) => row.state === (props.selected?.id as string)
+        ) as RowModel
+      );
+    }
+
+    props.handleSelect(null);
+  };
+
   var returnTopBarAppearance = () => {
     let allowedActions: string[] = [];
 
@@ -469,40 +474,52 @@ export const TopBar = (props: TopBarProps) => {
         onClose={() => setIsTopbarDialogOpen(false)}
       >
         <DialogTitle id="topbarDialogTitle">
-          {dialogType
+          {dialogType === 0
+            ? "Enter New State Name"
+            : dialogType === 1
             ? "Enter new Transition label(s)"
-            : "Enter New State Name"}
+            : dialogType === 2
+            ? `Are you sure you want to remove all transitions of state ${props.selected?.id}?`
+            : `Are you sure you want to delete state ${props.selected?.id}?`}
         </DialogTitle>
-        <DialogContent id="topbarDialogContent">
-          <DialogContentText id="topbarDialogContentText">
-            {topbarDialogError}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="topbarDialogValue"
-            label={dialogType ? "Transition Label" : "State Name"}
-            type="text"
-            fullWidth
-            variant="standard"
-            autoComplete="off"
-            value={topbarDialogValue}
-            onChange={(e) =>
-              setTopbarDialogValue(
-                dialogType
-                  ? Array.from(
-                      new Set(e.target.value.split(TransitionValuesSeparator))
-                    ).join("")
-                  : e.target.value
-              )
-            }
-          />
-        </DialogContent>
+        {(dialogType === 0 || dialogType === 1) && (
+          <DialogContent id="topbarDialogContent">
+            <DialogContentText id="topbarDialogContentText">
+              {topbarDialogError}
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="topbarDialogValue"
+              label={dialogType === 1 ? "Transition Label" : "State Name"}
+              type="text"
+              fullWidth
+              variant="standard"
+              autoComplete="off"
+              value={topbarDialogValue}
+              onChange={(e) =>
+                setTopbarDialogValue(
+                  dialogType === 1
+                    ? Array.from(
+                        new Set(e.target.value.split(TransitionValuesSeparator))
+                      ).join("")
+                    : e.target.value
+                )
+              }
+            />
+          </DialogContent>
+        )}
         <DialogActions id="topbarDialogActions">
           <Button onClick={() => setIsTopbarDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={() => {
-              dialogType ? handleEditTransitionLabel() : handleEditStateName();
+              dialogType === 0
+                ? handleEditStateName()
+                : dialogType === 1
+                ? handleEditTransitionLabel()
+                : dialogType === 2
+                ? handleRemoveTransitions()
+                : handleDeleteState();
             }}
           >
             Ok
