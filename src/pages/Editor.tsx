@@ -688,6 +688,9 @@ export const Editor = () => {
         <Dialog
           open={isStateNameDialogOpen}
           onClose={() => setIsStateNameDialogOpen(false)}
+          onKeyUp={(e) => {
+            if (e?.key === "Enter") handleStateNameDialogValue(e);
+          }}
         >
           <DialogTitle>Enter New State Name</DialogTitle>
           <DialogContent>
