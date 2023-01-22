@@ -428,6 +428,16 @@ export const TopBar = (props: TopBarProps) => {
     props.handleSelect(null);
   };
 
+  const handleTopbarDialogSubmit = () => {
+    dialogType === 0
+      ? handleEditStateName()
+      : dialogType === 1
+      ? handleEditTransitionLabel()
+      : dialogType === 2
+      ? handleRemoveTransitions()
+      : handleDeleteState();
+  };
+
   var returnTopBarAppearance = () => {
     let allowedActions: string[] = [];
 
@@ -472,6 +482,9 @@ export const TopBar = (props: TopBarProps) => {
         id="topbarDialog"
         open={isTopbarDialogOpen}
         onClose={() => setIsTopbarDialogOpen(false)}
+        onKeyUp={(e) => {
+          if (e?.key === "Enter") handleTopbarDialogSubmit();
+        }}
       >
         <DialogTitle id="topbarDialogTitle">
           {dialogType === 0
@@ -511,19 +524,7 @@ export const TopBar = (props: TopBarProps) => {
         )}
         <DialogActions id="topbarDialogActions">
           <Button onClick={() => setIsTopbarDialogOpen(false)}>Cancel</Button>
-          <Button
-            onClick={() => {
-              dialogType === 0
-                ? handleEditStateName()
-                : dialogType === 1
-                ? handleEditTransitionLabel()
-                : dialogType === 2
-                ? handleRemoveTransitions()
-                : handleDeleteState();
-            }}
-          >
-            Ok
-          </Button>
+          <Button onClick={handleTopbarDialogSubmit}>Ok</Button>
         </DialogActions>
       </Dialog>
 

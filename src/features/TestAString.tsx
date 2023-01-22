@@ -318,7 +318,13 @@ const TestAString = (props: TestAStringProps) => {
 
   return (
     <>
-      <Dialog open={props.isTestAStringDialogOpen} onClose={handleClose}>
+      <Dialog
+        open={props.isTestAStringDialogOpen}
+        onClose={handleClose}
+        onKeyUp={(e) => {
+          if (e?.key === "Enter") handleSubmit();
+        }}
+      >
         <DialogTitle>Test a string</DialogTitle>
         <DialogContent>
           <DialogContentText>
