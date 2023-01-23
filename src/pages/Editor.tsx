@@ -544,7 +544,7 @@ export const Editor = () => {
       stateY = e.clientY - rect.y;
     }
 
-    setStateNameDialogValue(`q${rowId}`);
+    setStateNameDialogValue(getNextStateName());
     setIsStateNameDialogOpen(true);
     setStateDropPosition({ stateX, stateY });
   };
@@ -632,6 +632,14 @@ export const Editor = () => {
   const handleErrorSnackbarClose = () => {
     setToolSelected(null);
   };
+
+  function getNextStateName() {
+    if (rows && rows?.[rows?.length - 1]?.state?.[0] === "q") {
+      const stateNumber = parseInt(rows?.[rows?.length - 1]?.state?.slice(1));
+      if (stateNumber >= 0) return `q${stateNumber + 1}`;
+    }
+    return `q${rowId}`;
+  }
 
   const transitionTableProps: TransitionTableProps = {
     rows,
@@ -758,7 +766,7 @@ export const Editor = () => {
                       handleAddRow(
                         new RowModel(
                           rowId,
-                          `q${rowId}`,
+                          getNextStateName(),
                           "",
                           "",
                           "",
