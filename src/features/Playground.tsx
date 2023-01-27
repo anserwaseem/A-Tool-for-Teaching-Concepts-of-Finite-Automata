@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { XarrowCoreProps } from "./components/playground/props/XarrowProps";
 import { DataContext } from "../pages/Editor";
 import { useContext } from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Tooltip, Typography, Zoom } from "@mui/material";
 import {
   stateFinalColor,
   stateInitialColor,
@@ -104,27 +104,41 @@ const Playground = (props: PlaygroundProps) => {
             <hr />
             <div className="toolboxContainer">
               <Grid
+                id="toolboxGrid"
                 container
                 direction="column"
                 justifyContent="space-between"
                 alignItems="center"
-                sx={{ height: "100%" }}
               >
-                <Grid item>
-                  <Box
-                    className="state"
-                    draggable
-                    style={{
-                      width: `${dataContext?.stateSize}px`,
-                      height: `${dataContext?.stateSize}px`,
-                      borderRadius: `${dataContext?.stateSize}px`,
-                      touchAction: "none",
-                    }}
-                    // enable touch events for mobile devices
-                    onTouchMove={props.handleDropDynamic}
-                  >
-                    state
-                  </Box>
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Grid item>
+                    <Box
+                      className="state"
+                      draggable
+                      style={{
+                        width: `${dataContext?.stateSize}px`,
+                        height: `${dataContext?.stateSize}px`,
+                        borderRadius: `${dataContext?.stateSize}px`,
+                        touchAction: "none",
+                      }}
+                      // enable touch events for mobile devices
+                      onTouchMove={props.handleDropDynamic}
+                    >
+                      state
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="h3">
+                      {dataContext?.states?.length ?? 0}
+                    </Typography>
+                  </Grid>
                 </Grid>
 
                 <Grid

@@ -30,6 +30,9 @@
   align-items: center;
   height: calc(100% - 68px);
 }
+#toolboxGrid {
+  height: 100%;
+}
 
 .statesContainer {
   position: relative;
@@ -43,4 +46,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-height: 360px) {
+  #toolboxGrid {
+    height: unset !important;
+  }
 }
