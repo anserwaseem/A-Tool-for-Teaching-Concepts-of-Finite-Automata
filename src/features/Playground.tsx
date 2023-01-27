@@ -119,25 +119,42 @@ const Playground = (props: PlaygroundProps) => {
                   spacing={1}
                 >
                   <Grid item>
-                    <Box
-                      className="state"
-                      draggable
-                      style={{
-                        width: `${dataContext?.stateSize}px`,
-                        height: `${dataContext?.stateSize}px`,
-                        borderRadius: `${dataContext?.stateSize}px`,
-                        touchAction: "none",
-                      }}
-                      // enable touch events for mobile devices
-                      onTouchMove={props.handleDropDynamic}
+                    <Tooltip
+                      title="Drag Me"
+                      placement="bottom"
+                      arrow
+                      TransitionComponent={Zoom}
+                      enterTouchDelay={0}
+                      disableTouchListener
                     >
-                      state
-                    </Box>
+                      <Box
+                        className="state"
+                        draggable
+                        style={{
+                          width: `${dataContext?.stateSize}px`,
+                          height: `${dataContext?.stateSize}px`,
+                          borderRadius: `${dataContext?.stateSize}px`,
+                          touchAction: "none",
+                        }}
+                        // enable touch events for mobile devices
+                        onTouchMove={props.handleDropDynamic}
+                      >
+                        state
+                      </Box>
+                    </Tooltip>
                   </Grid>
                   <Grid item>
-                    <Typography variant="h3">
-                      {dataContext?.states?.length ?? 0}
-                    </Typography>
+                    <Tooltip
+                      title="Number of States"
+                      placement="bottom"
+                      arrow
+                      TransitionComponent={Zoom}
+                      enterTouchDelay={0}
+                    >
+                      <Typography variant="h3">
+                        {dataContext?.states?.length ?? 0}
+                      </Typography>
+                    </Tooltip>
                   </Grid>
                 </Grid>
 

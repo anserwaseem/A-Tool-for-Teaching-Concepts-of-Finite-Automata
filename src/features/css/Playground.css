@@ -48,7 +48,7 @@
   align-items: center;
 }
 
-@media (max-height: 360px) {
+@media (max-height: 440px) {
   #toolboxGrid {
     height: unset !important;
   }

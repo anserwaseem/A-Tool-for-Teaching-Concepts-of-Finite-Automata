@@ -1,4 +1,12 @@
-import { Toolbar, Grid, IconButton, Typography, styled } from "@mui/material";
+import {
+  Toolbar,
+  Grid,
+  IconButton,
+  Typography,
+  styled,
+  Tooltip,
+  Zoom,
+} from "@mui/material";
 import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { appBarBackgroundColor } from "../consts/Colors";
@@ -44,20 +52,29 @@ export const CustomAppBar = (props: CustomAppBarProps) => {
       <Toolbar>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <IconButton
-              color="secondary"
-              aria-label="open transition table"
-              edge="start"
-              onClick={() => {
-                props.setOpen(1);
-              }}
-              sx={{
-                ml: -1,
-                ...(props.open === 1 && { mr: 2, display: "none" }),
-              }}
+            <Tooltip
+              title="Reveal Reference Table"
+              placement="right"
+              arrow
+              TransitionComponent={Zoom}
+              enterTouchDelay={0}
+              disableTouchListener
             >
-              <TableChartOutlinedIcon />
-            </IconButton>
+              <IconButton
+                color="secondary"
+                aria-label="open transition table"
+                edge="start"
+                onClick={() => {
+                  props.setOpen(1);
+                }}
+                sx={{
+                  ml: -1,
+                  ...(props.open === 1 && { mr: 2, display: "none" }),
+                }}
+              >
+                <TableChartOutlinedIcon />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item>
             <Typography noWrap variant="h5" fontWeight={"bold"} color={"black"}>
@@ -66,19 +83,28 @@ export const CustomAppBar = (props: CustomAppBarProps) => {
           </Grid>
           <Grid item>
             {props.showRightIcon && (
-              <IconButton
-                color="secondary"
-                aria-label="open transition table"
-                onClick={() => {
-                  props.setOpen(2);
-                }}
-                sx={{
-                  marginTop: { lg: "8px" },
-                  ...(props.open === 2 && { display: "none" }),
-                }}
+              <Tooltip
+                title="Reveal Reference Table"
+                placement="left"
+                arrow
+                TransitionComponent={Zoom}
+                enterTouchDelay={0}
+                disableTouchListener
               >
-                <TableChartOutlinedIcon />
-              </IconButton>
+                <IconButton
+                  color="secondary"
+                  aria-label="open transition table"
+                  onClick={() => {
+                    props.setOpen(2);
+                  }}
+                  sx={{
+                    marginTop: { lg: "8px" },
+                    ...(props.open === 2 && { display: "none" }),
+                  }}
+                >
+                  <TableChartOutlinedIcon />
+                </IconButton>
+              </Tooltip>
             )}
           </Grid>
         </Grid>
