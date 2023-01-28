@@ -1,4 +1,5 @@
-import { Box, Button, Divider, Grid, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, Link, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Timeline,
   TimelineItem,
@@ -14,6 +15,8 @@ import {
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { homeBackgroundColor } from "../consts/Colors";
 import "./css/Automadeasy.css";
+import { Pages } from "../enums/Pages";
+import { HelpHeaders } from "../enums/HelpHeaders";
 
 export const Automadeasy = () => {
   console.log("re rendering Automadeasy");
@@ -122,9 +125,18 @@ export const Automadeasy = () => {
         paddingTop={"7rem"}
       >
         <Grid item xs>
-          <Typography variant="h6" color={"black"} align={"center"}>
-            Creating Automaton
-          </Typography>
+          <Link
+            component={RouterLink}
+            to={`${process.env.PUBLIC_URL}/${Pages.Help}`}
+            state={{ defaultExpandedHeader: HelpHeaders.HowToCreateAutomaton }}
+            sx={{
+              textDecoration: "none",
+            }}
+          >
+            <Typography variant="h6" color={"black"} align={"center"}>
+              Creating Automaton
+            </Typography>
+          </Link>
           <Divider
             variant={"inset"}
             sx={{
@@ -151,9 +163,18 @@ export const Automadeasy = () => {
         </Grid>
 
         <Grid item xs>
-          <Typography variant="h6" color={"black"} align={"center"}>
-            Converting NFA to DFA
-          </Typography>
+          <Link
+            component={RouterLink}
+            to={`${process.env.PUBLIC_URL}/${Pages.Help}`}
+            state={{ defaultExpandedHeader: HelpHeaders.HowToConvertNFAtoDFA }}
+            sx={{
+              textDecoration: "none",
+            }}
+          >
+            <Typography variant="h6" color={"black"} align={"center"}>
+              Converting NFA to DFA
+            </Typography>
+          </Link>
           <Divider
             variant={"inset"}
             sx={{
@@ -187,9 +208,18 @@ export const Automadeasy = () => {
         </Grid>
 
         <Grid item xs>
-          <Typography variant="h6" color={"black"} align={"center"}>
-            Minimizing DFA
-          </Typography>
+          <Link
+            component={RouterLink}
+            to={`${process.env.PUBLIC_URL}/${Pages.Help}`}
+            state={{ defaultExpandedHeader: HelpHeaders.HowToMinimizeDFA }}
+            sx={{
+              textDecoration: "none",
+            }}
+          >
+            <Typography variant="h6" color={"black"} align={"center"}>
+              Minimizing DFA
+            </Typography>
+          </Link>
           <Divider
             variant={"inset"}
             sx={{

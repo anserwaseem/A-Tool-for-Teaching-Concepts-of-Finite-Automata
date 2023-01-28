@@ -11,6 +11,7 @@ import { HelpHeaders } from "../enums/HelpHeaders";
 import { HelpDetails } from "../enums/HelpDetails";
 import { HelpCard } from "../common/HelpCard";
 import { homeBackgroundColor } from "../consts/Colors";
+import { useLocation } from "react-router-dom";
 
 const videoSrc =
   "https://github.com/anserwaseem/automadeasy-videos/raw/main/help/";
@@ -19,7 +20,11 @@ const headers = Object.values(HelpHeaders);
 const details = Object.values(HelpDetails);
 
 export const Help = () => {
-  const [expanded, setExpanded] = useState<string | false>(false);
+  const location = useLocation();
+  
+  const [expanded, setExpanded] = useState<string | false>(
+    location?.state?.defaultExpandedHeader ?? false
+  );
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
