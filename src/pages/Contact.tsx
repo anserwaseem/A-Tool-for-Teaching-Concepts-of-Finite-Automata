@@ -11,6 +11,8 @@ import { ErrorSnackbar } from "../common/ErrorSnackbar";
 import { Email } from "../consts/Email";
 
 export const Contact = () => {
+  console.log("re rendering Contact");
+
   const [subject, setSubject] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");

@@ -20,6 +20,8 @@ const headers = Object.values(HelpHeaders);
 const details = Object.values(HelpDetails);
 
 export const Help = () => {
+  console.log("re rendering Help");
+
   const location = useLocation();
   
   const [expanded, setExpanded] = useState<string | false>(

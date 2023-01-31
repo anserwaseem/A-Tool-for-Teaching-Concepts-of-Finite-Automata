@@ -2,6 +2,8 @@ import { Container, Typography } from "@mui/material";
 import { homeBackgroundColor } from "../../consts/Colors";
 
 export const Footer = () => {
+  console.log("re rendering Footer");
+
   return (
     <Container
       maxWidth={false}
