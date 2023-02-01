@@ -152,7 +152,7 @@ const Playground = (props: PlaygroundProps) => {
                       enterTouchDelay={0}
                     >
                       <Typography variant="h3">
-                        {dataContext?.states?.length ?? 0}
+                        {dataContext?.states?.length || ""}
                       </Typography>
                     </Tooltip>
                   </Grid>
