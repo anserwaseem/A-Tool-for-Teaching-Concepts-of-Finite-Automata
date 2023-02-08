@@ -106,19 +106,19 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   useEffect(() => {
     if (isPlaying) {
       let timer = setTimeout(() => {
-        // if (!showExplanation) {
-        const rowIndex = Math.floor(index / numberOfColumns);
+        if (!showExplanation) {
+          const rowIndex = Math.floor(index / numberOfColumns);
 
-        handleUpdateData(rowIndex);
+          handleUpdateData(rowIndex);
 
-        // stop if all rows have been displayed
-        if (noNewStateFound === numberOfColumns) {
-          setIsComplete(true);
-          setIsPlaying(false);
-          // handleExplanation();
-        }
-        index++;
-        // } else handleExplanation();
+          // stop if all rows have been displayed
+          if (noNewStateFound === numberOfColumns) {
+            setIsComplete(true);
+            setIsPlaying(false);
+            handleExplanation();
+          }
+          index++;
+        } else handleExplanation();
       }, duration * 1000);
       return () => clearTimeout(timer);
     }
@@ -241,106 +241,16 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
       else {
         let state: string, a: string, b: string;
 
-        setResultantDfaRows((rows) =>
-          rows.map((row, mapIndex) => {
-            state = row.state;
-
-            a =
-              rowIndex - 1 === mapIndex // is last row?
-                ? ((index - 1) % rowIndex === 0 &&
-                    index !== 3 &&
-                    index !== 6) ||
-                  // b condition
-                  index === 5 ||
-                  ((index - 1) % rowIndex === 1 &&
-                    index !== 3 &&
-                    index !== 4 &&
-                    index !== 6)
-                  ? Array.from(
-                      new Set(
-                        row.state // replace each state name with its corresponding nul closure
-                          ?.split(", ")
-                          ?.filter((tv) => tv !== "")
-                          ?.map((tv) =>
-                            tv?.replace(
-                              tv,
-                              props.rows.find((r) => r.state === tv)?.a ?? tv
-                            )
-                          )
-                          ?.filter((tv) => tv !== "")
-                          ?.join(", ")
-                          ?.split(", ")
-                      ) // remove duplicates
-                    )
-                      ?.sort()
-                      ?.join(", ") ?? ""
-                  : ""
-                : row.a;
-
-            if (
-              rowIndex - 1 === mapIndex && // is last row?
-              a === ""
-            )
-              a = "Φ";
-
-            // insert a value in availableStates object if it is not already present and set isAvailable to true
-            if (a !== "" && !availableStates.find((as) => as.name === a))
-              setAvailableStates((availableStates) => {
-                const newAvailableStates = [...availableStates];
-                newAvailableStates.push({ name: a, isAvailable: true });
-                return newAvailableStates;
-              });
-
-            b =
-              rowIndex - 1 === mapIndex // is last row?
-                ? index === 5 ||
-                  ((index - 1) % rowIndex === 1 &&
-                    index !== 3 &&
-                    index !== 4 &&
-                    index !== 6)
-                  ? Array.from(
-                      new Set(
-                        row.state // replace each state name with its corresponding nul closure
-                          ?.split(", ")
-                          ?.filter((tv) => tv !== "")
-                          ?.map((tv) =>
-                            tv?.replace(
-                              tv,
-                              props.rows.find((r) => r.state === tv)?.b ?? tv
-                            )
-                          )
-                          ?.filter((tv) => tv !== "")
-                          ?.join(", ")
-                          ?.split(", ")
-                      ) // remove duplicates
-                    )
-                      ?.sort()
-                      ?.join(", ") ?? ""
-                  : ""
-                : row.b;
-
-            if (
-              rowIndex - 1 === mapIndex && // is last row?
-              index % numberOfColumns === numberOfColumns - 1 && // is it turn of b column to be filled?
-              b === ""
-            )
-              b = "Φ";
-
-            // insert b value in availableStates object if it is not already present and set isAvailable to true
-            if (b !== "" && !availableStates.find((as) => as.name === b))
-              setAvailableStates((availableStates) => {
-                const newAvailableStates = [...availableStates];
-                newAvailableStates.push({ name: b, isAvailable: true });
-                return newAvailableStates;
-              });
-
-            return {
-              ...row,
-              a: a,
-              b: b,
-            };
-          })
+        const [updatedResultDfaRows, updatedRow] = getUpdatedResultantDfaRows(
+          resultantDfaRows,
+          state,
+          a,
+          b,
+          rowIndex
         );
+
+        [state, a, b] = updatedRow;
+        setResultantDfaRows(updatedResultDfaRows);
 
         // update resultantDfaTransitions
         const updatedColumn =
@@ -399,8 +309,115 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
       }
     }
 
-    // setShowExplanation(true);
+    setShowExplanation(true);
   };
+
+  const getUpdatedResultantDfaRows = (
+    rows: RowModel[],
+    state: string,
+    a: string,
+    b: string,
+    rowIndex: number
+  ): [RowModel[], string[]] => {
+    const updatedRows = rows.map((row, mapIndex) => {
+      state = row.state;
+
+      a =
+        rowIndex - 1 === mapIndex // is last row?
+          ? ((index - 1) % rowIndex === 0 && index !== 3 && index !== 6) ||
+            // b condition
+            index === 5 ||
+            ((index - 1) % rowIndex === 1 &&
+              index !== 3 &&
+              index !== 4 &&
+              index !== 6)
+            ? Array.from(
+                new Set(
+                  row.state // replace each state name with its corresponding nul closure
+                    ?.split(", ")
+                    ?.filter((tv) => tv !== "")
+                    ?.map((tv) =>
+                      tv?.replace(
+                        tv,
+                        props.rows.find((r) => r.state === tv)?.a ?? tv
+                      )
+                    )
+                    ?.filter((tv) => tv !== "")
+                    ?.join(", ")
+                    ?.split(", ")
+                ) // remove duplicates
+              )
+                ?.sort()
+                ?.join(", ") ?? ""
+            : ""
+          : row.a;
+
+      if (
+        rowIndex - 1 === mapIndex && // is last row?
+        a === ""
+      )
+        a = "Φ";
+
+      // insert a value in availableStates object if it is not already present and set isAvailable to true
+      if (a !== "" && !availableStates.find((as) => as.name === a))
+        setAvailableStates((availableStates) => {
+          const newAvailableStates = [...availableStates];
+          newAvailableStates.push({ name: a, isAvailable: true });
+          return newAvailableStates;
+        });
+
+      b =
+        rowIndex - 1 === mapIndex // is last row?
+          ? index === 5 ||
+            ((index - 1) % rowIndex === 1 &&
+              index !== 3 &&
+              index !== 4 &&
+              index !== 6)
+            ? Array.from(
+                new Set(
+                  row.state // replace each state name with its corresponding nul closure
+                    ?.split(", ")
+                    ?.filter((tv) => tv !== "")
+                    ?.map((tv) =>
+                      tv?.replace(
+                        tv,
+                        props.rows.find((r) => r.state === tv)?.b ?? tv
+                      )
+                    )
+                    ?.filter((tv) => tv !== "")
+                    ?.join(", ")
+                    ?.split(", ")
+                ) // remove duplicates
+              )
+                ?.sort()
+                ?.join(", ") ?? ""
+            : ""
+          : row.b;
+
+      if (
+        rowIndex - 1 === mapIndex && // is last row?
+        index % numberOfColumns === numberOfColumns - 1 && // is it turn of b column to be filled?
+        b === ""
+      )
+        b = "Φ";
+
+      // insert b value in availableStates object if it is not already present and set isAvailable to true
+      if (b !== "" && !availableStates.find((as) => as.name === b))
+        setAvailableStates((availableStates) => {
+          const newAvailableStates = [...availableStates];
+          newAvailableStates.push({ name: b, isAvailable: true });
+          return newAvailableStates;
+        });
+
+      return {
+        ...row,
+        a: a,
+        b: b,
+      };
+    });
+
+    return [updatedRows, [state, a, b]];
+  }; 
 
   const handleExplanation = () => {
     if (index % numberOfColumns === 1)
@@ -512,24 +529,24 @@ export const ResultantDfa = (props: ResultantDfaProps) => {
   };
 
   const showNextRow = () => {
-    // if (!showExplanation) {
-    const rowIndex = Math.floor(index / numberOfColumns);
-    if (isComplete) {
-      setIsReady(true);
-      setOpenSnackbar(false);
-      props.setIsResultantDfaComplete(true);
-    }
+    if (!showExplanation) {
+      const rowIndex = Math.floor(index / numberOfColumns);
+      if (isComplete) {
+        setIsReady(true);
+        setOpenSnackbar(false);
+        props.setIsResultantDfaComplete(true);
+      }
 
-    handleUpdateData(rowIndex);
+      handleUpdateData(rowIndex);
 
-    // stop if all rows have been displayed
-    if (noNewStateFound === numberOfColumns) {
-      setIsComplete(true);
-      setIsPlaying(false);
-      // handleExplanation();
-    }
-    index++;
-    // } else handleExplanation();
+      // stop if all rows have been displayed
+      if (noNewStateFound === numberOfColumns) {
+        setIsComplete(true);
+        setIsPlaying(false);
+        handleExplanation();
+      }
+      index++;
+    } else handleExplanation();
   };
 
   const transitionTableProps: ToolsTransitionTableProps = {
