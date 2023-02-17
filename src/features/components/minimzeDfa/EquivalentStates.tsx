@@ -275,7 +275,7 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
 
   function getExplanation(result: string) {
     if (
-      statesToHighlight.length > 0 &&
+      statesToHighlight?.length > 0 &&
       lowerTriangularStep &&
       columnName !== null
     ) {
@@ -317,13 +317,13 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
       // show explanation of highlighted cells
       const colValue = dataContext?.rows?.find(
         (row) => row.state === statesToHighlight[1]
-      )[columnName];
+      )?.[columnName];
       const rowValue = dataContext?.rows?.find(
-        (row) => row.state === statesToHighlight[0]
-      )[columnName];
+        (row) => row.state === statesToHighlight?.at(0) ?? ""
+      )?.[columnName];
 
-      let row = rows.find((row) => row.state === rowValue);
-      let cellValue = row[`cell-${colValue}`];
+      let row = rows?.find((row) => row.state === rowValue);
+      let cellValue = row?.[`cell-${colValue}`];
       if (cellValue === "—") {
         row = rows.find((row) => row.state === colValue);
         cellValue = row[`cell-${rowValue}`];
@@ -348,10 +348,10 @@ export const EquivalentStates = (props: EquivalentStatesProps) => {
         );
 
       // if there is no further empty cell in rows, then reset emptyCells and set willThereBeNextIteration to false
-      const searchIndex = rows.findIndex(
-        (row) => row.state === statesToHighlight[0]
+      const searchIndex = rows?.findIndex(
+        (row) => row.state === statesToHighlight?.at(0) ?? ""
       );
-      const rowsToCheck = rows.slice(searchIndex + 1);
+      const rowsToCheck = rows?.slice(searchIndex + 1);
       const isThereAnyEmptyCell = rowsToCheck.some((row) =>
         Object.keys(row).some((key) => row[key] === "")
       );
